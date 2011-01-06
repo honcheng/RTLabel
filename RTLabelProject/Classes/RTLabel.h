@@ -32,10 +32,12 @@ typedef enum
 	RTTextLineBreakMode _lineBreakMode;
 	NSString *_plainText;
 	NSMutableArray *_textComponent;
+	CGSize optimumSize;
 }
 
 @property (nonatomic, retain) UIColor *textColor;
 @property (nonatomic, retain) UIFont *font;
+@property (nonatomic, assign) CGSize optimumSize;
 
 - (NSString*)text;
 - (void)setText:(NSString*)text;

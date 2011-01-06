@@ -69,7 +69,7 @@
 @synthesize font;
 @synthesize textColor;
 @synthesize _plainText, _textComponent;
-
+@synthesize optimumSize;
 
 - (id)initWithFrame:(CGRect)frame {
     
@@ -237,6 +237,11 @@
 	
 	// Create the frame and draw it into the graphics context
 	CTFrameRef frame = CTFramesetterCreateFrame(framesetter,CFRangeMake(0, 0), path, NULL);
+	
+	CFRange range;
+	CGSize constraint = CGSizeMake(self.frame.size.width, 1000000);
+	optimumSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, [self._plainText length]), nil, constraint, &range);
+	//NSLog(@"......%f %f", coreTextSize.height, coreTextSize.width);
 	
 	CFRelease(framesetter);
 	CTFrameDraw(frame, context);
