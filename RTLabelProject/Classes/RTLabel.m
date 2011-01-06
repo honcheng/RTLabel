@@ -47,8 +47,8 @@
 {
 	NSMutableString *desc = [NSMutableString string];
 	[desc appendFormat:@"text: %@", self.text];
-	[desc appendFormat:@", tag: %@", self.tagLabel];
-	[desc appendFormat:@", attributes: %@", self.attributes];
+	if (self.tagLabel) [desc appendFormat:@", tag: %@", self.tagLabel];
+	if (self.attributes) [desc appendFormat:@", attributes: %@", self.attributes];
 	return desc;
 }
 
@@ -163,13 +163,6 @@
 	CTFontRef thisFont = CTFontCreateWithName ((CFStringRef)[self.font fontName], [self.font pointSize], NULL); 
 	CFAttributedStringSetAttribute(attrString, CFRangeMake(0, [attrString length]), kCTFontAttributeName, thisFont);
 	
-	/* color text red
-	CGFloat components[] = { 1.0, 0.0, 0.0, 0.8 };
-	CGColorRef red = CGColorCreate(rgbColorSpace, components);
-	CGColorSpaceRelease(rgbColorSpace);
-	CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 50),kCTForegroundColorAttributeName, red);
-	*/
-	
 	int position = 0;
 	for (RTLabelComponent *component in self._textComponent)
 	{
@@ -192,6 +185,8 @@
 			for (NSString *key in component.attributes)
 			{
 				NSString *value = [component.attributes objectForKey:key];
+				value = [value stringByReplacingOccurrencesOfString:@"'" withString:@""];
+				
 				if ([key isEqualToString:@"color"])
 				{
 					if ([value rangeOfString:@"#"].location==0)
@@ -201,6 +196,20 @@
 						CGFloat components[] = { [[colorComponents objectAtIndex:0] floatValue] , [[colorComponents objectAtIndex:1] floatValue] , [[colorComponents objectAtIndex:2] floatValue] , [[colorComponents objectAtIndex:3] floatValue] };
 						CGColorRef color = CGColorCreate(rgbColorSpace, components);
 						CFAttributedStringSetAttribute(attrString, CFRangeMake(position, [component.text length]),kCTForegroundColorAttributeName, color);
+					}
+					else
+					{
+						
+						value = [value stringByAppendingString:@"Color"];
+						SEL colorSel = NSSelectorFromString(value);
+						UIColor *_color = nil;
+						if ([UIColor respondsToSelector:colorSel])
+						{
+							_color = [UIColor performSelector:colorSel];
+							CGColorRef color = [_color CGColor];
+							CFAttributedStringSetAttribute(attrString, CFRangeMake(position, [component.text length]),kCTForegroundColorAttributeName, color);
+						}
+											
 					}
 				}
 				else if ([key isEqualToString:@"face"])
