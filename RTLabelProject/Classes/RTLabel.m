@@ -116,8 +116,8 @@
 	CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB();
 	CGColorSpaceRelease(rgbColorSpace);
 	CFDictionaryAddValue( styleDict1, kCTForegroundColorAttributeName, [self.textColor CGColor] );
-	CFAttributedStringSetAttributes( attrString, CFRangeMake( 0, [attrString length] ), styleDict1, 0 ); 
-	
+	CFAttributedStringSetAttributes( attrString, CFRangeMake( 0, CFAttributedStringGetLength(attrString) ), styleDict1, 0 ); 
+
 	CFMutableDictionaryRef styleDict = ( CFDictionaryCreateMutable( (0), 0, (0), (0) ) );
 	
 	// attempt to add weight
@@ -161,7 +161,7 @@
 	CFAttributedStringSetAttributes( attrString, CFRangeMake( 0, stringLength ), styleDict, 0 ); 
 	
 	CTFontRef thisFont = CTFontCreateWithName ((CFStringRef)[self.font fontName], [self.font pointSize], NULL); 
-	CFAttributedStringSetAttribute(attrString, CFRangeMake(0, [attrString length]), kCTFontAttributeName, thisFont);
+	CFAttributedStringSetAttribute(attrString, CFRangeMake(0, CFAttributedStringGetLength(attrString)), kCTFontAttributeName, thisFont);
 	
 	int position = 0;
 	for (RTLabelComponent *component in self._textComponent)
