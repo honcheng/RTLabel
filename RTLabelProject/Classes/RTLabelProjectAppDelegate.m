@@ -28,11 +28,11 @@
 	[window addSubview:label];
 	[label release];
 	
-	NSString *text = @"Lorem <font kern=35>ipsum</font> dolor sit amet, <a href='http://buuuk.com'>buuuk.com</a> <i>consectetur adipisicing elit, sed do eiusmod tempor</i> <u color=red>incididunt ut</u> <uu color=green>labore et dolore</uu> magna aliqua. <i>Ut enim ad minim</i> veniam, <b>quis nostrud</b> exercitation <font color=#CCFF00 face=HelveticaNeue-CondensedBold size=30>ullamco</font> laboris <b>nisi</b> ut aliquip <font color='blue' size=30 stroke=1>ex ea commodo consequat.</font> Duis aute irure dolor in <font face=Cochin-Bold size=40>reprehenderit</font> <font face=AmericanTypewriter size=20 color=purple>in voluptate velit esse cillum dolore</font> eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+	NSString *text = @"Lorem <font kern=35>ipsum</font> dolor sit amet, <a href='http://buuuk.com'>buuuk.com</a> <i>consectetur adipisicing elit, sed do eiusmod tempor</i> <u color=red>incididunt ut</u> <uu color=green>labore et dolore</uu> magna aliqua. <i>Ut enim ad minim</i> veniam, <b>quis nostrud</b> exercitation <font color=#CCFF00 face=HelveticaNeue-CondensedBold size=30>ullamco</font> laboris <b>nisi</b> ut aliquip <font color='blue' size=30 stroke=1>ex ea commodo consequat.</font> Duis <a href='http://google.com'>google.com</a> aute irure dolor in <font face=Cochin-Bold size=40>reprehenderit</font> <font face=AmericanTypewriter size=20 color=purple>in voluptate velit esse cillum dolore</font> eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 	[label setText:text];
 	[label setTextAlignment:RTTextAlignmentJustify];
-    
-    return YES;
+	
+	return YES;
 }
 
 
