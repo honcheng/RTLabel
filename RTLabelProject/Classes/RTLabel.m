@@ -58,10 +58,12 @@
 @property (nonatomic, retain) NSString *_text;
 @property (nonatomic, retain) NSString *_plainText;
 @property (nonatomic, retain) NSMutableArray *_textComponent;
+@property (nonatomic, assign) CGSize _optimumSize;
 - (CGFloat)frameHeight:(CTFrameRef)frame;
 - (NSArray *)components;
 - (void)parse:(NSString *)data valid_tags:(NSArray *)valid_tags;
 - (NSArray*) colorForHex:(NSString *)hexColor;
+- (void)render;
 @end
 
 @implementation RTLabel
@@ -69,19 +71,20 @@
 @synthesize font;
 @synthesize textColor;
 @synthesize _plainText, _textComponent;
-@synthesize optimumSize;
+@synthesize _optimumSize;
 
 - (id)initWithFrame:(CGRect)frame {
     
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code.
-		[self setBackgroundColor:[UIColor whiteColor]];
+		[self setBackgroundColor:[UIColor clearColor]];
 		self.font = [UIFont systemFontOfSize:15];
 		self.textColor = [UIColor blackColor];
 		self._text = @"";
 		_textAlignment = RTTextAlignmentLeft;
 		_lineBreakMode = RTTextLineBreakModeWordWrapping;
+		_lineSpacing = 3;
     }
     return self;
 }
@@ -99,6 +102,11 @@
 }
 
 - (void)drawRect:(CGRect)rect 
+{
+	[self render];
+}
+
+- (void)render
 {
     // Drawing code.
 	CGContextRef context = UIGraphicsGetCurrentContext();
@@ -124,7 +132,7 @@
 	float half = 1.0;
 	CFNumberRef weight = ( CFNumberCreate( (0), 12, &half ) );
 	CFDictionaryAddValue( styleDict, kCTFontWeightTrait, weight );
-
+	
 	// direction
 	CTWritingDirection direction = kCTWritingDirectionLeftToRight; 
 	// leading
@@ -135,14 +143,13 @@
 	//CGFloat lineHeightMultiple = tabInterval + 1.0; 
 	//CGFloat maxLineHeight = lineHeightMultiple + 1.0; 
 	//CGFloat minLineHeight = maxLineHeight + 1.0; 
-	CGFloat lineSpacing = 1; // minLineHeight + 1.0; 
 	
 	CTParagraphStyleSetting theSettings[] =
 	{
 		{ kCTParagraphStyleSpecifierAlignment, sizeof(CTTextAlignment), &_textAlignment }, // justify text
 		{ kCTParagraphStyleSpecifierLineBreakMode, sizeof(CTLineBreakMode), &_lineBreakMode }, // break mode 
 		{ kCTParagraphStyleSpecifierBaseWritingDirection, sizeof(CTWritingDirection), &direction }, 
-		{ kCTParagraphStyleSpecifierLineSpacing, sizeof(CGFloat), &lineSpacing }, // leading
+		{ kCTParagraphStyleSpecifierLineSpacing, sizeof(CGFloat), &_lineSpacing }, // leading
 		//{ kCTParagraphStyleSpecifierFirstLineHeadIndent, sizeof(CGFloat), &firstLineIndent }, 
 		//{ kCTParagraphStyleSpecifierHeadIndent, sizeof(CGFloat), &headIndent }, 
 		//{ kCTParagraphStyleSpecifierTailIndent, sizeof(CGFloat), &tailIndent }, 
@@ -162,13 +169,6 @@
 	
 	CTFontRef thisFont = CTFontCreateWithName ((CFStringRef)[self.font fontName], [self.font pointSize], NULL); 
 	CFAttributedStringSetAttribute(attrString, CFRangeMake(0, [attrString length]), kCTFontAttributeName, thisFont);
-	
-	/* color text red
-	CGFloat components[] = { 1.0, 0.0, 0.0, 0.8 };
-	CGColorRef red = CGColorCreate(rgbColorSpace, components);
-	CGColorSpaceRelease(rgbColorSpace);
-	CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 50),kCTForegroundColorAttributeName, red);
-	*/
 	
 	int position = 0;
 	for (RTLabelComponent *component in self._textComponent)
@@ -240,8 +240,7 @@
 	
 	CFRange range;
 	CGSize constraint = CGSizeMake(self.frame.size.width, 1000000);
-	optimumSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, [self._plainText length]), nil, constraint, &range);
-	//NSLog(@"......%f %f", coreTextSize.height, coreTextSize.width);
+	self._optimumSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, [self._plainText length]), nil, constraint, &range);
 	
 	CFRelease(framesetter);
 	CTFrameDraw(frame, context);
@@ -286,12 +285,24 @@
 	 }*/
 }
 
+- (CGSize)optimumSize
+{
+	[self render];
+	return self._optimumSize;
+}
+
+- (void)setLineSpacing:(CGFloat)lineSpacing
+{
+	_lineSpacing = lineSpacing;
+	[self setNeedsDisplay];
+}
+
 - (void)setText:(NSString *)text
 {
 	self._text = text;
 	[self parse:self._text valid_tags:nil];
-	NSLog(@"%@", self._plainText);
-	NSLog(@"%@", self._textComponent); 
+	//NSLog(@"%@", self._plainText);
+	//NSLog(@"%@", self._textComponent); 
 	[self setNeedsDisplay];
 }
 
@@ -412,7 +423,7 @@
 				tag = [tag substringToIndex:[tag rangeOfString:@" "].location];
 			}
 		}
-
+		
 		//if not a valid tag, replace the tag with a space
 		if([valid_tags containsObject:tag] == NO)
 		{
@@ -434,7 +445,7 @@
 					//NSLog(@">>>>>>> normal: %@ %@", text2, lastAttributes);
 					[components addObject:[RTLabelComponent componentWithString:text2 tag:nil attributes:lastAttributes]];
 				}
-	
+				
 				//NSLog(@".......... %i %i %i %@", [data length], last_position, position, [data stringByReplacingOccurrencesOfString:delimiter withString:@"" options:NULL range:NSMakeRange(last_position, position+delimiter.length)]);
 				data = [data stringByReplacingOccurrencesOfString:delimiter withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(last_position, position+delimiter.length-last_position)];
 				
@@ -450,7 +461,7 @@
 			}
 			
 			//data = [data stringByReplacingOccurrencesOfString:delimiter withString:@""];
-
+			
 			lastAttributes = attributes;
 		}
 	}
@@ -465,19 +476,19 @@
 				 [NSCharacterSet whitespaceAndNewlineCharacterSet]
 				 ] uppercaseString];  
 	/*
-    // String should be 6 or 7 characters if it includes '#'  
-    if ([hexColor length] > 6) 
-		return [UIColor blackColor];  
-	
-    // strip # if it appears  
-    if ([hexColor hasPrefix:@"#"]) 
-		hexColor = [cString substringFromIndex:1];  
-	
-    // if the value isn't 6 characters at this point return 
-    // the color black	
-    if ([hexColor length] != 6) 
-		return [UIColor blackColor];  
-	*/
+	 // String should be 6 or 7 characters if it includes '#'  
+	 if ([hexColor length] > 6) 
+	 return [UIColor blackColor];  
+	 
+	 // strip # if it appears  
+	 if ([hexColor hasPrefix:@"#"]) 
+	 hexColor = [cString substringFromIndex:1];  
+	 
+	 // if the value isn't 6 characters at this point return 
+	 // the color black	
+	 if ([hexColor length] != 6) 
+	 return [UIColor blackColor];  
+	 */
     // Separate into r, g, b substrings  
     NSRange range;  
     range.location = 0;  
@@ -498,11 +509,11 @@
     [[NSScanner scannerWithString:bString] scanHexInt:&b];  
 	
 	/*
-    return [UIColor colorWithRed:((float) r / 255.0f)  
-                           green:((float) g / 255.0f)  
-                            blue:((float) b / 255.0f)  
-                           alpha:1.0f];  */
-
+	 return [UIColor colorWithRed:((float) r / 255.0f)  
+	 green:((float) g / 255.0f)  
+	 blue:((float) b / 255.0f)  
+	 alpha:1.0f];  */
+	
 	NSArray *components = [NSArray arrayWithObjects:[NSNumber numberWithFloat:((float) r / 255.0f)],[NSNumber numberWithFloat:((float) g / 255.0f)],[NSNumber numberWithFloat:((float) b / 255.0f)],[NSNumber numberWithFloat:1.0],nil];
 	return components;
 	
