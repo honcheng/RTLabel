@@ -28,7 +28,7 @@
 	[window addSubview:label];
 	[label release];
 	
-	NSString *text = @"Lorem ipsum dolor sit amet, http://buuuk.com <i>consectetur adipisicing elit, sed do eiusmod tempor</i> incididunt ut labore et dolore magna aliqua. <i>Ut enim ad minim</i> veniam, <b>quis nostrud</b> exercitation <font color=#CCFF00 face=HelveticaNeue-CondensedBold size=10>ullamco</font> laboris <b>nisi</b> ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+	NSString *text = @"Lorem ipsum dolor sit amet, http://buuuk.com <i>consectetur adipisicing elit, sed do eiusmod tempor</i> incididunt ut labore et dolore magna aliqua. <i>Ut enim ad minim</i> veniam, <b>quis nostrud</b> exercitation <font color=#FF0000 face=HelveticaNeue-CondensedBold size=10>ullamco</font> laboris <b>nisi</b> ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 	[label setText:text];
 	[label setTextAlignment:RTTextAlignmentJustify];
     

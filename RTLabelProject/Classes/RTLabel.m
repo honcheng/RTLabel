@@ -196,7 +196,7 @@
 				{
 					if ([value rangeOfString:@"#"].location==0)
 					{
-						value = [value stringByReplacingOccurrencesOfString:@"#" withString:@"0x"];
+						value = [value stringByReplacingOccurrencesOfString:@"#" withString:@""];
 						NSArray *colorComponents = [self colorForHex:value];
 						CGFloat components[] = { [[colorComponents objectAtIndex:0] floatValue] , [[colorComponents objectAtIndex:1] floatValue] , [[colorComponents objectAtIndex:2] floatValue] , [[colorComponents objectAtIndex:3] floatValue] };
 						CGColorRef color = CGColorCreate(rgbColorSpace, components);
@@ -497,7 +497,7 @@
                            green:((float) g / 255.0f)  
                             blue:((float) b / 255.0f)  
                            alpha:1.0f];  */
-	
+
 	NSArray *components = [NSArray arrayWithObjects:[NSNumber numberWithFloat:((float) r / 255.0f)],[NSNumber numberWithFloat:((float) g / 255.0f)],[NSNumber numberWithFloat:((float) b / 255.0f)],[NSNumber numberWithFloat:1.0],nil];
 	return components;
 	
