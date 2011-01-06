@@ -1,0 +1,230 @@
+// !$*UTF8*$!
+{
+	1D3623240D0F684500981E51 /* RTLabelProjectAppDelegate.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {927, 689}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 334}";
+		};
+	};
+	1D3623250D0F684500981E51 /* RTLabelProjectAppDelegate.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {4100, 1079}}";
+			sepNavSelRange = "{1023, 0}";
+			sepNavVisRange = "{184, 2676}";
+		};
+	};
+	1D6058900D05DD3D006BFB54 /* RTLabelProject */ = {
+		activeExec = 0;
+		executables = (
+			F8BDA69412D553BF00B6CC65 /* RTLabelProject */,
+		);
+	};
+	29B97313FDCFA39411CA2CEA /* Project object */ = {
+		activeBuildConfigurationName = Debug;
+		activeExecutable = F8BDA69412D553BF00B6CC65 /* RTLabelProject */;
+		activeSDKPreference = iphonesimulator4.2;
+		activeTarget = 1D6058900D05DD3D006BFB54 /* RTLabelProject */;
+		addToTargets = (
+			1D6058900D05DD3D006BFB54 /* RTLabelProject */,
+		);
+		codeSenseManager = F8BDA6A312D553CA00B6CC65 /* Code sense */;
+		executables = (
+			F8BDA69412D553BF00B6CC65 /* RTLabelProject */,
+		);
+		perUserDictionary = {
+			PBXConfiguration.PBXFileTableDataSource3.PBXFileTableDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					969,
+					20,
+					48,
+					43,
+					43,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+				);
+			};
+			PBXPerProjectTemplateStateSaveDate = 315980725;
+			PBXWorkspaceStateSaveDate = 315980725;
+		};
+		perUserProjectItems = {
+			F8ABFA9812D57E0900A7CE33 /* PBXTextBookmark */ = F8ABFA9812D57E0900A7CE33 /* PBXTextBookmark */;
+			F8ABFD7B12D5B82300A7CE33 /* PBXTextBookmark */ = F8ABFD7B12D5B82300A7CE33 /* PBXTextBookmark */;
+			F8ABFD7C12D5B82300A7CE33 /* PlistBookmark */ = F8ABFD7C12D5B82300A7CE33 /* PlistBookmark */;
+			F8ABFD7F12D5B82300A7CE33 /* PBXTextBookmark */ = F8ABFD7F12D5B82300A7CE33 /* PBXTextBookmark */;
+			F8ABFD8512D5B87500A7CE33 /* PBXTextBookmark */ = F8ABFD8512D5B87500A7CE33 /* PBXTextBookmark */;
+			F8ABFD8A12D5B88000A7CE33 /* PBXTextBookmark */ = F8ABFD8A12D5B88000A7CE33 /* PBXTextBookmark */;
+			F8ABFD8B12D5B88000A7CE33 /* PBXTextBookmark */ = F8ABFD8B12D5B88000A7CE33 /* PBXTextBookmark */;
+			F8ABFD8D12D5B88C00A7CE33 /* PBXTextBookmark */ = F8ABFD8D12D5B88C00A7CE33 /* PBXTextBookmark */;
+		};
+		sourceControlManager = F8BDA6A212D553CA00B6CC65 /* Source Control */;
+		userBuildSettings = {
+		};
+	};
+	29B97316FDCFA39411CA2CEA /* main.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1147, 754}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 354}";
+		};
+	};
+	32CA4F630368D1EE00C91783 /* RTLabelProject_Prefix.pch */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1147, 731}}";
+			sepNavSelRange = "{196, 0}";
+			sepNavVisRange = "{0, 196}";
+		};
+	};
+	F8ABFA9812D57E0900A7CE33 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 1D3623240D0F684500981E51 /* RTLabelProjectAppDelegate.h */;
+		name = "RTLabelProjectAppDelegate.h: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 334;
+		vrLoc = 0;
+	};
+	F8ABFD7B12D5B82300A7CE33 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 29B97316FDCFA39411CA2CEA /* main.m */;
+		name = "main.m: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 354;
+		vrLoc = 0;
+	};
+	F8ABFD7C12D5B82300A7CE33 /* PlistBookmark */ = {
+		isa = PlistBookmark;
+		fRef = 8D1107310486CEB800E47090 /* RTLabelProject-Info.plist */;
+		fallbackIsa = PBXBookmark;
+		isK = 0;
+		kPath = (
+			UIAppFonts,
+			0,
+		);
+		name = "/Users/honcheng/Dropbox/Open Source Projects/RTLabelProject/RTLabelProject-Info.plist";
+		rLen = 0;
+		rLoc = 9223372036854775807;
+	};
+	F8ABFD7F12D5B82300A7CE33 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = F8BDA69F12D553C900B6CC65 /* RTLabel.h */;
+		name = "RTLabel.h: 25";
+		rLen = 0;
+		rLoc = 624;
+		rType = 0;
+		vrLen = 1111;
+		vrLoc = 0;
+	};
+	F8ABFD8512D5B87500A7CE33 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 32CA4F630368D1EE00C91783 /* RTLabelProject_Prefix.pch */;
+		name = "RTLabelProject_Prefix.pch: 8";
+		rLen = 0;
+		rLoc = 196;
+		rType = 0;
+		vrLen = 196;
+		vrLoc = 0;
+	};
+	F8ABFD8A12D5B88000A7CE33 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = F8BDA6A012D553C900B6CC65 /* RTLabel.m */;
+		name = "RTLabel.m: 211";
+		rLen = 0;
+		rLoc = 8411;
+		rType = 0;
+		vrLen = 2414;
+		vrLoc = 6463;
+	};
+	F8ABFD8B12D5B88000A7CE33 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 1D3623250D0F684500981E51 /* RTLabelProjectAppDelegate.m */;
+		name = "RTLabelProjectAppDelegate.m: 31";
+		rLen = 0;
+		rLoc = 1023;
+		rType = 0;
+		vrLen = 2710;
+		vrLoc = 146;
+	};
+	F8ABFD8D12D5B88C00A7CE33 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 1D3623250D0F684500981E51 /* RTLabelProjectAppDelegate.m */;
+		name = "RTLabelProjectAppDelegate.m: 31";
+		rLen = 0;
+		rLoc = 1023;
+		rType = 0;
+		vrLen = 2676;
+		vrLoc = 184;
+	};
+	F8BDA69412D553BF00B6CC65 /* RTLabelProject */ = {
+		isa = PBXExecutable;
+		activeArgIndices = (
+		);
+		argumentStrings = (
+		);
+		autoAttachOnCrash = 1;
+		breakpointsEnabled = 0;
+		configStateDict = {
+		};
+		customDataFormattersEnabled = 1;
+		dataTipCustomDataFormattersEnabled = 1;
+		dataTipShowTypeColumn = 1;
+		dataTipSortType = 0;
+		debuggerPlugin = GDBDebugging;
+		disassemblyDisplayState = 0;
+		dylibVariantSuffix = "";
+		enableDebugStr = 1;
+		environmentEntries = (
+		);
+		executableSystemSymbolLevel = 0;
+		executableUserSymbolLevel = 0;
+		libgmallocEnabled = 0;
+		name = RTLabelProject;
+		savedGlobals = {
+		};
+		showTypeColumn = 0;
+		sourceDirectories = (
+		);
+	};
+	F8BDA69F12D553C900B6CC65 /* RTLabel.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1147, 731}}";
+			sepNavSelRange = "{624, 0}";
+			sepNavVisRange = "{0, 1111}";
+		};
+	};
+	F8BDA6A012D553C900B6CC65 /* RTLabel.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1727, 6565}}";
+			sepNavSelRange = "{7962, 0}";
+			sepNavVisRange = "{7429, 821}";
+		};
+	};
+	F8BDA6A212D553CA00B6CC65 /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+			repositoryNamesForRoots = {
+				"" = "";
+			};
+		};
+	};
+	F8BDA6A312D553CA00B6CC65 /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+}
