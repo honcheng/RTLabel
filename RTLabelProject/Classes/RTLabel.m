@@ -180,6 +180,45 @@
 			CTFontRef boldFont = CTFontCreateWithName ((CFStringRef)[font2 fontName], [font2 pointSize], NULL); 
 			CFAttributedStringSetAttribute(attrString, CFRangeMake(position, [component.text length]), kCTFontAttributeName, boldFont);
 		}
+		else if ([component.tagLabel isEqualToString:@"u"] || [component.tagLabel isEqualToString:@"uu"])
+		{
+			// underline
+			if ([component.tagLabel isEqualToString:@"u"])
+			{
+				CFAttributedStringSetAttribute(attrString, CFRangeMake(position, [component.text length]), kCTUnderlineStyleAttributeName,  (CFNumberRef)[NSNumber numberWithInt:kCTUnderlineStyleSingle]);
+			}
+			else if ([component.tagLabel isEqualToString:@"uu"])
+			{
+				CFAttributedStringSetAttribute(attrString, CFRangeMake(position, [component.text length]), kCTUnderlineStyleAttributeName,  (CFNumberRef)[NSNumber numberWithInt:kCTUnderlineStyleDouble]);
+			}
+			
+			if ([component.attributes objectForKey:@"color"])
+			{
+				NSString *value = [component.attributes objectForKey:@"color"];
+				value = [value stringByReplacingOccurrencesOfString:@"'" withString:@""];
+				
+				if ([value rangeOfString:@"#"].location==0)
+				{
+					value = [value stringByReplacingOccurrencesOfString:@"#" withString:@"0x"];
+					NSArray *colorComponents = [self colorForHex:value];
+					CGFloat components[] = { [[colorComponents objectAtIndex:0] floatValue] , [[colorComponents objectAtIndex:1] floatValue] , [[colorComponents objectAtIndex:2] floatValue] , [[colorComponents objectAtIndex:3] floatValue] };
+					CGColorRef color = CGColorCreate(rgbColorSpace, components);
+					CFAttributedStringSetAttribute(attrString, CFRangeMake(position, [component.text length]),kCTUnderlineColorAttributeName, color);
+				}
+				else
+				{
+					value = [value stringByAppendingString:@"Color"];
+					SEL colorSel = NSSelectorFromString(value);
+					UIColor *_color = nil;
+					if ([UIColor respondsToSelector:colorSel])
+					{
+						_color = [UIColor performSelector:colorSel];
+						CGColorRef color = [_color CGColor];
+						CFAttributedStringSetAttribute(attrString, CFRangeMake(position, [component.text length]),kCTUnderlineColorAttributeName, color);
+					}				
+				}
+			}
+		}
 		else if ([component.tagLabel isEqualToString:@"font"])
 		{
 			for (NSString *key in component.attributes)
@@ -208,30 +247,45 @@
 							_color = [UIColor performSelector:colorSel];
 							CGColorRef color = [_color CGColor];
 							CFAttributedStringSetAttribute(attrString, CFRangeMake(position, [component.text length]),kCTForegroundColorAttributeName, color);
-						}
-											
+						}				
 					}
 				}
-				else if ([key isEqualToString:@"face"])
+				else if ([key isEqualToString:@"stroke"])
 				{
-					UIFont *font2;
-					if ([component.attributes objectForKey:@"size"])
-					{
-						font2 = [UIFont fontWithName:value size:[[component.attributes objectForKey:@"size"] intValue]];
-					}
-					else
-					{
-						font2 = [UIFont fontWithName:value size:self.font.pointSize];
-					}
-					
-					CTFontRef customFont = CTFontCreateWithName ((CFStringRef)[font2 fontName], [font2 pointSize], NULL); 
-					CFAttributedStringSetAttribute(attrString, CFRangeMake(position, [component.text length]), kCTFontAttributeName, customFont);
+					CFAttributedStringSetAttribute(attrString, CFRangeMake(position, [component.text length]), kCTStrokeWidthAttributeName, [NSNumber numberWithFloat:[[component.attributes objectForKey:@"stroke"] intValue]]);
 				}
+			}
+			
+			UIFont *font2;
+			if ([component.attributes objectForKey:@"face"] && [component.attributes objectForKey:@"size"])
+			{
+				NSString *fontName = [component.attributes objectForKey:@"face"];
+				fontName = [fontName stringByReplacingOccurrencesOfString:@"'" withString:@""];
+				
+				font2 = [UIFont fontWithName:fontName size:[[component.attributes objectForKey:@"size"] intValue]];
+			}
+			else if ([component.attributes objectForKey:@"face"] && ![component.attributes objectForKey:@"size"])
+			{
+				NSString *fontName = [component.attributes objectForKey:@"face"];
+				fontName = [fontName stringByReplacingOccurrencesOfString:@"'" withString:@""];
+				
+				font2 = [UIFont fontWithName:fontName size:self.font.pointSize];
+			}
+			else if (![component.attributes objectForKey:@"face"] && [component.attributes objectForKey:@"size"])
+			{
+				font2 = [UIFont fontWithName:[self.font fontName] size:[[component.attributes objectForKey:@"size"] intValue]];
+			}
+			if (font2)
+			{
+				CTFontRef customFont = CTFontCreateWithName ((CFStringRef)[font2 fontName], [font2 pointSize], NULL); 
+				CFAttributedStringSetAttribute(attrString, CFRangeMake(position, [component.text length]), kCTFontAttributeName, customFont);
 			}
 		}
 		
 		position += [component.text length];
 	}
+	
+	
 	
 	
 	// Create the framesetter with the attributed string.
@@ -468,21 +522,7 @@
 	hexColor = [[hexColor stringByTrimmingCharactersInSet:
 				 [NSCharacterSet whitespaceAndNewlineCharacterSet]
 				 ] uppercaseString];  
-	/*
-    // String should be 6 or 7 characters if it includes '#'  
-    if ([hexColor length] > 6) 
-		return [UIColor blackColor];  
-	
-    // strip # if it appears  
-    if ([hexColor hasPrefix:@"#"]) 
-		hexColor = [cString substringFromIndex:1];  
-	
-    // if the value isn't 6 characters at this point return 
-    // the color black	
-    if ([hexColor length] != 6) 
-		return [UIColor blackColor];  
-	*/
-    // Separate into r, g, b substrings  
+
     NSRange range;  
     range.location = 0;  
     range.length = 2; 
@@ -500,12 +540,7 @@
     [[NSScanner scannerWithString:rString] scanHexInt:&r];  
     [[NSScanner scannerWithString:gString] scanHexInt:&g];  
     [[NSScanner scannerWithString:bString] scanHexInt:&b];  
-	
-	/*
-    return [UIColor colorWithRed:((float) r / 255.0f)  
-                           green:((float) g / 255.0f)  
-                            blue:((float) b / 255.0f)  
-                           alpha:1.0f];  */
+
 	
 	NSArray *components = [NSArray arrayWithObjects:[NSNumber numberWithFloat:((float) r / 255.0f)],[NSNumber numberWithFloat:((float) g / 255.0f)],[NSNumber numberWithFloat:((float) b / 255.0f)],[NSNumber numberWithFloat:1.0],nil];
 	return components;
