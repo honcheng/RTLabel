@@ -254,9 +254,13 @@
 				{
 					CFAttributedStringSetAttribute(attrString, CFRangeMake(position, [component.text length]), kCTStrokeWidthAttributeName, [NSNumber numberWithFloat:[[component.attributes objectForKey:@"stroke"] intValue]]);
 				}
+				else if ([key isEqualToString:@"kern"])
+				{
+					CFAttributedStringSetAttribute(attrString, CFRangeMake(position, [component.text length]), kCTKernAttributeName, [NSNumber numberWithFloat:[[component.attributes objectForKey:@"kern"] intValue]]);
+				}
 			}
 			
-			UIFont *font2;
+			UIFont *font2 = nil;
 			if ([component.attributes objectForKey:@"face"] && [component.attributes objectForKey:@"size"])
 			{
 				NSString *fontName = [component.attributes objectForKey:@"face"];
@@ -285,7 +289,7 @@
 		position += [component.text length];
 	}
 	
-	
+	//CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 20), kCTVerticalFormsAttributeName, [NSNumber numberWithBool:YES]);
 	
 	
 	// Create the framesetter with the attributed string.
