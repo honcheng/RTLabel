@@ -35,10 +35,12 @@ typedef enum
 	CGSize _optimumSize;
 	CGFloat _lineSpacing;
 	int currentSelectedButtonComponentIndex;
+	NSDictionary *linkAttributes, *selectedLinkAttributes;
 }
 
 @property (nonatomic, retain) UIColor *textColor;
 @property (nonatomic, retain) UIFont *font;
+@property (nonatomic, retain) NSDictionary *linkAttributes, *selectedLinkAttributes;
 
 
 - (NSString*)text;
