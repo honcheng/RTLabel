@@ -7,7 +7,6 @@
 //
 
 #import "RTLabelProjectAppDelegate.h"
-#import "RTLabel.h"
 
 @implementation RTLabelProjectAppDelegate
 
@@ -46,10 +45,15 @@
 	[label setText:text];
 	[label setTextAlignment:RTTextAlignmentJustify];
 	[label setLineSpacing:5];
+	[label setDelegate:self];
 	
 	return YES;
 }
 
+- (void)rtLabel:(id)rtLabel didSelectLinkWithURL:(NSURL*)url
+{
+	NSLog(@"did select url %@", url);
+}
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     /*

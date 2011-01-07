@@ -102,6 +102,7 @@
 @synthesize _plainText, _textComponent;
 @synthesize _optimumSize;
 @synthesize linkAttributes, selectedLinkAttributes;
+@synthesize delegate;
 
 - (id)initWithFrame:(CGRect)frame {
     
@@ -551,10 +552,13 @@
 - (void)onButtonPressed:(id)sender
 {
 	RTLabelButton *button = (RTLabelButton*)sender;
-	NSLog(@"%@", button.url);
 	currentSelectedButtonComponentIndex = -1;
 	[self setNeedsDisplay];
 	
+	if ([delegate respondsToSelector:@selector(rtLabel:didSelectLinkWithURL:)])
+	{
+		[delegate rtLabel:self didSelectLinkWithURL:button.url];
+	}
 }
 
 - (CGSize)optimumSize

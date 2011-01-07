@@ -24,6 +24,11 @@ typedef enum
 	RTTextLineBreakModeClip = kCTLineBreakByClipping,
 }RTTextLineBreakMode;
 
+@protocol RTLabelDelegate
+- (void)rtLabel:(id)rtLabel didSelectLinkWithURL:(NSURL*)url;
+- (BOOL)respondsToSelector:(SEL)selector;
+@end
+
 @interface RTLabel : UIView {
 	NSString *_text;
 	UIFont *font;
@@ -36,11 +41,13 @@ typedef enum
 	CGFloat _lineSpacing;
 	int currentSelectedButtonComponentIndex;
 	NSDictionary *linkAttributes, *selectedLinkAttributes;
+	id<RTLabelDelegate> delegate;
 }
 
 @property (nonatomic, retain) UIColor *textColor;
 @property (nonatomic, retain) UIFont *font;
 @property (nonatomic, retain) NSDictionary *linkAttributes, *selectedLinkAttributes;
+@property (nonatomic, assign) id<RTLabelDelegate> delegate;
 
 
 - (NSString*)text;
