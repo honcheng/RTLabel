@@ -747,6 +747,8 @@
 	
 	self._textComponent = components;
 	self._plainText = data;
+	self._plainText = [self._plainText stringByReplacingOccurrencesOfString:@"&lt;" withString:@"<"];
+	self._plainText = [self._plainText stringByReplacingOccurrencesOfString:@"&gt;" withString:@">"];
 }
 
 - (NSArray*)colorForHex:(NSString *)hexColor 
