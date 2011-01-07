@@ -34,6 +34,7 @@ typedef enum
 	NSMutableArray *_textComponent;
 	CGSize _optimumSize;
 	CGFloat _lineSpacing;
+	int currentSelectedButtonComponentIndex;
 }
 
 @property (nonatomic, retain) UIColor *textColor;
