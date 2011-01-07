@@ -15,10 +15,12 @@
 	NSString *text;
 	NSString *tagLabel;
 	NSMutableDictionary *attributes;
+	int position;
 }
 
 @property (nonatomic, retain) NSString *text, *tagLabel;
 @property (nonatomic, retain) NSMutableDictionary *attributes;
+@property (nonatomic, assign) int position;
 - (id)initWithString:(NSString*)_text tag:(NSString*)_tagLabel attributes:(NSMutableDictionary*)atrributes;
 + (id)componentWithString:(NSString*)_text tag:(NSString*)_tagLabel attributes:(NSMutableDictionary*)atrributes;
 @end
@@ -26,6 +28,7 @@
 @implementation RTLabelComponent
 @synthesize text, tagLabel;
 @synthesize attributes;
+@synthesize position;
 
 - (id)initWithString:(NSString*)_text tag:(NSString*)_tagLabel attributes:(NSMutableDictionary*)_attributes;
 {
@@ -47,8 +50,8 @@
 {
 	NSMutableString *desc = [NSMutableString string];
 	[desc appendFormat:@"text: %@", self.text];
-	[desc appendFormat:@", tag: %@", self.tagLabel];
-	[desc appendFormat:@", attributes: %@", self.attributes];
+	if (self.tagLabel) [desc appendFormat:@", tag: %@", self.tagLabel];
+	if (self.attributes) [desc appendFormat:@", attributes: %@", self.attributes];
 	return desc;
 }
 
@@ -124,8 +127,8 @@
 	CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB();
 	CGColorSpaceRelease(rgbColorSpace);
 	CFDictionaryAddValue( styleDict1, kCTForegroundColorAttributeName, [self.textColor CGColor] );
-	CFAttributedStringSetAttributes( attrString, CFRangeMake( 0, [attrString length] ), styleDict1, 0 ); 
-	
+	CFAttributedStringSetAttributes( attrString, CFRangeMake( 0, CFAttributedStringGetLength(attrString) ), styleDict1, 0 ); 
+
 	CFMutableDictionaryRef styleDict = ( CFDictionaryCreateMutable( (0), 0, (0), (0) ) );
 	
 	// attempt to add weight
@@ -168,7 +171,9 @@
 	CFAttributedStringSetAttributes( attrString, CFRangeMake( 0, stringLength ), styleDict, 0 ); 
 	
 	CTFontRef thisFont = CTFontCreateWithName ((CFStringRef)[self.font fontName], [self.font pointSize], NULL); 
-	CFAttributedStringSetAttribute(attrString, CFRangeMake(0, [attrString length]), kCTFontAttributeName, thisFont);
+	CFAttributedStringSetAttribute(attrString, CFRangeMake(0, CFAttributedStringGetLength(attrString)), kCTFontAttributeName, thisFont);
+	
+	NSMutableArray *links = [NSMutableArray array];
 	
 	int position = 0;
 	for (RTLabelComponent *component in self._textComponent)
@@ -187,11 +192,62 @@
 			CTFontRef boldFont = CTFontCreateWithName ((CFStringRef)[font2 fontName], [font2 pointSize], NULL); 
 			CFAttributedStringSetAttribute(attrString, CFRangeMake(position, [component.text length]), kCTFontAttributeName, boldFont);
 		}
+		else if ([component.tagLabel isEqualToString:@"a"])
+		{
+			// make font bold
+			UIFont *font2 = [UIFont boldSystemFontOfSize:self.font.pointSize];
+			CTFontRef boldFont = CTFontCreateWithName ((CFStringRef)[font2 fontName], [font2 pointSize], NULL); 
+			CFAttributedStringSetAttribute(attrString, CFRangeMake(position, [component.text length]), kCTFontAttributeName, boldFont);
+			
+			component.position = position;
+			[links addObject:component];
+		}
+		else if ([component.tagLabel isEqualToString:@"u"] || [component.tagLabel isEqualToString:@"uu"])
+		{
+			// underline
+			if ([component.tagLabel isEqualToString:@"u"])
+			{
+				CFAttributedStringSetAttribute(attrString, CFRangeMake(position, [component.text length]), kCTUnderlineStyleAttributeName,  (CFNumberRef)[NSNumber numberWithInt:kCTUnderlineStyleSingle]);
+			}
+			else if ([component.tagLabel isEqualToString:@"uu"])
+			{
+				CFAttributedStringSetAttribute(attrString, CFRangeMake(position, [component.text length]), kCTUnderlineStyleAttributeName,  (CFNumberRef)[NSNumber numberWithInt:kCTUnderlineStyleDouble]);
+			}
+			
+			if ([component.attributes objectForKey:@"color"])
+			{
+				NSString *value = [component.attributes objectForKey:@"color"];
+				value = [value stringByReplacingOccurrencesOfString:@"'" withString:@""];
+				
+				if ([value rangeOfString:@"#"].location==0)
+				{
+					value = [value stringByReplacingOccurrencesOfString:@"#" withString:@"0x"];
+					NSArray *colorComponents = [self colorForHex:value];
+					CGFloat components[] = { [[colorComponents objectAtIndex:0] floatValue] , [[colorComponents objectAtIndex:1] floatValue] , [[colorComponents objectAtIndex:2] floatValue] , [[colorComponents objectAtIndex:3] floatValue] };
+					CGColorRef color = CGColorCreate(rgbColorSpace, components);
+					CFAttributedStringSetAttribute(attrString, CFRangeMake(position, [component.text length]),kCTUnderlineColorAttributeName, color);
+				}
+				else
+				{
+					value = [value stringByAppendingString:@"Color"];
+					SEL colorSel = NSSelectorFromString(value);
+					UIColor *_color = nil;
+					if ([UIColor respondsToSelector:colorSel])
+					{
+						_color = [UIColor performSelector:colorSel];
+						CGColorRef color = [_color CGColor];
+						CFAttributedStringSetAttribute(attrString, CFRangeMake(position, [component.text length]),kCTUnderlineColorAttributeName, color);
+					}				
+				}
+			}
+		}
 		else if ([component.tagLabel isEqualToString:@"font"])
 		{
 			for (NSString *key in component.attributes)
 			{
 				NSString *value = [component.attributes objectForKey:key];
+				value = [value stringByReplacingOccurrencesOfString:@"'" withString:@""];
+				
 				if ([key isEqualToString:@"color"])
 				{
 					if ([value rangeOfString:@"#"].location==0)
@@ -202,28 +258,63 @@
 						CGColorRef color = CGColorCreate(rgbColorSpace, components);
 						CFAttributedStringSetAttribute(attrString, CFRangeMake(position, [component.text length]),kCTForegroundColorAttributeName, color);
 					}
-				}
-				else if ([key isEqualToString:@"face"])
-				{
-					UIFont *font2;
-					if ([component.attributes objectForKey:@"size"])
-					{
-						font2 = [UIFont fontWithName:value size:[[component.attributes objectForKey:@"size"] intValue]];
-					}
 					else
 					{
-						font2 = [UIFont fontWithName:value size:self.font.pointSize];
+						
+						value = [value stringByAppendingString:@"Color"];
+						SEL colorSel = NSSelectorFromString(value);
+						UIColor *_color = nil;
+						if ([UIColor respondsToSelector:colorSel])
+						{
+							_color = [UIColor performSelector:colorSel];
+							CGColorRef color = [_color CGColor];
+							CFAttributedStringSetAttribute(attrString, CFRangeMake(position, [component.text length]),kCTForegroundColorAttributeName, color);
+						}				
 					}
-					
-					CTFontRef customFont = CTFontCreateWithName ((CFStringRef)[font2 fontName], [font2 pointSize], NULL); 
-					CFAttributedStringSetAttribute(attrString, CFRangeMake(position, [component.text length]), kCTFontAttributeName, customFont);
 				}
+				else if ([key isEqualToString:@"stroke"])
+				{
+					CFAttributedStringSetAttribute(attrString, CFRangeMake(position, [component.text length]), kCTStrokeWidthAttributeName, [NSNumber numberWithFloat:[[component.attributes objectForKey:@"stroke"] intValue]]);
+				}
+				else if ([key isEqualToString:@"kern"])
+				{
+					CFAttributedStringSetAttribute(attrString, CFRangeMake(position, [component.text length]), kCTKernAttributeName, [NSNumber numberWithFloat:[[component.attributes objectForKey:@"kern"] intValue]]);
+				}
+			}
+			
+			UIFont *font2 = nil;
+			if ([component.attributes objectForKey:@"face"] && [component.attributes objectForKey:@"size"])
+			{
+				NSString *fontName = [component.attributes objectForKey:@"face"];
+				fontName = [fontName stringByReplacingOccurrencesOfString:@"'" withString:@""];
+				
+				font2 = [UIFont fontWithName:fontName size:[[component.attributes objectForKey:@"size"] intValue]];
+			}
+			else if ([component.attributes objectForKey:@"face"] && ![component.attributes objectForKey:@"size"])
+			{
+				NSString *fontName = [component.attributes objectForKey:@"face"];
+				fontName = [fontName stringByReplacingOccurrencesOfString:@"'" withString:@""];
+				
+				font2 = [UIFont fontWithName:fontName size:self.font.pointSize];
+			}
+			else if (![component.attributes objectForKey:@"face"] && [component.attributes objectForKey:@"size"])
+			{
+				font2 = [UIFont fontWithName:[self.font fontName] size:[[component.attributes objectForKey:@"size"] intValue]];
+			}
+			if (font2)
+			{
+				CTFontRef customFont = CTFontCreateWithName ((CFStringRef)[font2 fontName], [font2 pointSize], NULL); 
+				CFAttributedStringSetAttribute(attrString, CFRangeMake(position, [component.text length]), kCTFontAttributeName, customFont);
 			}
 		}
 		
 		position += [component.text length];
 	}
 	
+	//CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 20), kCTVerticalFormsAttributeName, [NSNumber numberWithBool:YES]);
+	//CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 20), kCTLigatureAttributeName, [NSNumber numberWithInt:2]);
+	//CFAttributedStringSetAttribute(attrString, CFRangeMake(20, 20), kCTParagraphStyleAttributeName, [NSNumber numberWithInt:kCTParagraphStyleSpecifierBaseWritingDirection ]);
+	CFAttributedStringSetAttribute(attrString, CFRangeMake(1, 2), kCTSuperscriptAttributeName, [NSNumber numberWithInt:-1 ]);
 	
 	// Create the framesetter with the attributed string.
 	CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString(attrString);
@@ -242,47 +333,54 @@
 	CGSize constraint = CGSizeMake(self.frame.size.width, 1000000);
 	self._optimumSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, [self._plainText length]), nil, constraint, &range);
 	
+	
+	for (RTLabelComponent *linkableComponents in links)
+	{
+		float height = 0.0;
+		CFArrayRef frameLines = CTFrameGetLines(frame);
+		for (CFIndex i=0; i<CFArrayGetCount(frameLines); i++)
+		{
+			CTLineRef line = (CTLineRef)CFArrayGetValueAtIndex(frameLines, i);
+			CFRange lineRange = CTLineGetStringRange(line);
+			CGFloat ascent;
+			CGFloat descent;
+			CGFloat leading;
+			
+			double width = CTLineGetTypographicBounds(line, &ascent, &descent, &leading);
+			
+			if (linkableComponents.position>=lineRange.location && linkableComponents.position<lineRange.location+lineRange.length)
+			{
+				NSLog(@"line %i: location %i, length %i", i+1, lineRange.location, lineRange.length);
+				NSLog(@"ascent %f, descent %f, leading %f, width %f", ascent, descent, leading, width);
+				NSLog(@"height %f", height);
+				
+				CGFloat secondaryOffset;
+				double primaryOffset = CTLineGetOffsetForStringIndex(CFArrayGetValueAtIndex(frameLines,i), linkableComponents.position, &secondaryOffset);
+				NSLog(@"primary offset %f, secondary offset %f", primaryOffset, secondaryOffset);
+				
+				float button_width = width - primaryOffset;
+				
+				UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(primaryOffset, height, button_width, ascent+descent)];
+				[self addSubview:button];
+				[button setBackgroundColor:[UIColor redColor]];
+			}
+			
+			height += (ascent + fabsf(descent) + leading);
+		}
+		
+		
+	}
+	
+	NSLog(@">>>> %f", [self frameHeight:frame]);
+	UIView *tmpView = [[UIView alloc] initWithFrame:CGRectMake(0,0,2,[self frameHeight:frame])];
+	[tmpView setBackgroundColor:[UIColor redColor]];
+	[self addSubview:tmpView];
+	[tmpView release];
+	
 	CFRelease(framesetter);
 	CTFrameDraw(frame, context);
 	CFRelease(frame);
-	/*
-	 const CGFloat border = 0.0;
-	 CGRect frameRect = CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height);
-	 CGMutablePathRef path = NULL;
-	 CTFrameRef ctframe = NULL;
-	 
-	 frameRect.size.height = FLT_MAX;
-	 frameRect.size.width -= (border * 2);
-	 
-	 path = CGPathCreateMutable();
-	 if (path) {
-	 CGPathAddRect(path, NULL, frameRect);
-	 ctframe = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, 0), path, NULL);
-	 if (ctframe) {
-	 frameRect.size.height = [self measureFrameHeight:ctframe];
-	 CFRelease(ctframe);
-	 }
-	 CFRelease(path);
-	 }
-	 
-	 frameRect.origin.y = CGRectGetMaxY(frameRect) - frameRect.size.height - border;
-	 frameRect.origin.x += border;
-	 
-	 path = CGPathCreateMutable();
-	 if (path) {
-	 CGPathAddRect(path, NULL, frameRect);
-	 ctframe = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, 0), path, NULL);
-	 if (ctframe) {
-	 CGContextAddPath(context, path);
-	 CGContextSetRGBFillColor(context, 1.0, 0.0, 0.0, 0.5);
-	 CGContextFillPath(context);
-	 
-	 CGContextSetTextMatrix(context, CGAffineTransformIdentity);			
-	 CTFrameDraw(ctframe, context);
-	 CFRelease(ctframe);
-	 }
-	 CGPathRelease(path);
-	 }*/
+
 }
 
 - (CGSize)optimumSize
@@ -320,6 +418,7 @@
         CTLineRef line = (CTLineRef)CFArrayGetValueAtIndex(lines, index);
         CTLineGetTypographicBounds(line, &ascent,  &descent, &leading);
         height += (ascent + fabsf(descent) + leading);
+		NSLog(@"%f %f %f", ascent, descent, leading);
     }
     return ceil(height);
 }
@@ -475,21 +574,7 @@
 	hexColor = [[hexColor stringByTrimmingCharactersInSet:
 				 [NSCharacterSet whitespaceAndNewlineCharacterSet]
 				 ] uppercaseString];  
-	/*
-	 // String should be 6 or 7 characters if it includes '#'  
-	 if ([hexColor length] > 6) 
-	 return [UIColor blackColor];  
-	 
-	 // strip # if it appears  
-	 if ([hexColor hasPrefix:@"#"]) 
-	 hexColor = [cString substringFromIndex:1];  
-	 
-	 // if the value isn't 6 characters at this point return 
-	 // the color black	
-	 if ([hexColor length] != 6) 
-	 return [UIColor blackColor];  
-	 */
-    // Separate into r, g, b substrings  
+
     NSRange range;  
     range.location = 0;  
     range.length = 2; 
@@ -507,12 +592,6 @@
     [[NSScanner scannerWithString:rString] scanHexInt:&r];  
     [[NSScanner scannerWithString:gString] scanHexInt:&g];  
     [[NSScanner scannerWithString:bString] scanHexInt:&b];  
-	
-	/*
-	 return [UIColor colorWithRed:((float) r / 255.0f)  
-	 green:((float) g / 255.0f)  
-	 blue:((float) b / 255.0f)  
-	 alpha:1.0f];  */
 	
 	NSArray *components = [NSArray arrayWithObjects:[NSNumber numberWithFloat:((float) r / 255.0f)],[NSNumber numberWithFloat:((float) g / 255.0f)],[NSNumber numberWithFloat:((float) b / 255.0f)],[NSNumber numberWithFloat:1.0],nil];
 	return components;
