@@ -331,7 +331,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>F8BC9E8112D6C70300E1D405</string>
+										<string>F889B93312D6E620004ADEED</string>
 										<key>history</key>
 										<array>
 											<string>F8ABFD7B12D5B82300A7CE33</string>
@@ -340,7 +340,7 @@
 											<string>F887A99E12D624DD00ACD279</string>
 											<string>F8BC9DF212D6BEF700E1D405</string>
 											<string>F8BC9E7512D6C68700E1D405</string>
-											<string>F8BC9E7612D6C68700E1D405</string>
+											<string>F8BC9E8112D6C70300E1D405</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -398,9 +398,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>F8BC9CE812D6A95700E1D405</string>
+				<string>F889B93412D6E620004ADEED</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>F8BC9CE912D6A95700E1D405</string>
+				<string>F889B93512D6E620004ADEED</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -538,9 +538,11 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
+		<string>F889B93E12D6E620004ADEED</string>
+		<string>F889B93F12D6E620004ADEED</string>
+		<string>1C78EAAD065D492600B07095</string>
 		<string>1CD10A99069EF8BA00B06720</string>
 		<string>F8BDA6BA12D5551D00B6CC65</string>
-		<string>1C78EAAD065D492600B07095</string>
 		<string>/Users/honcheng/Dropbox/Open Source Projects/RTLabel/RTLabelProject/RTLabelProject.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
@@ -621,7 +623,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>F8BDA6BA12D5551D00B6CC65</string>
-				<string>F8BC9CEA12D6A95700E1D405</string>
+				<string>F889B93612D6E620004ADEED</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>
@@ -743,13 +745,13 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1CD10A99069EF8BA00B06720</string>
-				<string>F8BC9CEB12D6A95700E1D405</string>
+				<string>F889B93712D6E620004ADEED</string>
 				<string>1C162984064C10D400B95A72</string>
-				<string>F8BC9CEC12D6A95700E1D405</string>
-				<string>F8BC9CED12D6A95700E1D405</string>
-				<string>F8BC9CEE12D6A95700E1D405</string>
-				<string>F8BC9CEF12D6A95700E1D405</string>
-				<string>F8BC9CF012D6A95700E1D405</string>
+				<string>F889B93812D6E620004ADEED</string>
+				<string>F889B93912D6E620004ADEED</string>
+				<string>F889B93A12D6E620004ADEED</string>
+				<string>F889B93B12D6E620004ADEED</string>
+				<string>F889B93C12D6E620004ADEED</string>
 			</array>
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.debugV3</string>
@@ -876,8 +878,6 @@
 					<key>Dock</key>
 					<array>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -913,7 +913,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C78EAAD065D492600B07095</string>
-				<string>F8BC9CF112D6A95700E1D405</string>
+				<string>F889B93D12D6E620004ADEED</string>
 				<string>1C78EAAC065D492600B07095</string>
 			</array>
 			<key>ToolbarConfiguration</key>
@@ -923,7 +923,7 @@
 			<key>WindowToolGUID</key>
 			<string>1C78EAAD065D492600B07095</string>
 			<key>WindowToolIsVisible</key>
-			<true/>
+			<false/>
 		</dict>
 		<dict>
 			<key>Identifier</key>

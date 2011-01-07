@@ -463,7 +463,7 @@
 {
 	//RTLabelButton *button = (RTLabelButton*)sender;
 	currentSelectedButtonComponentIndex = -1;
-	//[self setNeedsDisplay];
+	[self setNeedsDisplay];
 }
 
 - (void)onButtonPressed:(id)sender
