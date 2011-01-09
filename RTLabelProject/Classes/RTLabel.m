@@ -375,6 +375,12 @@
 	//CFArrayRef frameLines = CTFrameGetLines(frame);
 	//NSLog(@">>>>>>>>>>>>> %f %f %f", [self frameHeight:frame], self._optimumSize.height, (self._optimumSize.height-[self frameHeight:frame])/(CFArrayGetCount(frameLines)-1));
 	
+	CFRelease(thisFont);
+	CFRelease(theParagraphRef);
+	CFRelease(path);
+	CFRelease(styleDict1);
+	CFRelease(styleDict);
+	CFRelease(weight);
 	CFRelease(framesetter);
 	CTFrameDraw(frame, context);
 	CFRelease(frame);
@@ -399,6 +405,7 @@
 	UIFont *_font = [UIFont italicSystemFontOfSize:self.font.pointSize];
 	CTFontRef italicFont = CTFontCreateWithName ((CFStringRef)[_font fontName], [_font pointSize], NULL); 
 	CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTFontAttributeName, italicFont);
+	CFRelease(italicFont);
 }
 
 - (void)applyFontAttributes:(NSDictionary*)attributes toText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
@@ -450,14 +457,12 @@
 	{
 		NSString *fontName = [attributes objectForKey:@"face"];
 		fontName = [fontName stringByReplacingOccurrencesOfString:@"'" withString:@""];
-		
 		_font = [UIFont fontWithName:fontName size:[[attributes objectForKey:@"size"] intValue]];
 	}
 	else if ([attributes objectForKey:@"face"] && ![attributes objectForKey:@"size"])
 	{
 		NSString *fontName = [attributes objectForKey:@"face"];
 		fontName = [fontName stringByReplacingOccurrencesOfString:@"'" withString:@""];
-		
 		_font = [UIFont fontWithName:fontName size:self.font.pointSize];
 	}
 	else if (![attributes objectForKey:@"face"] && [attributes objectForKey:@"size"])
@@ -468,6 +473,7 @@
 	{
 		CTFontRef customFont = CTFontCreateWithName ((CFStringRef)[_font fontName], [_font pointSize], NULL); 
 		CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTFontAttributeName, customFont);
+		CFRelease(customFont);
 	}
 }
 
@@ -476,6 +482,7 @@
 	UIFont *_font = [UIFont boldSystemFontOfSize:self.font.pointSize];
 	CTFontRef boldFont = CTFontCreateWithName ((CFStringRef)[_font fontName], [_font pointSize], NULL); 
 	CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTFontAttributeName, boldFont);
+	CFRelease(boldFont);
 }
 
 - (void)applyColor:(NSString*)value toText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
@@ -489,6 +496,7 @@
 		CGFloat components[] = { [[colorComponents objectAtIndex:0] floatValue] , [[colorComponents objectAtIndex:1] floatValue] , [[colorComponents objectAtIndex:2] floatValue] , [[colorComponents objectAtIndex:3] floatValue] };
 		CGColorRef color = CGColorCreate(rgbColorSpace, components);
 		CFAttributedStringSetAttribute(text, CFRangeMake(position, length),kCTForegroundColorAttributeName, color);
+		CFRelease(color);
 	}
 	else
 	{
@@ -501,6 +509,7 @@
 			_color = [UIColor performSelector:colorSel];
 			CGColorRef color = [_color CGColor];
 			CFAttributedStringSetAttribute(text, CFRangeMake(position, length),kCTForegroundColorAttributeName, color);
+			
 		}				
 	}
 }
@@ -517,6 +526,7 @@
 		CGFloat components[] = { [[colorComponents objectAtIndex:0] floatValue] , [[colorComponents objectAtIndex:1] floatValue] , [[colorComponents objectAtIndex:2] floatValue] , [[colorComponents objectAtIndex:3] floatValue] };
 		CGColorRef color = CGColorCreate(rgbColorSpace, components);
 		CFAttributedStringSetAttribute(text, CFRangeMake(position, length),kCTUnderlineColorAttributeName, color);
+		//CFRelease(color);
 	}
 	else
 	{
@@ -528,6 +538,7 @@
 			_color = [UIColor performSelector:colorSel];
 			CGColorRef color = [_color CGColor];
 			CFAttributedStringSetAttribute(text, CFRangeMake(position, length),kCTUnderlineColorAttributeName, color);
+			//CFRelease(color);
 		}				
 	}
 }
@@ -747,8 +758,8 @@
 	
 	self._textComponent = components;
 	self._plainText = data;
-	self._plainText = [self._plainText stringByReplacingOccurrencesOfString:@"&lt;" withString:@"<"];
-	self._plainText = [self._plainText stringByReplacingOccurrencesOfString:@"&gt;" withString:@">"];
+	//self._plainText = [self._plainText stringByReplacingOccurrencesOfString:@"&lt;" withString:@"<"];
+	//self._plainText = [self._plainText stringByReplacingOccurrencesOfString:@"&gt;" withString:@">"];
 }
 
 - (NSArray*)colorForHex:(NSString *)hexColor 
