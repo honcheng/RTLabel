@@ -180,7 +180,7 @@
 	// direction
 	CTWritingDirection direction = kCTWritingDirectionLeftToRight; 
 	// leading
-	//CGFloat firstLineIndent = 0.0; 
+	//CGFloat firstLineIndent = 20.0; 
 	//CGFloat headIndent = firstLineIndent + 1.0; 
 	//CGFloat tailIndent = headIndent + 1.0; 
 	//CGFloat tabInterval = 10; //tailIndent + 1.0; 
@@ -194,6 +194,7 @@
 		{ kCTParagraphStyleSpecifierLineBreakMode, sizeof(CTLineBreakMode), &_lineBreakMode }, // break mode 
 		{ kCTParagraphStyleSpecifierBaseWritingDirection, sizeof(CTWritingDirection), &direction }, 
 		{ kCTParagraphStyleSpecifierLineSpacing, sizeof(CGFloat), &_lineSpacing }, // leading
+		
 		//{ kCTParagraphStyleSpecifierFirstLineHeadIndent, sizeof(CGFloat), &firstLineIndent }, 
 		//{ kCTParagraphStyleSpecifierHeadIndent, sizeof(CGFloat), &headIndent }, 
 		//{ kCTParagraphStyleSpecifierTailIndent, sizeof(CGFloat), &tailIndent }, 
@@ -292,10 +293,23 @@
 		position += [component.text length];
 	}
 	
+	// no working
 	//CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 20), kCTVerticalFormsAttributeName, [NSNumber numberWithBool:YES]);
 	//CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 20), kCTLigatureAttributeName, [NSNumber numberWithInt:2]);
 	//CFAttributedStringSetAttribute(attrString, CFRangeMake(20, 20), kCTParagraphStyleAttributeName, [NSNumber numberWithInt:kCTParagraphStyleSpecifierBaseWritingDirection ]);
 	//CFAttributedStringSetAttribute(attrString, CFRangeMake(1, 2), kCTSuperscriptAttributeName, [NSNumber numberWithInt:-1 ]);
+	//CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 20), kCTFontWeightTrait, [NSNumber numberWithInt:kCTFontBoldTrait]);
+	//CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 20), kCTFontSlantTrait, [NSNumber numberWithInt:kCTFontItalicTrait]);
+	//CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 5), kCTFontWidthTrait, [NSNumber numberWithInt:kCTFontCondensedTrait]);
+	//CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 5), kCTCharacterShapeAttributeName, [NSNumber numberWithInt:2]);
+	
+	// works
+	//CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 6), kCTUnderlineStyleAttributeName,  (CFNumberRef)[NSNumber numberWithInt:kCTUnderlineStyleSingle|kCTUnderlinePatternDot]);
+	//CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 6), kCTUnderlineStyleAttributeName,  (CFNumberRef)[NSNumber numberWithInt:kCTUnderlineStyleDouble|kCTUnderlinePatternDash]);
+	//CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 6), kCTUnderlineStyleAttributeName,  (CFNumberRef)[NSNumber numberWithInt:kCTUnderlineStyleDouble|kCTUnderlinePatternDashDot]);
+	//CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 6), kCTUnderlineStyleAttributeName,  (CFNumberRef)[NSNumber numberWithInt:kCTUnderlineStyleDouble|kCTUnderlinePatternDashDotDot]);
+	//CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 6), kCTUnderlineStyleAttributeName,  (CFNumberRef)[NSNumber numberWithInt:kCTUnderlineStyleDouble|kCTUnderlinePatternSolid]);
+	//CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 6), kCTUnderlineStyleAttributeName,  (CFNumberRef)[NSNumber numberWithInt:kCTUnderlineStyleThick|kCTUnderlinePatternSolid]);
 	
 	// Create the framesetter with the attributed string.
 	CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString(attrString);

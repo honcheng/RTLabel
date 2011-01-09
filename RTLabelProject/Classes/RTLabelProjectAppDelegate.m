@@ -47,6 +47,8 @@
 	[label setLineSpacing:5];
 	[label setDelegate:self];
 	
+	[window setBackgroundColor:[UIColor lightGrayColor]];
+	
 	return YES;
 }
 
