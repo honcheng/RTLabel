@@ -36,8 +36,11 @@
 @property (nonatomic, retain) NSMutableDictionary *attributes;
 @property (nonatomic, assign) int position;
 
-- (id)initWithString:(NSString*)_text tag:(NSString*)_tagLabel attributes:(NSMutableDictionary*)atrributes;
-+ (id)componentWithString:(NSString*)_text tag:(NSString*)_tagLabel attributes:(NSMutableDictionary*)atrributes;
+- (id)initWithString:(NSString*)_text tag:(NSString*)_tagLabel attributes:(NSMutableDictionary*)_attributes;
++ (id)componentWithString:(NSString*)_text tag:(NSString*)_tagLabel attributes:(NSMutableDictionary*)_attributes;
+- (id)initWithTag:(NSString*)_tagLabel position:(int)_position attributes:(NSMutableDictionary*)_attributes;
++(id)componentWithTag:(NSString*)_tagLabel position:(int)_position attributes:(NSMutableDictionary*)_attributes;
+
 @end
 
 @implementation RTLabelComponent
@@ -62,10 +65,27 @@
 	return [[[self alloc] initWithString:_text tag:_tagLabel attributes:_attributes] autorelease];
 }
 
+- (id)initWithTag:(NSString*)_tagLabel position:(int)_position attributes:(NSMutableDictionary*)_attributes
+{
+	if (self = [super init]) 
+	{
+		self.tagLabel = _tagLabel;
+		self.position = _position;
+		self.attributes = _attributes;
+	}
+	return self;
+}
+
++(id)componentWithTag:(NSString*)_tagLabel position:(int)_position attributes:(NSMutableDictionary*)_attributes
+{
+	return [[[self alloc] initWithTag:_tagLabel position:_position attributes:_attributes] autorelease];
+}
+
 - (NSString*)description
 {
 	NSMutableString *desc = [NSMutableString string];
 	[desc appendFormat:@"text: %@", self.text];
+	[desc appendFormat:@", position: %i", self.position];
 	if (self.tagLabel) [desc appendFormat:@", tag: %@", self.tagLabel];
 	if (self.attributes) [desc appendFormat:@", attributes: %@", self.attributes];
 	return desc;
@@ -83,6 +103,7 @@
 - (void)parse:(NSString *)data valid_tags:(NSArray *)valid_tags;
 - (NSArray*) colorForHex:(NSString *)hexColor;
 - (void)render;
+- (void)extractTextStyle:(NSString*)text;
 
 #pragma mark -
 #pragma mark styling
@@ -217,7 +238,6 @@
 	
 	NSMutableArray *links = [NSMutableArray array];
 	
-	int position = 0;
 	for (RTLabelComponent *component in self._textComponent)
 	{
 		int index = [self._textComponent indexOfObject:component];
@@ -226,12 +246,12 @@
 		if ([component.tagLabel isEqualToString:@"i"])
 		{
 			// make font italic
-			[self applyItalicStyleToText:attrString atPosition:position withLength:[component.text length]];
+			[self applyItalicStyleToText:attrString atPosition:component.position withLength:[component.text length]];
 		}
 		else if ([component.tagLabel isEqualToString:@"b"])
 		{
 			// make font bold
-			[self applyBoldStyleToText:attrString atPosition:position withLength:[component.text length]];
+			[self applyBoldStyleToText:attrString atPosition:component.position withLength:[component.text length]];
 		}
 		else if ([component.tagLabel isEqualToString:@"a"])
 		{
@@ -239,24 +259,24 @@
 			{
 				if (selectedLinkAttributes)
 				{
-					[self applyFontAttributes:selectedLinkAttributes toText:attrString atPosition:position withLength:[component.text length]];
+					[self applyFontAttributes:selectedLinkAttributes toText:attrString atPosition:component.position withLength:[component.text length]];
 				}
 				else
 				{
-					[self applyBoldStyleToText:attrString atPosition:position withLength:[component.text length]];
-					[self applyColor:@"#FF0000" toText:attrString atPosition:position withLength:[component.text length]];
+					[self applyBoldStyleToText:attrString atPosition:component.position withLength:[component.text length]];
+					[self applyColor:@"#FF0000" toText:attrString atPosition:component.position withLength:[component.text length]];
 				}
 			}
 			else
 			{
 				if (linkAttributes)
 				{
-					[self applyFontAttributes:linkAttributes toText:attrString atPosition:position withLength:[component.text length]];
+					[self applyFontAttributes:linkAttributes toText:attrString atPosition:component.position withLength:[component.text length]];
 				}
 				else
 				{
-					[self applyBoldStyleToText:attrString atPosition:position withLength:[component.text length]];
-					[self applySingleUnderlineText:attrString atPosition:position withLength:[component.text length]];
+					[self applyBoldStyleToText:attrString atPosition:component.position withLength:[component.text length]];
+					[self applySingleUnderlineText:attrString atPosition:component.position withLength:[component.text length]];
 				}
 			}
 			
@@ -264,7 +284,6 @@
 			value = [value stringByReplacingOccurrencesOfString:@"'" withString:@""];
 			[component.attributes setObject:value forKey:@"href"];
 			
-			component.position = position;
 			[links addObject:component];
 		}
 		else if ([component.tagLabel isEqualToString:@"u"] || [component.tagLabel isEqualToString:@"uu"])
@@ -272,25 +291,24 @@
 			// underline
 			if ([component.tagLabel isEqualToString:@"u"])
 			{
-				[self applySingleUnderlineText:attrString atPosition:position withLength:[component.text length]];
+				[self applySingleUnderlineText:attrString atPosition:component.position withLength:[component.text length]];
 			}
 			else if ([component.tagLabel isEqualToString:@"uu"])
 			{
-				[self applyDoubleUnderlineText:attrString atPosition:position withLength:[component.text length]];
+				[self applyDoubleUnderlineText:attrString atPosition:component.position withLength:[component.text length]];
 			}
 			
 			if ([component.attributes objectForKey:@"color"])
 			{
 				NSString *value = [component.attributes objectForKey:@"color"];
-				[self applyUnderlineColor:value toText:attrString atPosition:position withLength:[component.text length]];
+				[self applyUnderlineColor:value toText:attrString atPosition:component.position withLength:[component.text length]];
 			}
 		}
 		else if ([component.tagLabel isEqualToString:@"font"])
 		{
-			[self applyFontAttributes:component.attributes toText:attrString atPosition:position withLength:[component.text length]];
+			[self applyFontAttributes:component.attributes toText:attrString atPosition:component.position withLength:[component.text length]];
 		}
-		
-		position += [component.text length];
+
 	}
 	
 	// no working
@@ -601,7 +619,8 @@
 - (void)setText:(NSString *)text
 {
 	self._text = text;
-	[self parse:self._text valid_tags:nil];
+	[self extractTextStyle:self._text];
+	//[self parse:self._text valid_tags:nil];
 	//NSLog(@"%@", self._plainText);
 	//NSLog(@"%@", self._textComponent); 
 	[self setNeedsDisplay];
@@ -677,6 +696,83 @@
 		}
 	}
 	return [[components copy] autorelease];
+}
+
+- (void)extractTextStyle:(NSString*)data
+{
+	//NSLog(@"%@", data);
+	
+	NSScanner *scanner; 
+	NSString *text = nil;
+	NSString *tag = nil;
+	
+	NSMutableArray *components = [NSMutableArray array];
+	
+	int last_position = 0;
+	scanner = [NSScanner scannerWithString:data];
+	while (![scanner isAtEnd])
+	{
+		[scanner scanUpToString:@"<" intoString:NULL];
+		[scanner scanUpToString:@">" intoString:&text];
+		
+		NSString *delimiter = [NSString stringWithFormat:@"%@>", text];
+		int position = [data rangeOfString:delimiter].location;
+		if (position!=NSNotFound)
+		{
+			data = [data stringByReplacingOccurrencesOfString:delimiter withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(last_position, position+delimiter.length-last_position)];
+		}
+		
+		if ([text rangeOfString:@"</"].location==0)
+		{
+			// end of tag
+			tag = [text substringFromIndex:2];
+			//NSLog(@"end of tag: %@", tag);
+			if (position!=NSNotFound)
+			{
+				
+				for (int i=[components count]-1; i>=0; i--)
+				{
+					RTLabelComponent *component = [components objectAtIndex:i];
+					if (component.text==nil && [component.tagLabel isEqualToString:tag])
+					{
+						NSString *text2 = [data substringWithRange:NSMakeRange(component.position, position-component.position)];
+						component.text = text2;
+						break;
+					}
+				}
+			}
+			
+			
+		}
+		else
+		{
+			// start of tag
+			NSArray *textComponents = [[text substringFromIndex:1] componentsSeparatedByString:@" "];
+			tag = [textComponents objectAtIndex:0];
+			//NSLog(@"start of tag: %@", tag);
+			NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
+			for (int i=1; i<[textComponents count]; i++)
+			{
+				NSArray *pair = [[textComponents objectAtIndex:i] componentsSeparatedByString:@"="];
+				if ([pair count]==2)
+				{
+					[attributes setObject:[pair objectAtIndex:1] forKey:[pair objectAtIndex:0]];
+				}
+			}
+			//NSLog(@"%@", attributes);
+			
+			RTLabelComponent *component = [RTLabelComponent componentWithString:nil tag:tag attributes:attributes];
+			component.position = position;
+			[components addObject:component];
+		}
+		
+		last_position = position;
+		
+	}
+	
+	NSLog(@"%@", components);
+	self._textComponent = components;
+	self._plainText = data;
 }
 
 
