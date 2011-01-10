@@ -114,6 +114,7 @@
 - (void)applyDoubleUnderlineText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length;
 - (void)applyUnderlineColor:(NSString*)value toText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length;
 - (void)applyFontAttributes:(NSDictionary*)attributes toText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length;
+- (void)applyParagraphStyleToText:(CFMutableAttributedStringRef)text attributes:(NSMutableDictionary*)attributes atPosition:(int)position withLength:(int)length;
 @end
 
 @implementation RTLabel
@@ -308,6 +309,10 @@
 		{
 			[self applyFontAttributes:component.attributes toText:attrString atPosition:component.position withLength:[component.text length]];
 		}
+		else if ([component.tagLabel isEqualToString:@"p"])
+		{
+			[self applyParagraphStyleToText:attrString attributes:component.attributes atPosition:component.position withLength:[component.text length]];
+		}
 
 	}
 	
@@ -421,6 +426,82 @@
 
 #pragma mark -
 #pragma mark styling
+
+- (void)applyParagraphStyleToText:(CFMutableAttributedStringRef)text attributes:(NSMutableDictionary*)attributes atPosition:(int)position withLength:(int)length
+{
+	NSLog(@"%@", attributes);
+	
+	CFMutableDictionaryRef styleDict = ( CFDictionaryCreateMutable( (0), 0, (0), (0) ) );
+	
+	// direction
+	CTWritingDirection direction = kCTWritingDirectionLeftToRight; 
+	// leading
+	//CGFloat firstLineIndent = 20.0; 
+	//CGFloat headIndent = firstLineIndent + 1.0; 
+	//CGFloat tailIndent = headIndent + 1.0; 
+	//CGFloat tabInterval = 10; //tailIndent + 1.0; 
+	//CGFloat lineHeightMultiple = tabInterval + 1.0; 
+	//CGFloat maxLineHeight = lineHeightMultiple + 1.0; 
+	//CGFloat minLineHeight = maxLineHeight + 1.0; 
+	int textAlignment = kCTRightTextAlignment;
+	/*
+	CTParagraphStyleSetting theSettings[] =
+	{
+		{ kCTParagraphStyleSpecifierAlignment, sizeof(CTTextAlignment), &textAlignment }, // justify text
+		{ kCTParagraphStyleSpecifierLineBreakMode, sizeof(CTLineBreakMode), &_lineBreakMode }, // break mode 
+		{ kCTParagraphStyleSpecifierBaseWritingDirection, sizeof(CTWritingDirection), &direction }, 
+		{ kCTParagraphStyleSpecifierLineSpacing, sizeof(CGFloat), &_lineSpacing }, // leading
+		
+		//{ kCTParagraphStyleSpecifierFirstLineHeadIndent, sizeof(CGFloat), &firstLineIndent }, 
+		//{ kCTParagraphStyleSpecifierHeadIndent, sizeof(CGFloat), &headIndent }, 
+		//{ kCTParagraphStyleSpecifierTailIndent, sizeof(CGFloat), &tailIndent }, 
+		//{ kCTParagraphStyleSpecifierTabStops, sizeof(CFArrayRef), &tabStops }, 
+		//{ kCTParagraphStyleSpecifierDefaultTabInterval, sizeof(CGFloat), &tabInterval }, 
+		//{ kCTParagraphStyleSpecifierLineHeightMultiple, sizeof(CGFloat), &lineHeightMultiple }, 
+		//{ kCTParagraphStyleSpecifierMaximumLineHeight, sizeof(CGFloat), &maxLineHeight }, 
+		//{ kCTParagraphStyleSpecifierMinimumLineHeight, sizeof(CGFloat), &minLineHeight }, 
+		//{ kCTParagraphStyleSpecifierParagraphSpacing, sizeof(CGFloat), &paragraphSpacing }, 
+		//{ kCTParagraphStyleSpecifierParagraphSpacingBefore, sizeof(CGFloat), &paragraphSpacingBefore }
+	};*/
+	
+	CTParagraphStyleSetting theSettings[[attributes count]];
+	for (int i=0; i<[[attributes allKeys] count]; i++)
+	{
+		NSString *key = [[attributes allKeys] objectAtIndex:i];
+		id value = [attributes objectForKey:key];
+		if ([key isEqualToString:@"align"])
+		{
+			int textAligment = _textAlignment;
+			CTParagraphStyleSetting setting;
+			setting.spec = kCTParagraphStyleSpecifierAlignment;
+			setting.valueSize = sizeof(CTTextAlignment);
+			if ([value isEqualToString:@"left"])
+			{
+				textAligment = kCTLeftTextAlignment;
+			}
+			else if ([value isEqualToString:@"right"])
+			{
+				textAligment = kCTRightTextAlignment;
+			}
+			else if ([value isEqualToString:@"justify"])
+			{
+				textAligment = kCTJustifiedTextAlignment;
+			}
+			else if ([value isEqualToString:@"center"])
+			{
+				textAligment = kCTCenterTextAlignment;
+			}
+			setting.value = &textAligment;
+			theSettings[i] = setting;
+		}
+	}
+	
+	CTParagraphStyleRef theParagraphRef = CTParagraphStyleCreate(theSettings, sizeof(theSettings) / sizeof(CTParagraphStyleSetting));
+	CFDictionaryAddValue( styleDict, kCTParagraphStyleAttributeName, theParagraphRef );
+	
+	CFAttributedStringSetAttributes( text, CFRangeMake(position, length), styleDict, 0 ); 
+	
+}
 
 - (void)applySingleUnderlineText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
 {
@@ -662,9 +743,9 @@
 	while (![scanner isAtEnd]) 
 	{
 		NSString *currentComponent;
-		NSLog(@">>>>>>> %@", currentComponent);
+		//NSLog(@">>>>>>> %@", currentComponent);
 		BOOL foundComponent = [scanner scanUpToString:@"http" intoString:&currentComponent];
-		NSLog(@">>>>>>>11 %@", currentComponent);
+		//NSLog(@">>>>>>>11 %@", currentComponent);
 		if (foundComponent) 
 		{
 			[components addObject:currentComponent];
