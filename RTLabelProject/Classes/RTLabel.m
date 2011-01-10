@@ -194,15 +194,12 @@
 
 	CFMutableDictionaryRef styleDict = ( CFDictionaryCreateMutable( (0), 0, (0), (0) ) );
 	
-	// attempt to add weight
-	float half = 1.0;
-	CFNumberRef weight = ( CFNumberCreate( (0), 12, &half ) );
-	CFDictionaryAddValue( styleDict, kCTFontWeightTrait, weight );
-	
+	[self applyParagraphStyleToText:attrString attributes:nil atPosition:0 withLength:CFAttributedStringGetLength(attrString)];
+	/*
 	// direction
 	CTWritingDirection direction = kCTWritingDirectionLeftToRight; 
 	// leading
-	//CGFloat firstLineIndent = 20.0; 
+	//CGFloat firstLineIndent = 220.0; 
 	//CGFloat headIndent = firstLineIndent + 1.0; 
 	//CGFloat tailIndent = headIndent + 1.0; 
 	//CGFloat tabInterval = 10; //tailIndent + 1.0; 
@@ -233,6 +230,7 @@
 	
 	int stringLength = CFStringGetLength(string);
 	CFAttributedStringSetAttributes( attrString, CFRangeMake( 0, stringLength ), styleDict, 0 ); 
+	*/
 	
 	CTFontRef thisFont = CTFontCreateWithName ((CFStringRef)[self.font fontName], [self.font pointSize], NULL); 
 	CFAttributedStringSetAttribute(attrString, CFRangeMake(0, CFAttributedStringGetLength(attrString)), kCTFontAttributeName, thisFont);
@@ -316,7 +314,7 @@
 
 	}
 	
-	// no working
+	// not working
 	//CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 20), kCTVerticalFormsAttributeName, [NSNumber numberWithBool:YES]);
 	//CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 20), kCTLigatureAttributeName, [NSNumber numberWithInt:2]);
 	//CFAttributedStringSetAttribute(attrString, CFRangeMake(20, 20), kCTParagraphStyleAttributeName, [NSNumber numberWithInt:kCTParagraphStyleSpecifierBaseWritingDirection ]);
@@ -368,7 +366,7 @@
 				CGFloat descent;
 				CGFloat leading;
 				
-				double width = CTLineGetTypographicBounds(line, &ascent, &descent, &leading);
+				CTLineGetTypographicBounds(line, &ascent, &descent, &leading);
 				
 				if (linkableComponents.position>=lineRange.location && linkableComponents.position<lineRange.location+lineRange.length)
 				{
@@ -413,11 +411,11 @@
 	//NSLog(@">>>>>>>>>>>>> %f %f %f", [self frameHeight:frame], self._optimumSize.height, (self._optimumSize.height-[self frameHeight:frame])/(CFArrayGetCount(frameLines)-1));
 	
 	CFRelease(thisFont);
-	CFRelease(theParagraphRef);
+	//CFRelease(theParagraphRef);
 	CFRelease(path);
 	CFRelease(styleDict1);
 	CFRelease(styleDict);
-	CFRelease(weight);
+	//CFRelease(weight);
 	CFRelease(framesetter);
 	CTFrameDraw(frame, context);
 	CFRelease(frame);
@@ -436,75 +434,96 @@
 	// direction
 	CTWritingDirection direction = kCTWritingDirectionLeftToRight; 
 	// leading
-	//CGFloat firstLineIndent = 20.0; 
-	//CGFloat headIndent = firstLineIndent + 1.0; 
-	//CGFloat tailIndent = headIndent + 1.0; 
-	//CGFloat tabInterval = 10; //tailIndent + 1.0; 
-	//CGFloat lineHeightMultiple = tabInterval + 1.0; 
-	//CGFloat maxLineHeight = lineHeightMultiple + 1.0; 
-	//CGFloat minLineHeight = maxLineHeight + 1.0; 
-	int textAlignment = kCTRightTextAlignment;
-	/*
-	CTParagraphStyleSetting theSettings[] =
-	{
-		{ kCTParagraphStyleSpecifierAlignment, sizeof(CTTextAlignment), &textAlignment }, // justify text
-		{ kCTParagraphStyleSpecifierLineBreakMode, sizeof(CTLineBreakMode), &_lineBreakMode }, // break mode 
-		{ kCTParagraphStyleSpecifierBaseWritingDirection, sizeof(CTWritingDirection), &direction }, 
-		{ kCTParagraphStyleSpecifierLineSpacing, sizeof(CGFloat), &_lineSpacing }, // leading
-		
-		//{ kCTParagraphStyleSpecifierFirstLineHeadIndent, sizeof(CGFloat), &firstLineIndent }, 
-		//{ kCTParagraphStyleSpecifierHeadIndent, sizeof(CGFloat), &headIndent }, 
-		//{ kCTParagraphStyleSpecifierTailIndent, sizeof(CGFloat), &tailIndent }, 
-		//{ kCTParagraphStyleSpecifierTabStops, sizeof(CFArrayRef), &tabStops }, 
-		//{ kCTParagraphStyleSpecifierDefaultTabInterval, sizeof(CGFloat), &tabInterval }, 
-		//{ kCTParagraphStyleSpecifierLineHeightMultiple, sizeof(CGFloat), &lineHeightMultiple }, 
-		//{ kCTParagraphStyleSpecifierMaximumLineHeight, sizeof(CGFloat), &maxLineHeight }, 
-		//{ kCTParagraphStyleSpecifierMinimumLineHeight, sizeof(CGFloat), &minLineHeight }, 
-		//{ kCTParagraphStyleSpecifierParagraphSpacing, sizeof(CGFloat), &paragraphSpacing }, 
-		//{ kCTParagraphStyleSpecifierParagraphSpacingBefore, sizeof(CGFloat), &paragraphSpacingBefore }
-	};*/
+	CGFloat firstLineIndent = 0.0; 
+	CGFloat headIndent = 0.0; 
+	CGFloat tailIndent = 0.0; 
+	CGFloat lineHeightMultiple = 1.0; 
+	CGFloat maxLineHeight = 0; 
+	CGFloat minLineHeight = 0; 
+	CGFloat paragraphSpacing = 0.0;
+	CGFloat paragraphSpacingBefore = 0.0;
+	int textAlignment = _textAlignment;
+	int lineBreakMode = _lineBreakMode;
+	int lineSpacing = _lineSpacing;
 	
-	CTParagraphStyleSetting theSettings[[attributes count]];
 	for (int i=0; i<[[attributes allKeys] count]; i++)
 	{
 		NSString *key = [[attributes allKeys] objectAtIndex:i];
 		id value = [attributes objectForKey:key];
 		if ([key isEqualToString:@"align"])
 		{
-			int textAligment;
-			CTParagraphStyleSetting setting;
-			setting.spec = kCTParagraphStyleSpecifierAlignment;
-			setting.valueSize = sizeof(CTTextAlignment);
 			if ([value isEqualToString:@"left"])
 			{
-				textAligment = kCTLeftTextAlignment;
+				textAlignment = kCTLeftTextAlignment;
 			}
 			else if ([value isEqualToString:@"right"])
 			{
-				textAligment = kCTRightTextAlignment;
+				textAlignment = kCTRightTextAlignment;
 			}
 			else if ([value isEqualToString:@"justify"])
 			{
-				textAligment = kCTJustifiedTextAlignment;
+				textAlignment = kCTJustifiedTextAlignment;
 			}
 			else if ([value isEqualToString:@"center"])
 			{
-				textAligment = kCTCenterTextAlignment;
+				textAlignment = kCTCenterTextAlignment;
 			}
-			else
+		}
+		else if ([key isEqualToString:@"indent"])
+		{
+			firstLineIndent = [value floatValue];
+		}
+		else if ([key isEqualToString:@"linebreakmode"])
+		{
+			if ([value isEqualToString:@"wordwrap"])
 			{
-				textAligment = kCTLeftTextAlignment;
+				lineBreakMode = kCTLineBreakByWordWrapping;
 			}
-			setting.value = &textAligment;
-			theSettings[i] = setting;
+			else if ([value isEqualToString:@"charwrap"])
+			{
+				lineBreakMode = kCTLineBreakByCharWrapping;
+			}
+			else if ([value isEqualToString:@"clipping"])
+			{
+				lineBreakMode = kCTLineBreakByClipping;
+			}
+			else if ([value isEqualToString:@"truncatinghead"])
+			{
+				lineBreakMode = kCTLineBreakByTruncatingHead;
+			}
+			else if ([value isEqualToString:@"truncatingtail"])
+			{
+				lineBreakMode = kCTLineBreakByTruncatingTail;
+			}
+			else if ([value isEqualToString:@"truncatingmiddle"])
+			{
+				lineBreakMode = kCTLineBreakByTruncatingMiddle;
+			}
 		}
 	}
+	
+	CTParagraphStyleSetting theSettings[] =
+	{
+		{ kCTParagraphStyleSpecifierAlignment, sizeof(CTTextAlignment), &textAlignment },
+		{ kCTParagraphStyleSpecifierLineBreakMode, sizeof(CTLineBreakMode), &lineBreakMode  },
+		{ kCTParagraphStyleSpecifierBaseWritingDirection, sizeof(CTWritingDirection), &direction }, 
+		{ kCTParagraphStyleSpecifierLineSpacing, sizeof(CGFloat), &lineSpacing }, // leading
+		{ kCTParagraphStyleSpecifierFirstLineHeadIndent, sizeof(CGFloat), &firstLineIndent }, 
+		{ kCTParagraphStyleSpecifierHeadIndent, sizeof(CGFloat), &headIndent }, 
+		{ kCTParagraphStyleSpecifierTailIndent, sizeof(CGFloat), &tailIndent }, 
+		{ kCTParagraphStyleSpecifierLineHeightMultiple, sizeof(CGFloat), &lineHeightMultiple }, 
+		{ kCTParagraphStyleSpecifierMaximumLineHeight, sizeof(CGFloat), &maxLineHeight }, 
+		{ kCTParagraphStyleSpecifierMinimumLineHeight, sizeof(CGFloat), &minLineHeight }, 
+		{ kCTParagraphStyleSpecifierParagraphSpacing, sizeof(CGFloat), &paragraphSpacing }, 
+		{ kCTParagraphStyleSpecifierParagraphSpacingBefore, sizeof(CGFloat), &paragraphSpacingBefore }
+	};
+	
 	
 	CTParagraphStyleRef theParagraphRef = CTParagraphStyleCreate(theSettings, sizeof(theSettings) / sizeof(CTParagraphStyleSetting));
 	CFDictionaryAddValue( styleDict, kCTParagraphStyleAttributeName, theParagraphRef );
 	
 	CFAttributedStringSetAttributes( text, CFRangeMake(position, length), styleDict, 0 ); 
-	
+	CFRelease(theParagraphRef);
 }
 
 - (void)applySingleUnderlineText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
@@ -804,7 +823,15 @@
 		int position = [data rangeOfString:delimiter].location;
 		if (position!=NSNotFound)
 		{
-			data = [data stringByReplacingOccurrencesOfString:delimiter withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(last_position, position+delimiter.length-last_position)];
+			if ([delimiter rangeOfString:@"<p"].location==0)
+			{
+				data = [data stringByReplacingOccurrencesOfString:delimiter withString:@"\n" options:NSCaseInsensitiveSearch range:NSMakeRange(last_position, position+delimiter.length-last_position)];
+			}
+			else
+			{
+				data = [data stringByReplacingOccurrencesOfString:delimiter withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(last_position, position+delimiter.length-last_position)];
+			}
+			
 		}
 		
 		if ([text rangeOfString:@"</"].location==0)
