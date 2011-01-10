@@ -471,7 +471,7 @@
 		id value = [attributes objectForKey:key];
 		if ([key isEqualToString:@"align"])
 		{
-			int textAligment = _textAlignment;
+			int textAligment;
 			CTParagraphStyleSetting setting;
 			setting.spec = kCTParagraphStyleSpecifierAlignment;
 			setting.valueSize = sizeof(CTTextAlignment);
@@ -490,6 +490,10 @@
 			else if ([value isEqualToString:@"center"])
 			{
 				textAligment = kCTCenterTextAlignment;
+			}
+			else
+			{
+				textAligment = kCTLeftTextAlignment;
 			}
 			setting.value = &textAligment;
 			theSettings[i] = setting;
