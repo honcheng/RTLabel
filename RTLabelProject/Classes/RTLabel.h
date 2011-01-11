@@ -42,6 +42,7 @@ typedef enum
 	int currentSelectedButtonComponentIndex;
 	NSDictionary *linkAttributes, *selectedLinkAttributes;
 	id<RTLabelDelegate> delegate;
+	CTFrameRef frame;
 }
 
 @property (nonatomic, retain) UIColor *textColor;

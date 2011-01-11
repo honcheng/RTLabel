@@ -139,6 +139,8 @@
 		_lineBreakMode = RTTextLineBreakModeWordWrapping;
 		_lineSpacing = 3;
 		currentSelectedButtonComponentIndex = -1;
+		
+		[self setMultipleTouchEnabled:YES];
     }
     return self;
 }
@@ -343,7 +345,8 @@
 	CGPathAddRect(path, NULL, bounds);
 	
 	// Create the frame and draw it into the graphics context
-	CTFrameRef frame = CTFramesetterCreateFrame(framesetter,CFRangeMake(0, 0), path, NULL);
+	//CTFrameRef 
+	frame = CTFramesetterCreateFrame(framesetter,CFRangeMake(0, 0), path, NULL);
 	
 	CFRange range;
 	CGSize constraint = CGSizeMake(self.frame.size.width, 1000000);
@@ -418,7 +421,7 @@
 	//CFRelease(weight);
 	CFRelease(framesetter);
 	CTFrameDraw(frame, context);
-	CFRelease(frame);
+	//CFRelease(frame);
 
 }
 
@@ -427,7 +430,7 @@
 
 - (void)applyParagraphStyleToText:(CFMutableAttributedStringRef)text attributes:(NSMutableDictionary*)attributes atPosition:(int)position withLength:(int)length
 {
-	NSLog(@"%@", attributes);
+	//NSLog(@"%@", attributes);
 	
 	CFMutableDictionaryRef styleDict = ( CFDictionaryCreateMutable( (0), 0, (0), (0) ) );
 	
@@ -752,6 +755,8 @@
 }
 
 - (void)dealloc {
+	CFRelease(frame);
+	//CFRelease(framesetter);
 	[self._text release];
     [super dealloc];
 }
@@ -831,7 +836,6 @@
 			{
 				data = [data stringByReplacingOccurrencesOfString:delimiter withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(last_position, position+delimiter.length-last_position)];
 			}
-			
 		}
 		
 		if ([text rangeOfString:@"</"].location==0)
@@ -882,7 +886,7 @@
 		
 	}
 	
-	NSLog(@"%@", components);
+	//NSLog(@"%@", components);
 	self._textComponent = components;
 	self._plainText = data;
 }
@@ -1013,6 +1017,49 @@
 	
 }
 
+#pragma mark touch delegate
 
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+	UITouch *touch = [touches anyObject];
+	CGPoint currentTouch = [touch locationInView:self];
+	//NSLog(@"%i %i", currentTouch.x, currentTouch.y);
+
+	float height = 0.0;
+	CFArrayRef frameLines = CTFrameGetLines(frame);
+	for (CFIndex i=0; i<CFArrayGetCount(frameLines); i++)
+	{
+		CTLineRef line = (CTLineRef)CFArrayGetValueAtIndex(frameLines, i);
+		CFRange lineRange = CTLineGetStringRange(line);
+		CGFloat ascent;
+		CGFloat descent;
+		CGFloat leading;
+		
+		CTLineGetTypographicBounds(line, &ascent, &descent, &leading);
+
+		CGPoint origin;
+		CTFrameGetLineOrigins(frame, CFRangeMake(i, 1), &origin);
+		origin.y = self.frame.size.height - origin.y;
+		height = origin.y + descent + _lineSpacing;
+		
+		if (currentTouch.y < height)
+		{
+			for (int j=0; j<lineRange.length; j++)
+			{
+				CGFloat secondaryOffset;
+				double primaryOffset = CTLineGetOffsetForStringIndex(CFArrayGetValueAtIndex(frameLines,i),lineRange.location+j, &secondaryOffset);
+				//NSLog(@"? %i %i %f", j, lineRange.location, primaryOffset);
+				if (primaryOffset>currentTouch.x)
+				{
+					//NSLog(@">>>>> %i", lineRange.location+j);
+					NSLog(@"clicked on [%@]", [self._plainText substringWithRange:NSMakeRange(lineRange.location+j-1, 1)]);
+					break;
+				}
+				
+			}
+			break;
+		}
+	}
+}
 
 @end
