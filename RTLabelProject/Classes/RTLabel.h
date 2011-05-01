@@ -43,19 +43,23 @@ typedef enum
 	NSDictionary *linkAttributes, *selectedLinkAttributes;
 	id<RTLabelDelegate> delegate;
 	CTFrameRef frame;
+    CFRange visibleRange;
+    int columnCount, columnWidth, alley;
 }
 
 @property (nonatomic, retain) UIColor *textColor;
 @property (nonatomic, retain) UIFont *font;
 @property (nonatomic, retain) NSDictionary *linkAttributes, *selectedLinkAttributes;
 @property (nonatomic, assign) id<RTLabelDelegate> delegate;
+@property (nonatomic, assign) int columnCount, columnWidth, alley;
 
-
+- (void)render;
 - (NSString*)text;
 - (void)setText:(NSString*)text;
 - (void)setTextAlignment:(RTTextAlignment)textAlignment;
 - (void)setLineBreakMode:(RTTextLineBreakMode)lineBreakMode;
 - (CGSize)optimumSize;
 - (void)setLineSpacing:(CGFloat)lineSpacing;
+- (NSString*)visibleText;
 
 @end

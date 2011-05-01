@@ -39,7 +39,7 @@
 - (id)initWithString:(NSString*)_text tag:(NSString*)_tagLabel attributes:(NSMutableDictionary*)_attributes;
 + (id)componentWithString:(NSString*)_text tag:(NSString*)_tagLabel attributes:(NSMutableDictionary*)_attributes;
 - (id)initWithTag:(NSString*)_tagLabel position:(int)_position attributes:(NSMutableDictionary*)_attributes;
-+(id)componentWithTag:(NSString*)_tagLabel position:(int)_position attributes:(NSMutableDictionary*)_attributes;
++ (id)componentWithTag:(NSString*)_tagLabel position:(int)_position attributes:(NSMutableDictionary*)_attributes;
 
 @end
 
@@ -102,8 +102,9 @@
 - (NSArray *)components;
 - (void)parse:(NSString *)data valid_tags:(NSArray *)valid_tags;
 - (NSArray*) colorForHex:(NSString *)hexColor;
-- (void)render;
+//- (void)render;
 - (void)extractTextStyle:(NSString*)text;
+- (CFArrayRef)createColumns;
 
 #pragma mark -
 #pragma mark styling
@@ -124,21 +125,23 @@
 @synthesize _plainText, _textComponent;
 @synthesize _optimumSize;
 @synthesize linkAttributes, selectedLinkAttributes;
-@synthesize delegate;
+@synthesize delegate, columnCount, columnWidth, alley;
 
-- (id)initWithFrame:(CGRect)frame {
+- (id)initWithFrame:(CGRect)_frame {
     
-    self = [super initWithFrame:frame];
+    self = [super initWithFrame:_frame];
     if (self) {
         // Initialization code.
 		[self setBackgroundColor:[UIColor clearColor]];
 		self.font = [UIFont systemFontOfSize:15];
 		self.textColor = [UIColor blackColor];
-		self._text = @"";
+		//self._text = @"";
+		[self setText:@""];
 		_textAlignment = RTTextAlignmentLeft;
 		_lineBreakMode = RTTextLineBreakModeWordWrapping;
 		_lineSpacing = 3;
 		currentSelectedButtonComponentIndex = -1;
+        columnCount = 1;
 		
 		[self setMultipleTouchEnabled:YES];
     }
@@ -175,6 +178,7 @@
 		}
 	}
 	
+    if (!self._plainText) return;
 	
     // Drawing code.
 	CGContextRef context = UIGraphicsGetCurrentContext();
@@ -197,42 +201,7 @@
 	CFMutableDictionaryRef styleDict = ( CFDictionaryCreateMutable( (0), 0, (0), (0) ) );
 	
 	[self applyParagraphStyleToText:attrString attributes:nil atPosition:0 withLength:CFAttributedStringGetLength(attrString)];
-	/*
-	// direction
-	CTWritingDirection direction = kCTWritingDirectionLeftToRight; 
-	// leading
-	//CGFloat firstLineIndent = 220.0; 
-	//CGFloat headIndent = firstLineIndent + 1.0; 
-	//CGFloat tailIndent = headIndent + 1.0; 
-	//CGFloat tabInterval = 10; //tailIndent + 1.0; 
-	//CGFloat lineHeightMultiple = tabInterval + 1.0; 
-	//CGFloat maxLineHeight = lineHeightMultiple + 1.0; 
-	//CGFloat minLineHeight = maxLineHeight + 1.0; 
-	
-	CTParagraphStyleSetting theSettings[] =
-	{
-		{ kCTParagraphStyleSpecifierAlignment, sizeof(CTTextAlignment), &_textAlignment }, // justify text
-		{ kCTParagraphStyleSpecifierLineBreakMode, sizeof(CTLineBreakMode), &_lineBreakMode }, // break mode 
-		{ kCTParagraphStyleSpecifierBaseWritingDirection, sizeof(CTWritingDirection), &direction }, 
-		{ kCTParagraphStyleSpecifierLineSpacing, sizeof(CGFloat), &_lineSpacing }, // leading
-		
-		//{ kCTParagraphStyleSpecifierFirstLineHeadIndent, sizeof(CGFloat), &firstLineIndent }, 
-		//{ kCTParagraphStyleSpecifierHeadIndent, sizeof(CGFloat), &headIndent }, 
-		//{ kCTParagraphStyleSpecifierTailIndent, sizeof(CGFloat), &tailIndent }, 
-		//{ kCTParagraphStyleSpecifierTabStops, sizeof(CFArrayRef), &tabStops }, 
-		//{ kCTParagraphStyleSpecifierDefaultTabInterval, sizeof(CGFloat), &tabInterval }, 
-		//{ kCTParagraphStyleSpecifierLineHeightMultiple, sizeof(CGFloat), &lineHeightMultiple }, 
-		//{ kCTParagraphStyleSpecifierMaximumLineHeight, sizeof(CGFloat), &maxLineHeight }, 
-		//{ kCTParagraphStyleSpecifierMinimumLineHeight, sizeof(CGFloat), &minLineHeight }, 
-		//{ kCTParagraphStyleSpecifierParagraphSpacing, sizeof(CGFloat), &paragraphSpacing }, 
-		//{ kCTParagraphStyleSpecifierParagraphSpacingBefore, sizeof(CGFloat), &paragraphSpacingBefore }
-	};
-	CTParagraphStyleRef theParagraphRef = CTParagraphStyleCreate(theSettings, sizeof(theSettings) / sizeof(CTParagraphStyleSetting));
-	CFDictionaryAddValue( styleDict, kCTParagraphStyleAttributeName, theParagraphRef );
-	
-	int stringLength = CFStringGetLength(string);
-	CFAttributedStringSetAttributes( attrString, CFRangeMake( 0, stringLength ), styleDict, 0 ); 
-	*/
+
 	
 	CTFontRef thisFont = CTFontCreateWithName ((CFStringRef)[self.font fontName], [self.font pointSize], NULL); 
 	CFAttributedStringSetAttribute(attrString, CFRangeMake(0, CFAttributedStringGetLength(attrString)), kCTFontAttributeName, thisFont);
@@ -315,114 +284,156 @@
 		}
 
 	}
+    
+    // Create the framesetter with the attributed string.
+    CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString(attrString);
+    CFRelease(attrString);
 	
-	// not working
-	//CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 20), kCTVerticalFormsAttributeName, [NSNumber numberWithBool:YES]);
-	//CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 20), kCTLigatureAttributeName, [NSNumber numberWithInt:2]);
-	//CFAttributedStringSetAttribute(attrString, CFRangeMake(20, 20), kCTParagraphStyleAttributeName, [NSNumber numberWithInt:kCTParagraphStyleSpecifierBaseWritingDirection ]);
-	//CFAttributedStringSetAttribute(attrString, CFRangeMake(1, 2), kCTSuperscriptAttributeName, [NSNumber numberWithInt:-1 ]);
-	//CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 20), kCTFontWeightTrait, [NSNumber numberWithInt:kCTFontBoldTrait]);
-	//CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 20), kCTFontSlantTrait, [NSNumber numberWithInt:kCTFontItalicTrait]);
-	//CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 5), kCTFontWidthTrait, [NSNumber numberWithInt:kCTFontCondensedTrait]);
-	//CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 5), kCTCharacterShapeAttributeName, [NSNumber numberWithInt:2]);
-	
-	// works
-	//CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 6), kCTUnderlineStyleAttributeName,  (CFNumberRef)[NSNumber numberWithInt:kCTUnderlineStyleSingle|kCTUnderlinePatternDot]);
-	//CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 6), kCTUnderlineStyleAttributeName,  (CFNumberRef)[NSNumber numberWithInt:kCTUnderlineStyleDouble|kCTUnderlinePatternDash]);
-	//CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 6), kCTUnderlineStyleAttributeName,  (CFNumberRef)[NSNumber numberWithInt:kCTUnderlineStyleDouble|kCTUnderlinePatternDashDot]);
-	//CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 6), kCTUnderlineStyleAttributeName,  (CFNumberRef)[NSNumber numberWithInt:kCTUnderlineStyleDouble|kCTUnderlinePatternDashDotDot]);
-	//CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 6), kCTUnderlineStyleAttributeName,  (CFNumberRef)[NSNumber numberWithInt:kCTUnderlineStyleDouble|kCTUnderlinePatternSolid]);
-	//CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 6), kCTUnderlineStyleAttributeName,  (CFNumberRef)[NSNumber numberWithInt:kCTUnderlineStyleThick|kCTUnderlinePatternSolid]);
-	
-	// Create the framesetter with the attributed string.
-	CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString(attrString);
-	CFRelease(attrString);
-	
-	
-	// Initialize a rectangular path.
-	CGMutablePathRef path = CGPathCreateMutable();
-	CGRect bounds = CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height);
-	CGPathAddRect(path, NULL, bounds);
-	
-	// Create the frame and draw it into the graphics context
-	//CTFrameRef 
-	frame = CTFramesetterCreateFrame(framesetter,CFRangeMake(0, 0), path, NULL);
-	
-	CFRange range;
-	CGSize constraint = CGSizeMake(self.frame.size.width, 1000000);
-	self._optimumSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, [self._plainText length]), nil, constraint, &range);
-	
-	
-	if (currentSelectedButtonComponentIndex==-1)
-	{
-		// only check for linkable items the first time, not when it's being redrawn on button pressed
-		
-		for (RTLabelComponent *linkableComponents in links)
-		{
-			float height = 0.0;
-			CFArrayRef frameLines = CTFrameGetLines(frame);
-			for (CFIndex i=0; i<CFArrayGetCount(frameLines); i++)
-			{
-				CTLineRef line = (CTLineRef)CFArrayGetValueAtIndex(frameLines, i);
-				CFRange lineRange = CTLineGetStringRange(line);
-				CGFloat ascent;
-				CGFloat descent;
-				CGFloat leading;
-				
-				CTLineGetTypographicBounds(line, &ascent, &descent, &leading);
-				
-				if (linkableComponents.position>=lineRange.location && linkableComponents.position<lineRange.location+lineRange.length)
-				{
-					//NSLog(@"line %i: location %i, length %i", i+1, lineRange.location, lineRange.length);
-					//NSLog(@"ascent %f, descent %f, leading %f, width %f", ascent, descent, leading, width);
-					//NSLog(@"height %f", height);
-					
-					CGFloat secondaryOffset;
-					double primaryOffset = CTLineGetOffsetForStringIndex(CFArrayGetValueAtIndex(frameLines,i), linkableComponents.position, &secondaryOffset);
-					double primaryOffset2 = CTLineGetOffsetForStringIndex(CFArrayGetValueAtIndex(frameLines,i), linkableComponents.position+linkableComponents.text.length, NULL);
-					//NSLog(@"primary offset %f, secondary offset %f", primaryOffset, secondaryOffset);
-					
-					float button_width = primaryOffset2 - primaryOffset;
-					
-					RTLabelButton *button = [[RTLabelButton alloc] initWithFrame:CGRectMake(primaryOffset, height, button_width, ascent+descent)];
-					[self addSubview:button];
-					[button setBackgroundColor:[UIColor colorWithWhite:0 alpha:0]];
-					[button setComponentIndex:linkableComponents.componentIndex];
-					
-					[button setUrl:[NSURL URLWithString:[linkableComponents.attributes objectForKey:@"href"]]];
-					[button addTarget:self action:@selector(onButtonTouchDown:) forControlEvents:UIControlEventTouchDown];
-					[button addTarget:self action:@selector(onButtonTouchUpOutside:) forControlEvents:UIControlEventTouchUpOutside];
-					[button addTarget:self action:@selector(onButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-					
-				}
-				
-				//height += (ascent + fabsf(descent) + leading);
-				
-				//CGRect rect = CTLineGetImageBounds(line, context);
-				//NSLog(@"???? %f %f", rect.origin.y, rect.size.height);
-				
-				CGPoint origin;
-				CTFrameGetLineOrigins(frame, CFRangeMake(i, 1), &origin);
-				origin.y = self.frame.size.height - origin.y;
-				//NSLog(@"---------- %f", origin.y);
-				height = origin.y + descent + _lineSpacing;
-			}
-		}
-	}
-	
-	//CFArrayRef frameLines = CTFrameGetLines(frame);
-	//NSLog(@">>>>>>>>>>>>> %f %f %f", [self frameHeight:frame], self._optimumSize.height, (self._optimumSize.height-[self frameHeight:frame])/(CFArrayGetCount(frameLines)-1));
-	
-	CFRelease(thisFont);
-	//CFRelease(theParagraphRef);
-	CFRelease(path);
-	CFRelease(styleDict1);
-	CFRelease(styleDict);
-	//CFRelease(weight);
-	CFRelease(framesetter);
-	CTFrameDraw(frame, context);
-	//CFRelease(frame);
+    if (columnCount>1)
+    {
+        
+        
+        CFArrayRef columnPaths = [self createColumns];
+        CFIndex pathCount = CFArrayGetCount(columnPaths);
+        CFIndex startIndex = 0;
+        
+        int column;
+        for (column = 0; column < pathCount; column++) 
+        {
+            CGPathRef path = (CGPathRef)CFArrayGetValueAtIndex(columnPaths, column);
+            
+            // Create a frame for this column and draw it.
+            frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(startIndex, 0), path, NULL);
+            CTFrameDraw(frame, context);
+            
+            // Start the next frame at the first character not visible in this frame.
+            CFRange frameRange = CTFrameGetVisibleStringRange(frame);
+            startIndex += frameRange.length;
+            CFRelease(frame);
+        }
+        CFRelease(columnPaths);
+    }
+	else
+    {
+        // Initialize a rectangular path.
+        CGMutablePathRef path = CGPathCreateMutable();
+        CGRect bounds = CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height);
+        CGPathAddRect(path, NULL, bounds);
+        
+        // Create the frame and draw it into the graphics context
+        //CTFrameRef 
+        frame = CTFramesetterCreateFrame(framesetter,CFRangeMake(0, 0), path, NULL);
+        
+        CFRange range;
+        CGSize constraint = CGSizeMake(self.frame.size.width, 1000000);
+        self._optimumSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, [self._plainText length]), nil, constraint, &range);
+        
+        
+        if (currentSelectedButtonComponentIndex==-1)
+        {
+            // only check for linkable items the first time, not when it's being redrawn on button pressed
+            
+            for (RTLabelComponent *linkableComponents in links)
+            {
+                float height = 0.0;
+                CFArrayRef frameLines = CTFrameGetLines(frame);
+                for (CFIndex i=0; i<CFArrayGetCount(frameLines); i++)
+                {
+                    CTLineRef line = (CTLineRef)CFArrayGetValueAtIndex(frameLines, i);
+                    CFRange lineRange = CTLineGetStringRange(line);
+                    CGFloat ascent;
+                    CGFloat descent;
+                    CGFloat leading;
+                    
+                    CTLineGetTypographicBounds(line, &ascent, &descent, &leading);
+                    
+                    if (linkableComponents.position>=lineRange.location && linkableComponents.position<lineRange.location+lineRange.length)
+                    {
+                        //NSLog(@"line %i: location %i, length %i", i+1, lineRange.location, lineRange.length);
+                        //NSLog(@"ascent %f, descent %f, leading %f, width %f", ascent, descent, leading, width);
+                        //NSLog(@"height %f", height);
+                        
+                        CGFloat secondaryOffset;
+                        double primaryOffset = CTLineGetOffsetForStringIndex(CFArrayGetValueAtIndex(frameLines,i), linkableComponents.position, &secondaryOffset);
+                        double primaryOffset2 = CTLineGetOffsetForStringIndex(CFArrayGetValueAtIndex(frameLines,i), linkableComponents.position+linkableComponents.text.length, NULL);
+                        //NSLog(@"primary offset %f, secondary offset %f", primaryOffset, secondaryOffset);
+                        
+                        float button_width = primaryOffset2 - primaryOffset;
+                        
+                        RTLabelButton *button = [[RTLabelButton alloc] initWithFrame:CGRectMake(primaryOffset, height, button_width, ascent+descent)];
+                        [self addSubview:button];
+                        [button setBackgroundColor:[UIColor colorWithWhite:0 alpha:0]];
+                        [button setComponentIndex:linkableComponents.componentIndex];
+                        
+                        [button setUrl:[NSURL URLWithString:[linkableComponents.attributes objectForKey:@"href"]]];
+                        [button addTarget:self action:@selector(onButtonTouchDown:) forControlEvents:UIControlEventTouchDown];
+                        [button addTarget:self action:@selector(onButtonTouchUpOutside:) forControlEvents:UIControlEventTouchUpOutside];
+                        [button addTarget:self action:@selector(onButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+                        
+                    }
+                    
+                    //height += (ascent + fabsf(descent) + leading);
+                    
+                    //CGRect rect = CTLineGetImageBounds(line, context);
+                    //NSLog(@"???? %f %f", rect.origin.y, rect.size.height);
+                    
+                    CGPoint origin;
+                    CTFrameGetLineOrigins(frame, CFRangeMake(i, 1), &origin);
+                    origin.y = self.frame.size.height - origin.y;
+                    //NSLog(@"---------- %f", origin.y);
+                    height = origin.y + descent + _lineSpacing;
+                }
+            }
+        }
+        
+        visibleRange = CTFrameGetVisibleStringRange(frame);
+        //NSLog(@"??? >>>> %i %i", visibleRange.location, visibleRange.length);
+        
+        //CFArrayRef frameLines = CTFrameGetLines(frame);
+        //NSLog(@">>>>>>>>>>>>> %f %f %f", [self frameHeight:frame], self._optimumSize.height, (self._optimumSize.height-[self frameHeight:frame])/(CFArrayGetCount(frameLines)-1));
+        
+        CFRelease(thisFont);
+        //CFRelease(theParagraphRef);
+        CFRelease(path);
+        CFRelease(styleDict1);
+        CFRelease(styleDict);
+        //CFRelease(weight);
+        CFRelease(framesetter);
+        
+        CTFrameDraw(frame, context);
+        //CFRelease(frame);
+        
+        /*
+        CFArrayRef frameLines = CTFrameGetLines(frame);
+        for (CFIndex i=0; i<CFArrayGetCount(frameLines); i++)
+        {
+            CTLineRef line = (CTLineRef)CFArrayGetValueAtIndex(frameLines, i);
+            CFRange cfStringRange = CTLineGetStringRange(line);
+            NSRange stringRange = NSMakeRange(cfStringRange.location, cfStringRange.length);
+            static const unichar softHypen = 0x00AD;
+            unichar lastChar = [self._plainText characterAtIndex:stringRange.location + stringRange.length-1];
 
+            if(softHypen == lastChar) {
+                NSMutableAttributedString* lineAttrString = [[attrString attributedSubstringFromRange:stringRange] mutableCopy];
+                NSRange replaceRange = NSMakeRange(stringRange.length-1, 1);
+                [lineAttrString replaceCharactersInRange:replaceRange withString:@"-"];
+                
+                CTLineRef hyphenLine = CTLineCreateWithAttributedString((CFAttributedStringRef)lineAttrString);
+                CTLineRef justifiedLine = CTLineCreateJustifiedLine(hyphenLine, 1.0, self.frame.size.width); 
+                
+                CTLineDraw(justifiedLine, context);
+            } else {
+                //CTLineDraw(originalLine, context);
+            }
+        }
+        */
+        
+                
+        
+    }
+    
+	
+    
 }
 
 #pragma mark -
@@ -727,9 +738,6 @@
 {
 	self._text = text;
 	[self extractTextStyle:self._text];
-	//[self parse:self._text valid_tags:nil];
-	//NSLog(@"%@", self._plainText);
-	//NSLog(@"%@", self._textComponent); 
 	[self setNeedsDisplay];
 }
 
@@ -755,7 +763,7 @@
 }
 
 - (void)dealloc {
-	CFRelease(frame);
+	//CFRelease(frame);
 	//CFRelease(framesetter);
 	[self._text release];
     [super dealloc];
@@ -836,6 +844,9 @@
 			{
 				data = [data stringByReplacingOccurrencesOfString:delimiter withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(last_position, position+delimiter.length-last_position)];
 			}
+			
+			data = [data stringByReplacingOccurrencesOfString:@"&lt;" withString:@"<"];
+			data = [data stringByReplacingOccurrencesOfString:@"&gt;" withString:@">"];
 		}
 		
 		if ([text rangeOfString:@"</"].location==0)
@@ -1021,6 +1032,7 @@
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    /*
 	UITouch *touch = [touches anyObject];
 	CGPoint currentTouch = [touch locationInView:self];
 	//NSLog(@"%i %i", currentTouch.x, currentTouch.y);
@@ -1052,14 +1064,64 @@
 				if (primaryOffset>currentTouch.x)
 				{
 					//NSLog(@">>>>> %i", lineRange.location+j);
-					NSLog(@"clicked on [%@]", [self._plainText substringWithRange:NSMakeRange(lineRange.location+j-1, 1)]);
+					//NSLog(@"clicked on [%@]", [self._plainText substringWithRange:NSMakeRange(lineRange.location+j-1, 1)]);
 					break;
 				}
 				
 			}
 			break;
 		}
-	}
+	}*/
+}
+
+- (CFArrayRef)createColumns 
+{
+    CGRect bounds = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
+    int column;
+    CGRect* columnRects = (CGRect*)calloc(columnCount, sizeof(*columnRects));
+   
+    // Start by setting the first column to cover the entire view.
+    columnRects[0] = bounds;
+    
+    for (column = 0; column < columnCount; column++) 
+    {
+        columnRects[column] = CGRectMake( column*(columnWidth+alley), 0, columnWidth, bounds.size.height);
+    }
+    
+    /*
+    // Divide the columns equally across the frame's width.
+    //CGFloat columnWidth = CGRectGetWidth(bounds) / columnCount;
+    for (column = 0; column < columnCount - 1; column++) 
+    {
+        CGRectDivide(columnRects[column], &columnRects[column],&columnRects[column + 1], columnWidth, CGRectMinXEdge);
+    }
+    
+    //  add margin
+    
+    for (column = 0; column < _columnCount; column++) 
+    {
+        columnRects[column] = CGRectInset(columnRects[column], 10.0, 10.0);
+    }*/
+    
+    // Create an array of layout paths, one for each column.
+    CFMutableArrayRef array = CFArrayCreateMutable(kCFAllocatorDefault, columnCount, &kCFTypeArrayCallBacks);
+    for (column = 0; column < columnCount; column++) 
+    {
+        CGMutablePathRef path = CGPathCreateMutable();
+        CGPathAddRect(path, NULL, columnRects[column]);
+        CFArrayInsertValueAtIndex(array, column, path);
+        CFRelease(path);
+    }
+    free(columnRects);
+    return array;
+}
+
+
+- (NSString*)visibleText
+{
+    [self render];
+    NSString *text = [_text substringWithRange:NSMakeRange(visibleRange.location, visibleRange.length)];
+    return text;
 }
 
 @end
