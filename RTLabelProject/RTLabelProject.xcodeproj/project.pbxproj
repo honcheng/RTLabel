@@ -13,6 +13,8 @@
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
 		28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
+		F801A574136D868000BA1B35 /* DemoTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F801A573136D868000BA1B35 /* DemoTableViewController.m */; };
+		F801A58E136D879B00BA1B35 /* DemoTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F801A58D136D879B00BA1B35 /* DemoTableViewCell.m */; };
 		F8ABFD7612D5B7EE00A7CE33 /* HelveticaNeue.dfont in Resources */ = {isa = PBXBuildFile; fileRef = F8ABFD7512D5B7EE00A7CE33 /* HelveticaNeue.dfont */; };
 		F8BDA6A112D553C900B6CC65 /* RTLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = F8BDA6A012D553C900B6CC65 /* RTLabel.m */; };
 		F8BDA6AD12D554AE00B6CC65 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8BDA6AC12D554AE00B6CC65 /* CoreText.framework */; };
@@ -29,6 +31,10 @@
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* RTLabelProject_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RTLabelProject_Prefix.pch; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* RTLabelProject-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "RTLabelProject-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		F801A572136D868000BA1B35 /* DemoTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoTableViewController.h; sourceTree = "<group>"; };
+		F801A573136D868000BA1B35 /* DemoTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoTableViewController.m; sourceTree = "<group>"; };
+		F801A58C136D879B00BA1B35 /* DemoTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoTableViewCell.h; sourceTree = "<group>"; };
+		F801A58D136D879B00BA1B35 /* DemoTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoTableViewCell.m; sourceTree = "<group>"; };
 		F8ABFD7512D5B7EE00A7CE33 /* HelveticaNeue.dfont */ = {isa = PBXFileReference; lastKnownFileType = file; path = HelveticaNeue.dfont; sourceTree = "<group>"; };
 		F8BDA69F12D553C900B6CC65 /* RTLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RTLabel.h; sourceTree = "<group>"; };
 		F8BDA6A012D553C900B6CC65 /* RTLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RTLabel.m; sourceTree = "<group>"; };
@@ -55,6 +61,10 @@
 			children = (
 				1D3623240D0F684500981E51 /* RTLabelProjectAppDelegate.h */,
 				1D3623250D0F684500981E51 /* RTLabelProjectAppDelegate.m */,
+				F801A572136D868000BA1B35 /* DemoTableViewController.h */,
+				F801A573136D868000BA1B35 /* DemoTableViewController.m */,
+				F801A58C136D879B00BA1B35 /* DemoTableViewCell.h */,
+				F801A58D136D879B00BA1B35 /* DemoTableViewCell.m */,
 				F8BDA69F12D553C900B6CC65 /* RTLabel.h */,
 				F8BDA6A012D553C900B6CC65 /* RTLabel.m */,
 			);
@@ -175,6 +185,8 @@
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				1D3623260D0F684500981E51 /* RTLabelProjectAppDelegate.m in Sources */,
 				F8BDA6A112D553C900B6CC65 /* RTLabel.m in Sources */,
+				F801A574136D868000BA1B35 /* DemoTableViewController.m in Sources */,
+				F801A58E136D879B00BA1B35 /* DemoTableViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

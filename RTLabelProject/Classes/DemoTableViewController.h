@@ -1,6 +1,7 @@
 //
-//  RTLabelProjectAppDelegate.h
+//  DemoTableViewController.h
 //  RTLabelProject
+//
 /**
  * Copyright (c) 2010 Muh Hon Cheng
  * Created by honcheng on 1/6/11.
@@ -35,13 +36,12 @@
  */
 
 #import <UIKit/UIKit.h>
-#import "RTLabel.h"
 
-@interface RTLabelProjectAppDelegate : NSObject <UIApplicationDelegate, RTLabelDelegate> {
-    UIWindow *window;
+
+@interface DemoTableViewController : UITableViewController {
+	NSMutableArray *dataArray;
 }
 
-@property (nonatomic, retain) IBOutlet UIWindow *window;
+@property (nonatomic, retain) NSMutableArray *dataArray;
 
 @end
-

@@ -2,11 +2,52 @@
 //  RTLabelProjectAppDelegate.m
 //  RTLabelProject
 //
-//  Created by honcheng on 1/6/11.
-//  Copyright 2011 honcheng. All rights reserved.
-//
+/**
+ * Copyright (c) 2010 Muh Hon Cheng
+ * Created by honcheng on 1/6/11.
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining 
+ * a copy of this software and associated documentation files (the 
+ * "Software"), to deal in the Software without restriction, including 
+ * without limitation the rights to use, copy, modify, merge, publish, 
+ * distribute, sublicense, and/or sell copies of the Software, and to 
+ * permit persons to whom the Software is furnished to do so, subject 
+ * to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be 
+ * included in all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT 
+ * WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT 
+ * SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE 
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
+ * IN CONNECTION WITH THE SOFTWARE OR 
+ * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * 
+ * @author 		Muh Hon Cheng <honcheng@gmail.com>
+ * @copyright	2011	Muh Hon Cheng
+ * @version
+ * 
+ */
 
 #import "RTLabelProjectAppDelegate.h"
+#import "DemoTableViewController.h"
+
+@interface UINavigationBar (CustomNavBar)
+@end
+@implementation UINavigationBar (CustomNavBar)
+- (void) drawRect:(CGRect)rect 
+{
+	CGContextRef context = UIGraphicsGetCurrentContext();
+	CGContextSetRGBFillColor(context, 0.3,0.3,0.3,1.0);
+	CGContextFillRect(context, CGRectMake(0,0,self.frame.size.width,44));
+}
+@end
 
 @implementation RTLabelProjectAppDelegate
 
@@ -22,6 +63,7 @@
     
     [self.window makeKeyAndVisible];
 	//[window setBackgroundColor:[UIColor blackColor]];
+	
 	
 	RTLabel *label = [[RTLabel alloc] initWithFrame:CGRectMake(10,30,300,440)];
 	[window addSubview:label];
@@ -49,6 +91,12 @@
 	[label setDelegate:self];
 	
 	[window setBackgroundColor:[UIColor whiteColor]];
+	
+	
+	//DemoTableViewController *demoTableViewController = [[DemoTableViewController alloc] initWithStyle:UITableViewStylePlain];
+	//UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:demoTableViewController];
+	//[window addSubview:navController.view];
+	
 	
 	return YES;
 }
