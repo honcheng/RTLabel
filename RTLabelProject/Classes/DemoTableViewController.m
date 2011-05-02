@@ -67,15 +67,27 @@
 		[self.dataArray addObject:row1];
 		
 		NSMutableDictionary *row2 = [NSMutableDictionary dictionary];
-		[row2 setObject:@"<u>underlined</u> text with <u color=red>color</u>" forKey:@"text"];
+		[row2 setObject:@"<font face='HelveticaNeue-CondensedBold' size=20><u color=blue>underlined</u> <uu color=red>text</uu></font>" forKey:@"text"];
 		[self.dataArray addObject:row2];
 		
 		NSMutableDictionary *row3 = [NSMutableDictionary dictionary];
-		[row3 setObject:@"<uu color=green>labore et dolore</uu> magna aliqua.</p><p indent=20><i>Ut enim ad minim</i>" forKey:@"text"];
+		[row3 setObject:@"clickable link - <a href='http://www.google.com'>google.com</a>" forKey:@"text"];
 		[self.dataArray addObject:row3];
+        
+        NSMutableDictionary *row4 = [NSMutableDictionary dictionary];
+		[row4 setObject:@"<font face='HelveticaNeue-CondensedBold' size=20 color='#CCFF00'>Text with</font> <font face=AmericanTypewriter size=16 color=purple>different colours</font> <font face=Futura size=32 color='#dd1100'>and sizes</font>" forKey:@"text"];
+		[self.dataArray addObject:row4];
+        
+        NSMutableDictionary *row5 = [NSMutableDictionary dictionary];
+		[row5 setObject:@"<font face='HelveticaNeue-CondensedBold' size=20 stroke=1>Text with strokes</font> " forKey:@"text"];
+		[self.dataArray addObject:row5];
+        
+        NSMutableDictionary *row6 = [NSMutableDictionary dictionary];
+		[row6 setObject:@"<font face='HelveticaNeue-CondensedBold' size=20 kern=35>KERN</font> " forKey:@"text"];
+		[self.dataArray addObject:row6];
 		
 		NSMutableDictionary *row20 = [NSMutableDictionary dictionary];
-		[row20 setObject:@"<p indent=0>Lorem &lt;<font kern=35 underline=2 style=italic color=blue>ipsum</font>&gt; dolor \tsit amet, <a href='http://buuuk.com'>buuuk.com</a> <i>consectetur adipisicing elit, sed do eiusmod tempor</i> <u color=red>incididunt ut</u> <uu color=green>labore et dolore</uu> magna aliqua.</p><p indent=20><i>Ut enim ad minim</i> veniam, <b>quis nostrud</b> exercitation <font color=#CCFF00 face=HelveticaNeue-CondensedBold size=30>ullamco laboris <i>nisi</i> ut aliquip</font> <font color='blue' size=30 stroke=1>ex ea commodo consequat.</font> Duis <a href='http://google.com'>google.com</a> aute irure dolor in <font face=Cochin-Bold size=40>reprehenderit</font> <font face=AmericanTypewriter size=20 color=purple>in voluptate velit esse cillum dolore</font> eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat <i>non <font color=cyan>proident,</p> <b>sunt in <u>culpa qui</u> officia</b> deserunt</font> mollit</i> anim id est laborum." forKey:@"text"];
+		[row20 setObject:@"<p indent=20>Indented bla bla bla bla bla bla bla bla bla bla bla bla bla</p>" forKey:@"text"];
 		[self.dataArray addObject:row20];
     }
     return self;

@@ -232,6 +232,8 @@
 			<key>Layout</key>
 			<array>
 				<dict>
+					<key>BecomeActive</key>
+					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXBottomSmartGroupGIDs</key>
@@ -308,8 +310,6 @@
 					<key>Dock</key>
 					<array>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -327,18 +327,18 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>F801A6C0136D94A300BA1B35</string>
+										<string>F80CC92C136DA57D003B2F00</string>
 										<key>history</key>
 										<array>
-											<string>F801A598136D88DC00BA1B35</string>
 											<string>F801A59B136D88DC00BA1B35</string>
-											<string>F801A612136D8CCC00BA1B35</string>
 											<string>F801A615136D8CCC00BA1B35</string>
 											<string>F801A674136D921C00BA1B35</string>
 											<string>F801A6BB136D948D00BA1B35</string>
 											<string>F801A6BC136D948D00BA1B35</string>
-											<string>F801A6BD136D948D00BA1B35</string>
-											<string>F801A6BE136D948D00BA1B35</string>
+											<string>F801A6DD136D95B100BA1B35</string>
+											<string>F801A6DE136D95B100BA1B35</string>
+											<string>F80CC92A136DA57D003B2F00</string>
+											<string>F80CC92B136DA57D003B2F00</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -352,18 +352,18 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {768, 384}}</string>
+								<string>{{0, 0}, {768, 363}}</string>
 								<key>RubberWindowFrame</key>
 								<string>20 125 975 608 0 0 1366 746 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>384pt</string>
+							<string>363pt</string>
 						</dict>
 						<dict>
 							<key>Proportion</key>
-							<string>178pt</string>
+							<string>199pt</string>
 							<key>Tabs</key>
 							<array>
 								<dict>
@@ -377,7 +377,9 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 27}, {768, 151}}</string>
+										<string>{{10, 27}, {768, 172}}</string>
+										<key>RubberWindowFrame</key>
+										<string>20 125 975 608 0 0 1366 746 </string>
 									</dict>
 									<key>Module</key>
 									<string>XCDetailModule</string>
@@ -432,8 +434,6 @@
 									<dict>
 										<key>Frame</key>
 										<string>{{10, 27}, {768, 151}}</string>
-										<key>RubberWindowFrame</key>
-										<string>20 125 975 608 0 0 1366 746 </string>
 									</dict>
 									<key>Module</key>
 									<string>PBXBuildResultsModule</string>
@@ -461,11 +461,11 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>F801A5A9136D89B000BA1B35</string>
+				<string>F80CC921136DA562003B2F00</string>
 				<string>1CA23ED40692098700951B8B</string>
-				<string>F801A5AA136D89B000BA1B35</string>
+				<string>F80CC922136DA562003B2F00</string>
 				<string>F801A500136D838B00BA1B35</string>
-				<string>F801A5AB136D89B000BA1B35</string>
+				<string>F80CC923136DA562003B2F00</string>
 				<string>1CA23EDF0692099D00951B8B</string>
 				<string>1CA23EE00692099D00951B8B</string>
 				<string>1CA23EE10692099D00951B8B</string>
@@ -614,14 +614,14 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>F801A5AC136D89B000BA1B35</string>
+				<string>F80CC924136DA562003B2F00</string>
 				<string>1CCC7628064C1048000F2A68</string>
 				<string>1CCC7629064C1048000F2A68</string>
-				<string>F801A5AD136D89B000BA1B35</string>
-				<string>F801A5AE136D89B000BA1B35</string>
-				<string>F801A5AF136D89B000BA1B35</string>
-				<string>F801A5B0136D89B000BA1B35</string>
-				<string>F801A500136D838B00BA1B35</string>
+				<string>F80CC925136DA562003B2F00</string>
+				<string>F80CC926136DA562003B2F00</string>
+				<string>F80CC927136DA562003B2F00</string>
+				<string>F80CC928136DA562003B2F00</string>
+				<string>F80CC929136DA562003B2F00</string>
 			</array>
 			<key>ToolbarConfigUserDefaultsMinorVersion</key>
 			<string>2</string>

@@ -9,9 +9,9 @@
 	};
 	1D3623250D0F684500981E51 /* RTLabelProjectAppDelegate.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {6816, 1950}}";
+			sepNavIntBoundsRect = "{{0, 0}, {6816, 1976}}";
 			sepNavSelRange = "{4499, 0}";
-			sepNavVisRange = "{4159, 1086}";
+			sepNavVisRange = "{2261, 2107}";
 		};
 	};
 	1D6058900D05DD3D006BFB54 /* RTLabelProject */ = {
@@ -55,20 +55,20 @@
 					PBXFileDataSource_Target_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 325948677;
-			PBXWorkspaceStateSaveDate = 325948677;
+			PBXPerProjectTemplateStateSaveDate = 325952863;
+			PBXWorkspaceStateSaveDate = 325952863;
 		};
 		perUserProjectItems = {
-			F801A598136D88DC00BA1B35 = F801A598136D88DC00BA1B35 /* PBXTextBookmark */;
-			F801A59B136D88DC00BA1B35 = F801A59B136D88DC00BA1B35 /* PlistBookmark */;
-			F801A612136D8CCC00BA1B35 = F801A612136D8CCC00BA1B35 /* PBXTextBookmark */;
-			F801A615136D8CCC00BA1B35 = F801A615136D8CCC00BA1B35 /* PBXTextBookmark */;
-			F801A674136D921C00BA1B35 = F801A674136D921C00BA1B35 /* PBXTextBookmark */;
-			F801A6BB136D948D00BA1B35 = F801A6BB136D948D00BA1B35 /* PBXTextBookmark */;
-			F801A6BC136D948D00BA1B35 = F801A6BC136D948D00BA1B35 /* PBXTextBookmark */;
-			F801A6BD136D948D00BA1B35 = F801A6BD136D948D00BA1B35 /* PBXTextBookmark */;
-			F801A6BE136D948D00BA1B35 = F801A6BE136D948D00BA1B35 /* PBXTextBookmark */;
-			F801A6C0136D94A300BA1B35 = F801A6C0136D94A300BA1B35 /* PBXTextBookmark */;
+			F801A59B136D88DC00BA1B35 /* PlistBookmark */ = F801A59B136D88DC00BA1B35 /* PlistBookmark */;
+			F801A615136D8CCC00BA1B35 /* PBXTextBookmark */ = F801A615136D8CCC00BA1B35 /* PBXTextBookmark */;
+			F801A674136D921C00BA1B35 /* PBXTextBookmark */ = F801A674136D921C00BA1B35 /* PBXTextBookmark */;
+			F801A6BB136D948D00BA1B35 /* PBXTextBookmark */ = F801A6BB136D948D00BA1B35 /* PBXTextBookmark */;
+			F801A6BC136D948D00BA1B35 /* PBXTextBookmark */ = F801A6BC136D948D00BA1B35 /* PBXTextBookmark */;
+			F801A6DD136D95B100BA1B35 /* PBXTextBookmark */ = F801A6DD136D95B100BA1B35 /* PBXTextBookmark */;
+			F801A6DE136D95B100BA1B35 /* PBXTextBookmark */ = F801A6DE136D95B100BA1B35 /* PBXTextBookmark */;
+			F80CC92A136DA57D003B2F00 /* PBXTextBookmark */ = F80CC92A136DA57D003B2F00 /* PBXTextBookmark */;
+			F80CC92B136DA57D003B2F00 /* PBXTextBookmark */ = F80CC92B136DA57D003B2F00 /* PBXTextBookmark */;
+			F80CC92C136DA57D003B2F00 /* PBXTextBookmark */ = F80CC92C136DA57D003B2F00 /* PBXTextBookmark */;
 		};
 		sourceControlManager = F8BDA6A212D553CA00B6CC65 /* Source Control */;
 		userBuildSettings = {
@@ -116,16 +116,6 @@
 			sepNavVisRange = "{418, 286}";
 		};
 	};
-	F801A598136D88DC00BA1B35 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 1D3623240D0F684500981E51 /* RTLabelProjectAppDelegate.h */;
-		name = "RTLabelProjectAppDelegate.h: 32";
-		rLen = 0;
-		rLoc = 1308;
-		rType = 0;
-		vrLen = 1192;
-		vrLoc = 0;
-	};
 	F801A59B136D88DC00BA1B35 /* PlistBookmark */ = {
 		isa = PlistBookmark;
 		fRef = 8D1107310486CEB800E47090 /* RTLabelProject-Info.plist */;
@@ -136,16 +126,6 @@
 		name = "/Users/honcheng/Dropbox/Open Source Projects/RTLabel/RTLabelProject/RTLabelProject-Info.plist";
 		rLen = 0;
 		rLoc = 9223372036854775808;
-	};
-	F801A612136D8CCC00BA1B35 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = F8BDA69F12D553C900B6CC65 /* RTLabel.h */;
-		name = "RTLabel.h: 33";
-		rLen = 0;
-		rLoc = 1293;
-		rType = 0;
-		vrLen = 856;
-		vrLoc = 2173;
 	};
 	F801A615136D8CCC00BA1B35 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
@@ -187,35 +167,55 @@
 		vrLen = 540;
 		vrLoc = 789;
 	};
-	F801A6BD136D948D00BA1B35 /* PBXTextBookmark */ = {
+	F801A6DD136D95B100BA1B35 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 1D3623240D0F684500981E51 /* RTLabelProjectAppDelegate.h */;
+		name = "RTLabelProjectAppDelegate.h: 32";
+		rLen = 0;
+		rLoc = 1308;
+		rType = 0;
+		vrLen = 692;
+		vrLoc = 877;
+	};
+	F801A6DE136D95B100BA1B35 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = F8BDA6A012D553C900B6CC65 /* RTLabel.m */;
-		name = "RTLabel.m: 197";
-		rLen = 14;
-		rLoc = 6523;
-		rType = 0;
-		vrLen = 1018;
-		vrLoc = 1732;
-	};
-	F801A6BE136D948D00BA1B35 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 1D3623250D0F684500981E51 /* RTLabelProjectAppDelegate.m */;
-		name = "RTLabelProjectAppDelegate.m: 94";
+		name = "RTLabel.m: 136";
 		rLen = 0;
-		rLoc = 4240;
+		rLoc = 4309;
 		rType = 0;
-		vrLen = 2101;
-		vrLoc = 2140;
+		vrLen = 1427;
+		vrLoc = 4019;
 	};
-	F801A6C0136D94A300BA1B35 /* PBXTextBookmark */ = {
+	F80CC92A136DA57D003B2F00 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = F8BDA69F12D553C900B6CC65 /* RTLabel.h */;
+		name = "RTLabel.h: 81";
+		rLen = 0;
+		rLoc = 2633;
+		rType = 0;
+		vrLen = 799;
+		vrLoc = 2117;
+	};
+	F80CC92B136DA57D003B2F00 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = 1D3623250D0F684500981E51 /* RTLabelProjectAppDelegate.m */;
 		name = "RTLabelProjectAppDelegate.m: 98";
 		rLen = 0;
 		rLoc = 4499;
 		rType = 0;
-		vrLen = 1093;
+		vrLen = 1015;
 		vrLoc = 4159;
+	};
+	F80CC92C136DA57D003B2F00 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 1D3623250D0F684500981E51 /* RTLabelProjectAppDelegate.m */;
+		name = "RTLabelProjectAppDelegate.m: 98";
+		rLen = 0;
+		rLoc = 4499;
+		rType = 0;
+		vrLen = 2107;
+		vrLoc = 2261;
 	};
 	F8BDA69412D553BF00B6CC65 /* RTLabelProject */ = {
 		isa = PBXExecutable;
@@ -249,16 +249,16 @@
 	};
 	F8BDA69F12D553C900B6CC65 /* RTLabel.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {707, 1274}}";
+			sepNavIntBoundsRect = "{{0, 0}, {707, 1300}}";
 			sepNavSelRange = "{2633, 0}";
-			sepNavVisRange = "{2080, 841}";
+			sepNavVisRange = "{2117, 799}";
 		};
 	};
 	F8BDA6A012D553C900B6CC65 /* RTLabel.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1139, 15301}}";
-			sepNavSelRange = "{6523, 14}";
-			sepNavVisRange = "{1732, 1018}";
+			sepNavIntBoundsRect = "{{0, 0}, {1139, 14014}}";
+			sepNavSelRange = "{4309, 0}";
+			sepNavVisRange = "{4019, 1427}";
 		};
 	};
 	F8BDA6A212D553CA00B6CC65 /* Source Control */ = {
