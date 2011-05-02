@@ -1,0 +1,15 @@
+RTLabel - rich text display based on html-like markups for iOS. 
+
+RTLabel works like UILabel, but supports html-like markups for rich text display. 
+It is based on Core Text, so it supports some of the stuff that Core Text supports
+
+* bold and italic style
+* color and size
+* stroke
+* indenting
+* kerning
+* line spacing
+* clickable links
+
+The code is still messy, but it's usable. But I have only fixed bugs that is crucial to my projects, so if you are using this, do fork it and push back the fixes. 
+Thanks
