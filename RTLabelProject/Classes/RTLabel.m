@@ -80,7 +80,8 @@
 
 - (id)initWithString:(NSString*)_text tag:(NSString*)_tagLabel attributes:(NSMutableDictionary*)_attributes;
 {
-	if (self = [super init]) 
+    self = [super init];
+	if (self) 
 	{
 		self.text = _text;
 		self.tagLabel = _tagLabel;
@@ -127,6 +128,7 @@
 @property (nonatomic, retain) NSString *_plainText;
 @property (nonatomic, retain) NSMutableArray *_textComponent;
 @property (nonatomic, assign) CGSize _optimumSize;
+
 - (CGFloat)frameHeight:(CTFrameRef)frame;
 - (NSArray *)components;
 - (void)parse:(NSString *)data valid_tags:(NSArray *)valid_tags;
@@ -155,6 +157,7 @@
 @synthesize _optimumSize;
 @synthesize linkAttributes, selectedLinkAttributes;
 @synthesize delegate;
+@synthesize paragraphReplacement;
 
 - (id)initWithFrame:(CGRect)_frame {
     
@@ -170,6 +173,7 @@
 		_lineBreakMode = RTTextLineBreakModeWordWrapping;
 		_lineSpacing = 3;
 		currentSelectedButtonComponentIndex = -1;
+        self.paragraphReplacement = @"\n";
 		
 		[self setMultipleTouchEnabled:YES];
     }
@@ -763,7 +767,12 @@
 - (void)dealloc {
 	//CFRelease(frame);
 	//CFRelease(framesetter);
-	[self._text release];
+    self._textComponent = nil;
+    self._plainText = nil;
+    self.textColor = nil;
+    self.font = nil;
+	self._text = nil;
+    self.paragraphReplacement = nil;
     [super dealloc];
 }
 

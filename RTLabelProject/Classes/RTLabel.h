@@ -73,12 +73,14 @@ typedef enum
 	id<RTLabelDelegate> delegate;
 	CTFrameRef frame;
     CFRange visibleRange;
+    NSString *paragraphReplacement;
 }
 
 @property (nonatomic, retain) UIColor *textColor;
 @property (nonatomic, retain) UIFont *font;
 @property (nonatomic, retain) NSDictionary *linkAttributes, *selectedLinkAttributes;
 @property (nonatomic, assign) id<RTLabelDelegate> delegate;
+@property (nonatomic, copy) NSString *paragraphReplacement;
 
 - (void)render;
 - (NSString*)text;
