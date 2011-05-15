@@ -53,9 +53,10 @@ typedef enum
 	RTTextLineBreakModeClip = kCTLineBreakByClipping,
 }RTTextLineBreakMode;
 
-@protocol RTLabelDelegate
+@protocol RTLabelDelegate <NSObject>
+
 - (void)rtLabel:(id)rtLabel didSelectLinkWithURL:(NSURL*)url;
-- (BOOL)respondsToSelector:(SEL)selector;
+
 @end
 
 @interface RTLabel : UIView {
