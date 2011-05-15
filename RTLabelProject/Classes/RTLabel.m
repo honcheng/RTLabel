@@ -753,10 +753,9 @@
 
 // http://forums.macrumors.com/showthread.php?t=925312
 // not accurate
-- (CGFloat)frameHeight:(CTFrameRef)frame
+- (CGFloat)frameHeight:(CTFrameRef)theFrame
 {
-	
-	CFArrayRef lines = CTFrameGetLines(frame);
+	CFArrayRef lines = CTFrameGetLines(theFrame);
     CGFloat height = 0.0;
     CGFloat ascent, descent, leading;
     for (CFIndex index = 0; index < CFArrayGetCount(lines); index++) {
