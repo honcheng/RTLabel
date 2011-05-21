@@ -891,9 +891,9 @@
 			for (int i=1; i<[textComponents count]; i++)
 			{
 				NSArray *pair = [[textComponents objectAtIndex:i] componentsSeparatedByString:@"="];
-				if ([pair count]==2)
+				if ([pair count]>=2)
 				{
-					[attributes setObject:[pair objectAtIndex:1] forKey:[pair objectAtIndex:0]];
+					[attributes setObject:[[pair subarrayWithRange:NSMakeRange(1, [pair count] - 1)] componentsJoinedByString:@"="] forKey:[pair objectAtIndex:0]];
 				}
 			}
 			//NSLog(@"%@", attributes);
