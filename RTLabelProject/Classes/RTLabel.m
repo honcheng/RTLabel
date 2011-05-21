@@ -212,11 +212,14 @@
 	
     if (!self._plainText) return;
 	
-    // Drawing code.
-	CGContextRef context = UIGraphicsGetCurrentContext();
-	CGContextSetTextMatrix(context, CGAffineTransformIdentity);
-	CGAffineTransform flipVertical = CGAffineTransformMake(1,0,0,-1,0,self.frame.size.height);
-	CGContextConcatCTM(context, flipVertical);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    if (context != NULL)
+    {
+        // Drawing code.
+        CGContextSetTextMatrix(context, CGAffineTransformIdentity);
+        CGAffineTransform flipVertical = CGAffineTransformMake(1,0,0,-1,0,self.frame.size.height);
+        CGContextConcatCTM(context, flipVertical);
+    }
 	
 	// Initialize an attributed string.
 	CFStringRef string = (CFStringRef)self._plainText;
