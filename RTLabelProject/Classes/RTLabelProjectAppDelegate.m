@@ -64,7 +64,7 @@
     [self.window makeKeyAndVisible];
 	//[window setBackgroundColor:[UIColor blackColor]];
 	
-	
+	/*
 	RTLabel *label = [[RTLabel alloc] initWithFrame:CGRectMake(10,30,300,440)];
 	[window addSubview:label];
 	[label release];
@@ -92,11 +92,11 @@
 	[label setDelegate:self];
 	
 	[window setBackgroundColor:[UIColor whiteColor]];
+	*/
 	
-	
-	//DemoTableViewController *demoTableViewController = [[DemoTableViewController alloc] initWithStyle:UITableViewStylePlain];
-	//UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:demoTableViewController];
-	//[window addSubview:navController.view];
+	DemoTableViewController *demoTableViewController = [[DemoTableViewController alloc] initWithStyle:UITableViewStylePlain];
+	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:demoTableViewController];
+	[window addSubview:navController.view];
 	
 	
 	return YES;

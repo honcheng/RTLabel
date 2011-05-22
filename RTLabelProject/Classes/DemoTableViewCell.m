@@ -21,6 +21,8 @@
 		[self.contentView addSubview:self.rtLabel];
 		[self.rtLabel release];
 		[self.rtLabel setBackgroundColor:[UIColor clearColor]];
+        
+        [self setSelectionStyle:UITableViewCellEditingStyleNone];
     }
     return self;
 }
@@ -31,7 +33,7 @@
 	
 	CGSize optimumSize = [self.rtLabel optimumSize];
 	CGRect frame = [self.rtLabel frame];
-	frame.size.height = optimumSize.height;
+	frame.size.height = (int)optimumSize.height;
 	[self.rtLabel setFrame:frame];
 }
 
@@ -39,6 +41,7 @@
 {
 	RTLabel *label = [[RTLabel alloc] initWithFrame:CGRectMake(10,10,300,100)];
 	//[label setFont:[UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:20]];
+    [label setParagraphReplacement:@""];
 	return [label autorelease];
 }
 

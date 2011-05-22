@@ -356,7 +356,7 @@
 				
 				CTLineGetTypographicBounds(line, &ascent, &descent, &leading);
 				
-				if (linkableComponents.position>=lineRange.location && linkableComponents.position<lineRange.location+lineRange.length)
+				if ( (linkableComponents.position<lineRange.location && linkableComponents.position+linkableComponents.text.length>lineRange.location) || (linkableComponents.position>=lineRange.location && linkableComponents.position<lineRange.location+lineRange.length))
 				{
 					//NSLog(@"line %i: location %i, length %i", i+1, lineRange.location, lineRange.length);
 					//NSLog(@"ascent %f, descent %f, leading %f, width %f", ascent, descent, leading, width);
@@ -741,7 +741,7 @@
 
 - (void)setText:(NSString *)text
 {
-	self._text = text;
+	self._text = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
 	[self extractTextStyle:self._text];
 	[self setNeedsDisplay];
 }
@@ -847,7 +847,7 @@
 		{
 			if ([delimiter rangeOfString:@"<p"].location==0)
 			{
-				data = [data stringByReplacingOccurrencesOfString:delimiter withString:@"\n" options:NSCaseInsensitiveSearch range:NSMakeRange(last_position, position+delimiter.length-last_position)];
+				data = [data stringByReplacingOccurrencesOfString:delimiter withString:self.paragraphReplacement options:NSCaseInsensitiveSearch range:NSMakeRange(last_position, position+delimiter.length-last_position)];
 			}
 			else
 			{
