@@ -47,8 +47,17 @@
 @end
 
 @implementation RTLabelButton
+
 @synthesize componentIndex;
 @synthesize url;
+
+- (void)dealloc 
+{
+    [url release];
+    
+    [super dealloc];
+}
+
 @end
 
 
@@ -60,14 +69,16 @@
 	int position;
 	int componentIndex;
 }
+
 @property (nonatomic, assign) int componentIndex;
-@property (nonatomic, retain) NSString *text, *tagLabel;
+@property (nonatomic, copy) NSString *text;
+@property (nonatomic, copy) NSString *tagLabel;
 @property (nonatomic, retain) NSMutableDictionary *attributes;
 @property (nonatomic, assign) int position;
 
-- (id)initWithString:(NSString*)_text tag:(NSString*)_tagLabel attributes:(NSMutableDictionary*)_attributes;
-+ (id)componentWithString:(NSString*)_text tag:(NSString*)_tagLabel attributes:(NSMutableDictionary*)_attributes;
-- (id)initWithTag:(NSString*)_tagLabel position:(int)_position attributes:(NSMutableDictionary*)_attributes;
+- (id)initWithString:(NSString*)aText tag:(NSString*)aTagLabel attributes:(NSMutableDictionary*)theAttributes;
++ (id)componentWithString:(NSString*)_text tag:(NSString*)_tagLabel attributes:(NSMutableDictionary*)theAttributes;
+- (id)initWithTag:(NSString*)aTagLabel position:(int)_position attributes:(NSMutableDictionary*)_attributes;
 + (id)componentWithTag:(NSString*)_tagLabel position:(int)_position attributes:(NSMutableDictionary*)_attributes;
 
 @end
@@ -80,36 +91,36 @@
 @synthesize position;
 @synthesize componentIndex;
 
-- (id)initWithString:(NSString*)_text tag:(NSString*)_tagLabel attributes:(NSMutableDictionary*)_attributes;
+- (id)initWithString:(NSString*)aText tag:(NSString*)aTagLabel attributes:(NSMutableDictionary*)theAttributes;
 {
     self = [super init];
 	if (self) {
-		self.text = _text;
-		self.tagLabel = _tagLabel;
-		self.attributes = _attributes;
+		text = [aText copy];
+		tagLabel = [aTagLabel copy];
+		attributes = [theAttributes retain];
 	}
 	return self;
 }
 
-+ (id)componentWithString:(NSString*)_text tag:(NSString*)_tagLabel attributes:(NSMutableDictionary*)_attributes
++ (id)componentWithString:(NSString*)aText tag:(NSString*)aTagLabel attributes:(NSMutableDictionary*)theAttributes
 {
-	return [[[self alloc] initWithString:_text tag:_tagLabel attributes:_attributes] autorelease];
+	return [[[self alloc] initWithString:aText tag:aTagLabel attributes:theAttributes] autorelease];
 }
 
-- (id)initWithTag:(NSString*)_tagLabel position:(int)_position attributes:(NSMutableDictionary*)_attributes 
+- (id)initWithTag:(NSString*)aTagLabel position:(int)_position attributes:(NSMutableDictionary*)_attributes 
 {
     self = [super init];
     if (self) {
-        self.tagLabel = _tagLabel;
+        self.tagLabel = aTagLabel;
 		self.position = _position;
 		self.attributes = _attributes;
     }
     return self;
 }
 
-+(id)componentWithTag:(NSString*)_tagLabel position:(int)_position attributes:(NSMutableDictionary*)_attributes
++(id)componentWithTag:(NSString*)aTagLabel position:(int)aPosition attributes:(NSMutableDictionary*)theAttributes
 {
-	return [[[self alloc] initWithTag:_tagLabel position:_position attributes:_attributes] autorelease];
+	return [[[self alloc] initWithTag:aTagLabel position:aPosition attributes:theAttributes] autorelease];
 }
 
 - (NSString*)description
@@ -120,6 +131,15 @@
 	if (self.tagLabel) [desc appendFormat:@", tag: %@", self.tagLabel];
 	if (self.attributes) [desc appendFormat:@", attributes: %@", self.attributes];
 	return desc;
+}
+
+- (void)dealloc 
+{
+    [text release];
+    [tagLabel release];
+    [attributes release];
+    
+    [super dealloc];
 }
 
 @end
@@ -370,7 +390,7 @@
 					float button_width = primaryOffset2 - primaryOffset;
 					
 					RTLabelButton *button = [[RTLabelButton alloc] initWithFrame:CGRectMake(primaryOffset, height, button_width, ascent+descent)];
-					[self addSubview:button];
+					
 					[button setBackgroundColor:[UIColor colorWithWhite:0 alpha:0]];
 					[button setComponentIndex:linkableComponents.componentIndex];
 					
@@ -378,6 +398,8 @@
 					[button addTarget:self action:@selector(onButtonTouchDown:) forControlEvents:UIControlEventTouchDown];
 					[button addTarget:self action:@selector(onButtonTouchUpOutside:) forControlEvents:UIControlEventTouchUpOutside];
 					[button addTarget:self action:@selector(onButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+                    [self addSubview:button];
+                    [button release];
 					
 				}
 				

@@ -87,8 +87,10 @@ typedef enum
 
 - (NSString*)text;
 - (void)setText:(NSString*)text;
+
 - (void)setTextAlignment:(RTTextAlignment)textAlignment;
 - (void)setLineBreakMode:(RTTextLineBreakMode)lineBreakMode;
+
 - (CGSize)optimumSize;
 - (void)setLineSpacing:(CGFloat)lineSpacing;
 - (NSString*)visibleText;
