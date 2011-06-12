@@ -540,6 +540,7 @@
 	
 	CFAttributedStringSetAttributes( text, CFRangeMake(position, length), styleDict, 0 ); 
 	CFRelease(theParagraphRef);
+    CFRelease(styleDict);
 }
 
 - (void)applySingleUnderlineText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
@@ -638,47 +639,40 @@
 }
 
 - (void)applyColor:(NSString*)value toText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
-{
-	CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB();
-	CGColorSpaceRelease(rgbColorSpace);
-	if ([value rangeOfString:@"#"].location==0)
-	{
+{    
+	if ([value rangeOfString:@"#"].location == 0) {
+        CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB();
 		value = [value stringByReplacingOccurrencesOfString:@"#" withString:@""];
 		NSArray *colorComponents = [self colorForHex:value];
 		CGFloat components[] = { [[colorComponents objectAtIndex:0] floatValue] , [[colorComponents objectAtIndex:1] floatValue] , [[colorComponents objectAtIndex:2] floatValue] , [[colorComponents objectAtIndex:3] floatValue] };
 		CGColorRef color = CGColorCreate(rgbColorSpace, components);
 		CFAttributedStringSetAttribute(text, CFRangeMake(position, length),kCTForegroundColorAttributeName, color);
 		CFRelease(color);
-	}
-	else
-	{
-		
+        CGColorSpaceRelease(rgbColorSpace);
+	} else {
 		value = [value stringByAppendingString:@"Color"];
 		SEL colorSel = NSSelectorFromString(value);
 		UIColor *_color = nil;
-		if ([UIColor respondsToSelector:colorSel])
-		{
+		if ([UIColor respondsToSelector:colorSel]) {
 			_color = [UIColor performSelector:colorSel];
 			CGColorRef color = [_color CGColor];
 			CFAttributedStringSetAttribute(text, CFRangeMake(position, length),kCTForegroundColorAttributeName, color);
-			
 		}				
 	}
 }
 
 - (void)applyUnderlineColor:(NSString*)value toText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
 {
-	CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB();
-	CGColorSpaceRelease(rgbColorSpace);
 	value = [value stringByReplacingOccurrencesOfString:@"'" withString:@""];
-	if ([value rangeOfString:@"#"].location==0)
-	{
+	if ([value rangeOfString:@"#"].location==0) {
+        CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB();
 		value = [value stringByReplacingOccurrencesOfString:@"#" withString:@"0x"];
 		NSArray *colorComponents = [self colorForHex:value];
 		CGFloat components[] = { [[colorComponents objectAtIndex:0] floatValue] , [[colorComponents objectAtIndex:1] floatValue] , [[colorComponents objectAtIndex:2] floatValue] , [[colorComponents objectAtIndex:3] floatValue] };
 		CGColorRef color = CGColorCreate(rgbColorSpace, components);
 		CFAttributedStringSetAttribute(text, CFRangeMake(position, length),kCTUnderlineColorAttributeName, color);
-		//CFRelease(color);
+		CFRelease(color);
+        CGColorSpaceRelease(rgbColorSpace);
 	}
 	else
 	{
