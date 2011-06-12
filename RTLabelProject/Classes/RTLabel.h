@@ -83,7 +83,6 @@ typedef enum
 @property (nonatomic, assign) id<RTLabelDelegate> delegate;
 @property (nonatomic, copy) NSString *paragraphReplacement;
 
-- (void)render;
 - (NSString*)text;
 - (void)setText:(NSString*)text;
 - (void)setTextAlignment:(RTTextAlignment)textAlignment;

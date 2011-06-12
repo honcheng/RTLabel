@@ -95,15 +95,15 @@
 	return [[[self alloc] initWithString:_text tag:_tagLabel attributes:_attributes] autorelease];
 }
 
-- (id)initWithTag:(NSString*)_tagLabel position:(int)_position attributes:(NSMutableDictionary*)_attributes
+- (id)initWithTag:(NSString*)_tagLabel position:(int)_position attributes:(NSMutableDictionary*)_attributes 
 {
-	if (self = [super init]) 
-	{
-		self.tagLabel = _tagLabel;
+    self = [super init];
+    if (self) {
+        self.tagLabel = _tagLabel;
 		self.position = _position;
 		self.attributes = _attributes;
-	}
-	return self;
+    }
+    return self;
 }
 
 +(id)componentWithTag:(NSString*)_tagLabel position:(int)_position attributes:(NSMutableDictionary*)_attributes
@@ -133,7 +133,7 @@
 - (NSArray *)components;
 - (void)parse:(NSString *)data valid_tags:(NSArray *)valid_tags;
 - (NSArray*) colorForHex:(NSString *)hexColor;
-//- (void)render;
+- (void)render;
 - (void)extractTextStyle:(NSString*)text;
 
 
