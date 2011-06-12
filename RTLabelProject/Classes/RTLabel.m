@@ -239,11 +239,14 @@
 	
     if (!self._plainText) return;
 	
-    // Drawing code.
-	CGContextRef context = UIGraphicsGetCurrentContext();
-	CGContextSetTextMatrix(context, CGAffineTransformIdentity);
-	CGAffineTransform flipVertical = CGAffineTransformMake(1,0,0,-1,0,self.frame.size.height);
-	CGContextConcatCTM(context, flipVertical);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    if (context != NULL)
+    {
+        // Drawing code.
+        CGContextSetTextMatrix(context, CGAffineTransformIdentity);
+        CGAffineTransform flipVertical = CGAffineTransformMake(1,0,0,-1,0,self.frame.size.height);
+        CGContextConcatCTM(context, flipVertical);
+    }
 	
 	// Initialize an attributed string.
 	CFStringRef string = (CFStringRef)self._plainText;
@@ -380,7 +383,7 @@
 				
 				CTLineGetTypographicBounds(line, &ascent, &descent, &leading);
 				
-				if (linkableComponents.position>=lineRange.location && linkableComponents.position<lineRange.location+lineRange.length)
+				if ( (linkableComponents.position<lineRange.location && linkableComponents.position+linkableComponents.text.length>lineRange.location) || (linkableComponents.position>=lineRange.location && linkableComponents.position<lineRange.location+lineRange.length))
 				{
 					//NSLog(@"line %i: location %i, length %i", i+1, lineRange.location, lineRange.length);
 					//NSLog(@"ascent %f, descent %f, leading %f, width %f", ascent, descent, leading, width);
@@ -758,7 +761,7 @@
 
 - (void)setText:(NSString *)text
 {
-	self._text = text;
+	self._text = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
 	[self extractTextStyle:self._text];
 	[self setNeedsDisplay];
 }
@@ -870,7 +873,7 @@
 		{
 			if ([delimiter rangeOfString:@"<p"].location==0)
 			{
-				data = [data stringByReplacingOccurrencesOfString:delimiter withString:@"\n" options:NSCaseInsensitiveSearch range:NSMakeRange(last_position, position+delimiter.length-last_position)];
+				data = [data stringByReplacingOccurrencesOfString:delimiter withString:self.paragraphReplacement options:NSCaseInsensitiveSearch range:NSMakeRange(last_position, position+delimiter.length-last_position)];
 			}
 			else
 			{
@@ -913,9 +916,9 @@
 			for (int i=1; i<[textComponents count]; i++)
 			{
 				NSArray *pair = [[textComponents objectAtIndex:i] componentsSeparatedByString:@"="];
-				if ([pair count]==2)
+				if ([pair count]>=2)
 				{
-					[attributes setObject:[pair objectAtIndex:1] forKey:[pair objectAtIndex:0]];
+					[attributes setObject:[[pair subarrayWithRange:NSMakeRange(1, [pair count] - 1)] componentsJoinedByString:@"="] forKey:[pair objectAtIndex:0]];
 				}
 			}
 			//NSLog(@"%@", attributes);

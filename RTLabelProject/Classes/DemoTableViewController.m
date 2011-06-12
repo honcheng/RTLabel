@@ -71,7 +71,7 @@
 		[self.dataArray addObject:row2];
 		
 		NSMutableDictionary *row3 = [NSMutableDictionary dictionary];
-		[row3 setObject:@"clickable link - <a href='http://www.google.com'>google.com</a>" forKey:@"text"];
+		[row3 setObject:@"clickable link - <a href='http://store.apple.com'>link to apple store</a> <a href='http://www.google.com'>link to google</a> <a href='http://www.yahoo.com'>link to yahoo</a> <a href='https://github.com/honcheng/RTLabel'>link to RTLabel in GitHub</a> <a href='http://www.wiki.com'>link to wiki.com website</a>" forKey:@"text"];
 		[self.dataArray addObject:row3];
         
         NSMutableDictionary *row4 = [NSMutableDictionary dictionary];
@@ -85,6 +85,10 @@
         NSMutableDictionary *row6 = [NSMutableDictionary dictionary];
 		[row6 setObject:@"<font face='HelveticaNeue-CondensedBold' size=20 kern=35>KERN</font> " forKey:@"text"];
 		[self.dataArray addObject:row6];
+        
+        NSMutableDictionary *row7 = [NSMutableDictionary dictionary];
+		[row7 setObject:@"<font face='HelveticaNeue-CondensedBold' size=14><p align=justify><font color=red>JUSTIFY</font> Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Ut enim ad minim </p> <p align=left><font color=red>LEFT ALIGNED</font> veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><br><p align=right><font color=red>RIGHT ALIGNED</font> Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p><br><p align=center><font color=red>CENTER ALIGNED</font> Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum</p></font> " forKey:@"text"];
+		[self.dataArray addObject:row7];
 		
 		NSMutableDictionary *row20 = [NSMutableDictionary dictionary];
 		[row20 setObject:@"<p indent=20>Indented bla bla bla bla bla bla bla bla bla bla bla bla bla</p>" forKey:@"text"];
