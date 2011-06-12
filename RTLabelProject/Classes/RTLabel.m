@@ -673,14 +673,11 @@
 		CFAttributedStringSetAttribute(text, CFRangeMake(position, length),kCTUnderlineColorAttributeName, color);
 		CFRelease(color);
         CGColorSpaceRelease(rgbColorSpace);
-	}
-	else
-	{
+	} else {
 		value = [value stringByAppendingString:@"Color"];
 		SEL colorSel = NSSelectorFromString(value);
 		UIColor *_color = nil;
-		if ([UIColor respondsToSelector:colorSel])
-		{
+		if ([UIColor respondsToSelector:colorSel]) {
 			_color = [UIColor performSelector:colorSel];
 			CGColorRef color = [_color CGColor];
 			CFAttributedStringSetAttribute(text, CFRangeMake(position, length),kCTUnderlineColorAttributeName, color);
@@ -757,7 +754,9 @@
     return ceil(height);
 }
 
-- (void)dealloc {
+- (void)dealloc 
+{
+    delegate = nil;
 	//CFRelease(frame);
 	//CFRelease(framesetter);
     self._textComponent = nil;
