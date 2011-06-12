@@ -73,7 +73,9 @@
 @end
 
 @implementation RTLabelComponent
-@synthesize text, tagLabel;
+
+@synthesize text;
+@synthesize tagLabel;
 @synthesize attributes;
 @synthesize position;
 @synthesize componentIndex;
@@ -81,8 +83,7 @@
 - (id)initWithString:(NSString*)_text tag:(NSString*)_tagLabel attributes:(NSMutableDictionary*)_attributes;
 {
     self = [super init];
-	if (self) 
-	{
+	if (self) {
 		self.text = _text;
 		self.tagLabel = _tagLabel;
 		self.attributes = _attributes;
@@ -124,6 +125,7 @@
 @end
 
 @interface RTLabel()
+
 @property (nonatomic, retain) NSString *_text;
 @property (nonatomic, retain) NSString *_plainText;
 @property (nonatomic, retain) NSMutableArray *_textComponent;
@@ -155,7 +157,8 @@
 @synthesize textColor;
 @synthesize _plainText, _textComponent;
 @synthesize _optimumSize;
-@synthesize linkAttributes, selectedLinkAttributes;
+@synthesize linkAttributes;
+@synthesize selectedLinkAttributes;
 @synthesize delegate;
 @synthesize paragraphReplacement;
 
@@ -759,12 +762,16 @@
     delegate = nil;
 	//CFRelease(frame);
 	//CFRelease(framesetter);
-    self._textComponent = nil;
-    self._plainText = nil;
-    self.textColor = nil;
-    self.font = nil;
-	self._text = nil;
-    self.paragraphReplacement = nil;
+    [_textComponent release];
+    [_plainText release];
+    [textColor release];
+    [font release];
+	[_text release];
+    [paragraphReplacement release];
+    
+    [linkAttributes release];
+    [selectedLinkAttributes release];
+    
     [super dealloc];
 }
 
