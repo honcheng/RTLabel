@@ -66,7 +66,7 @@ typedef enum
 	RTTextAlignment _textAlignment;
 	RTTextLineBreakMode _lineBreakMode;
 	NSString *_plainText;
-	NSMutableArray *_textComponent;
+	NSMutableArray *_textComponents;
 	CGSize _optimumSize;
 	CGFloat _lineSpacing;
 	int currentSelectedButtonComponentIndex;

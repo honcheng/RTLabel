@@ -39,6 +39,7 @@
 
 @interface RTLabelButton : UIButton
 {
+@private
 	int componentIndex;
 	NSURL *url;
 }
@@ -63,6 +64,7 @@
 
 @interface RTLabelComponent : NSObject
 {
+@private
 	NSString *text;
 	NSString *tagLabel;
 	NSMutableDictionary *attributes;
@@ -77,9 +79,9 @@
 @property (nonatomic, assign) int position;
 
 - (id)initWithString:(NSString*)aText tag:(NSString*)aTagLabel attributes:(NSMutableDictionary*)theAttributes;
-+ (id)componentWithString:(NSString*)_text tag:(NSString*)_tagLabel attributes:(NSMutableDictionary*)theAttributes;
++ (id)componentWithString:(NSString*)aText tag:(NSString*)aTagLabel attributes:(NSMutableDictionary*)theAttributes;
 - (id)initWithTag:(NSString*)aTagLabel position:(int)_position attributes:(NSMutableDictionary*)_attributes;
-+ (id)componentWithTag:(NSString*)_tagLabel position:(int)_position attributes:(NSMutableDictionary*)_attributes;
++ (id)componentWithTag:(NSString*)aTagLabel position:(int)aPosition attributes:(NSMutableDictionary*)theAttributes;
 
 @end
 
@@ -107,13 +109,13 @@
 	return [[[self alloc] initWithString:aText tag:aTagLabel attributes:theAttributes] autorelease];
 }
 
-- (id)initWithTag:(NSString*)aTagLabel position:(int)_position attributes:(NSMutableDictionary*)_attributes 
+- (id)initWithTag:(NSString*)aTagLabel position:(int)aPosition attributes:(NSMutableDictionary*)theAttributes 
 {
     self = [super init];
     if (self) {
-        self.tagLabel = aTagLabel;
-		self.position = _position;
-		self.attributes = _attributes;
+        tagLabel = [aTagLabel copy];
+		position = aPosition;
+		attributes = [theAttributes retain];
     }
     return self;
 }
@@ -148,7 +150,7 @@
 
 @property (nonatomic, retain) NSString *_text;
 @property (nonatomic, retain) NSString *_plainText;
-@property (nonatomic, retain) NSMutableArray *_textComponent;
+@property (nonatomic, retain) NSMutableArray *_textComponents;
 @property (nonatomic, assign) CGSize _optimumSize;
 
 - (CGFloat)frameHeight:(CTFrameRef)frame;
@@ -161,6 +163,7 @@
 
 #pragma mark -
 #pragma mark styling
+
 - (void)applyItalicStyleToText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length;
 - (void)applyBoldStyleToText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length;
 - (void)applyColor:(NSString*)value toText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length;
@@ -172,10 +175,11 @@
 @end
 
 @implementation RTLabel
+
 @synthesize _text;
 @synthesize font;
 @synthesize textColor;
-@synthesize _plainText, _textComponent;
+@synthesize _plainText, _textComponents;
 @synthesize _optimumSize;
 @synthesize linkAttributes;
 @synthesize selectedLinkAttributes;
@@ -263,9 +267,9 @@
 	
 	NSMutableArray *links = [NSMutableArray array];
 	
-	for (RTLabelComponent *component in self._textComponent)
+	for (RTLabelComponent *component in self._textComponents)
 	{
-		int index = [self._textComponent indexOfObject:component];
+		int index = [self._textComponents indexOfObject:component];
 		component.componentIndex = index;
 		
 		if ([component.tagLabel isEqualToString:@"i"])
@@ -784,7 +788,7 @@
     delegate = nil;
 	//CFRelease(frame);
 	//CFRelease(framesetter);
-    [_textComponent release];
+    [_textComponents release];
     [_plainText release];
     [textColor release];
     [font release];
@@ -847,7 +851,7 @@
 {
 	//NSLog(@"%@", data);
 	
-	NSScanner *scanner; 
+	NSScanner *scanner = nil; 
 	NSString *text = nil;
 	NSString *tag = nil;
 	
@@ -856,7 +860,7 @@
 	int last_position = 0;
 	scanner = [NSScanner scannerWithString:data];
 	while (![scanner isAtEnd])
-	{
+    {
 		[scanner scanUpToString:@"<" intoString:NULL];
 		[scanner scanUpToString:@">" intoString:&text];
 		
@@ -926,7 +930,7 @@
 	}
 	
 	//NSLog(@"%@", components);
-	self._textComponent = components;
+	self._textComponents = components;
 	self._plainText = data;
 }
 
@@ -934,7 +938,7 @@
 - (void)parse:(NSString *)data valid_tags:(NSArray *)valid_tags
 {
 	//use to strip the HTML tags from the data
-	NSScanner *scanner;
+	NSScanner *scanner = nil;
 	NSString *text = nil;
 	NSString *tag = nil;
 	
@@ -1021,7 +1025,7 @@
 		}
 	}
 	
-	self._textComponent = components;
+	self._textComponents = components;
 	self._plainText = data;
 	//self._plainText = [self._plainText stringByReplacingOccurrencesOfString:@"&lt;" withString:@"<"];
 	//self._plainText = [self._plainText stringByReplacingOccurrencesOfString:@"&gt;" withString:@">"];
