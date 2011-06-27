@@ -232,11 +232,11 @@
 	CGColorSpaceRelease(rgbColorSpace);
 	CFDictionaryAddValue( styleDict1, kCTForegroundColorAttributeName, [self.textColor CGColor] );
 	CFAttributedStringSetAttributes( attrString, CFRangeMake( 0, CFAttributedStringGetLength(attrString) ), styleDict1, 0 ); 
-
+	
 	CFMutableDictionaryRef styleDict = ( CFDictionaryCreateMutable( (0), 0, (0), (0) ) );
 	
 	[self applyParagraphStyleToText:attrString attributes:nil atPosition:0 withLength:CFAttributedStringGetLength(attrString)];
-
+	
 	
 	CTFontRef thisFont = CTFontCreateWithName ((CFStringRef)[self.font fontName], [self.font pointSize], NULL); 
 	CFAttributedStringSetAttribute(attrString, CFRangeMake(0, CFAttributedStringGetLength(attrString)), kCTFontAttributeName, thisFont);
@@ -248,17 +248,17 @@
 		int index = [self._textComponent indexOfObject:component];
 		component.componentIndex = index;
 		
-		if ([component.tagLabel isEqualToString:@"i"])
+		if ([component.tagLabel caseInsensitiveCompare:@"i"] == NSOrderedSame)
 		{
 			// make font italic
 			[self applyItalicStyleToText:attrString atPosition:component.position withLength:[component.text length]];
 		}
-		else if ([component.tagLabel isEqualToString:@"b"])
+		else if ([component.tagLabel caseInsensitiveCompare:@"b"] == NSOrderedSame)
 		{
 			// make font bold
 			[self applyBoldStyleToText:attrString atPosition:component.position withLength:[component.text length]];
 		}
-		else if ([component.tagLabel isEqualToString:@"a"])
+		else if ([component.tagLabel caseInsensitiveCompare:@"a"] == NSOrderedSame)
 		{
 			if (currentSelectedButtonComponentIndex==index)
 			{
@@ -291,14 +291,14 @@
 			
 			[links addObject:component];
 		}
-		else if ([component.tagLabel isEqualToString:@"u"] || [component.tagLabel isEqualToString:@"uu"])
+		else if ([component.tagLabel caseInsensitiveCompare:@"u"] == NSOrderedSame || [component.tagLabel caseInsensitiveCompare:@"uu"] == NSOrderedSame)
 		{
 			// underline
-			if ([component.tagLabel isEqualToString:@"u"])
+			if ([component.tagLabel caseInsensitiveCompare:@"u"] == NSOrderedSame)
 			{
 				[self applySingleUnderlineText:attrString atPosition:component.position withLength:[component.text length]];
 			}
-			else if ([component.tagLabel isEqualToString:@"uu"])
+			else if ([component.tagLabel caseInsensitiveCompare:@"uu"] == NSOrderedSame)
 			{
 				[self applyDoubleUnderlineText:attrString atPosition:component.position withLength:[component.text length]];
 			}
@@ -309,15 +309,15 @@
 				[self applyUnderlineColor:value toText:attrString atPosition:component.position withLength:[component.text length]];
 			}
 		}
-		else if ([component.tagLabel isEqualToString:@"font"])
+		else if ([component.tagLabel caseInsensitiveCompare:@"font"] == NSOrderedSame)
 		{
 			[self applyFontAttributes:component.attributes toText:attrString atPosition:component.position withLength:[component.text length]];
 		}
-		else if ([component.tagLabel isEqualToString:@"p"])
+		else if ([component.tagLabel caseInsensitiveCompare:@"p"] == NSOrderedSame)
 		{
 			[self applyParagraphStyleToText:attrString attributes:component.attributes atPosition:component.position withLength:[component.text length]];
 		}
-
+		
 	}
     
     // Create the framesetter with the attributed string.
@@ -334,7 +334,7 @@
 	frame = CTFramesetterCreateFrame(framesetter,CFRangeMake(0, 0), path, NULL);
 	
 	CFRange range;
-	CGSize constraint = CGSizeMake(self.frame.size.width, 1000000);
+	CGSize constraint = CGSizeMake(self.frame.size.width, CGFLOAT_MAX);
 	self._optimumSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, [self._plainText length]), nil, constraint, &range);
 	
 	
@@ -469,52 +469,52 @@
 	{
 		NSString *key = [[attributes allKeys] objectAtIndex:i];
 		id value = [attributes objectForKey:key];
-		if ([key isEqualToString:@"align"])
+		if ([key caseInsensitiveCompare:@"align"] == NSOrderedSame)
 		{
-			if ([value isEqualToString:@"left"])
+			if ([value caseInsensitiveCompare:@"left"] == NSOrderedSame)
 			{
 				textAlignment = kCTLeftTextAlignment;
 			}
-			else if ([value isEqualToString:@"right"])
+			else if ([value caseInsensitiveCompare:@"right"] == NSOrderedSame)
 			{
 				textAlignment = kCTRightTextAlignment;
 			}
-			else if ([value isEqualToString:@"justify"])
+			else if ([value caseInsensitiveCompare:@"justify"] == NSOrderedSame)
 			{
 				textAlignment = kCTJustifiedTextAlignment;
 			}
-			else if ([value isEqualToString:@"center"])
+			else if ([value caseInsensitiveCompare:@"center"] == NSOrderedSame)
 			{
 				textAlignment = kCTCenterTextAlignment;
 			}
 		}
-		else if ([key isEqualToString:@"indent"])
+		else if ([key caseInsensitiveCompare:@"indent"] == NSOrderedSame)
 		{
 			firstLineIndent = [value floatValue];
 		}
-		else if ([key isEqualToString:@"linebreakmode"])
+		else if ([key caseInsensitiveCompare:@"linebreakmode"] == NSOrderedSame)
 		{
-			if ([value isEqualToString:@"wordwrap"])
+			if ([value caseInsensitiveCompare:@"wordwrap"] == NSOrderedSame)
 			{
 				lineBreakMode = kCTLineBreakByWordWrapping;
 			}
-			else if ([value isEqualToString:@"charwrap"])
+			else if ([value caseInsensitiveCompare:@"charwrap"] == NSOrderedSame)
 			{
 				lineBreakMode = kCTLineBreakByCharWrapping;
 			}
-			else if ([value isEqualToString:@"clipping"])
+			else if ([value caseInsensitiveCompare:@"clipping"] == NSOrderedSame)
 			{
 				lineBreakMode = kCTLineBreakByClipping;
 			}
-			else if ([value isEqualToString:@"truncatinghead"])
+			else if ([value caseInsensitiveCompare:@"truncatinghead"] == NSOrderedSame)
 			{
 				lineBreakMode = kCTLineBreakByTruncatingHead;
 			}
-			else if ([value isEqualToString:@"truncatingtail"])
+			else if ([value caseInsensitiveCompare:@"truncatingtail"] == NSOrderedSame)
 			{
 				lineBreakMode = kCTLineBreakByTruncatingTail;
 			}
-			else if ([value isEqualToString:@"truncatingmiddle"])
+			else if ([value caseInsensitiveCompare:@"truncatingmiddle"] == NSOrderedSame)
 			{
 				lineBreakMode = kCTLineBreakByTruncatingMiddle;
 			}
@@ -543,6 +543,7 @@
 	
 	CFAttributedStringSetAttributes( text, CFRangeMake(position, length), styleDict, 0 ); 
 	CFRelease(theParagraphRef);
+	CFRelease(styleDict);
 }
 
 - (void)applySingleUnderlineText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
@@ -557,9 +558,12 @@
 
 - (void)applyItalicStyleToText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
 {
-	UIFont *_font = [UIFont italicSystemFontOfSize:self.font.pointSize];
+	CTFontRef actualFontSize = CFAttributedStringGetAttribute(text, position, kCTFontAttributeName, NULL);
+	
+	UIFont *_font = [UIFont boldSystemFontOfSize:CTFontGetSize(actualFontSize)];
 	CTFontRef italicFont = CTFontCreateWithName ((CFStringRef)[_font fontName], [_font pointSize], NULL); 
 	CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTFontAttributeName, italicFont);
+	
 	CFRelease(italicFont);
 }
 
@@ -570,19 +574,19 @@
 		NSString *value = [attributes objectForKey:key];
 		value = [value stringByReplacingOccurrencesOfString:@"'" withString:@""];
 		
-		if ([key isEqualToString:@"color"])
+		if ([key caseInsensitiveCompare:@"color"] == NSOrderedSame)
 		{
 			[self applyColor:value toText:text atPosition:position withLength:length];
 		}
-		else if ([key isEqualToString:@"stroke"])
+		else if ([key caseInsensitiveCompare:@"stroke"] == NSOrderedSame)
 		{
 			CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTStrokeWidthAttributeName, [NSNumber numberWithFloat:[[attributes objectForKey:@"stroke"] intValue]]);
 		}
-		else if ([key isEqualToString:@"kern"])
+		else if ([key caseInsensitiveCompare:@"kern"] == NSOrderedSame)
 		{
 			CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTKernAttributeName, [NSNumber numberWithFloat:[[attributes objectForKey:@"kern"] intValue]]);
 		}
-		else if ([key isEqualToString:@"underline"])
+		else if ([key caseInsensitiveCompare:@"underline"] == NSOrderedSame)
 		{
 			int numberOfLines = [value intValue];
 			if (numberOfLines==1)
@@ -594,13 +598,13 @@
 				[self applyDoubleUnderlineText:text atPosition:position withLength:length];
 			}
 		}
-		else if ([key isEqualToString:@"style"])
+		else if ([key caseInsensitiveCompare:@"style"] == NSOrderedSame)
 		{
-			if ([value isEqualToString:@"bold"])
+			if ([value caseInsensitiveCompare:@"bold"] == NSOrderedSame)
 			{
 				[self applyBoldStyleToText:text atPosition:position withLength:length];
 			}
-			else if ([value isEqualToString:@"italic"])
+			else if ([value caseInsensitiveCompare:@"italic"] == NSOrderedSame)
 			{
 				[self applyItalicStyleToText:text atPosition:position withLength:length];
 			}
@@ -634,7 +638,9 @@
 
 - (void)applyBoldStyleToText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
 {
-	UIFont *_font = [UIFont boldSystemFontOfSize:self.font.pointSize];
+	CTFontRef actualFontSize = CFAttributedStringGetAttribute(text, position, kCTFontAttributeName, NULL);
+	
+	UIFont *_font = [UIFont boldSystemFontOfSize:CTFontGetSize(actualFontSize)];
 	CTFontRef boldFont = CTFontCreateWithName ((CFStringRef)[_font fontName], [_font pointSize], NULL); 
 	CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTFontAttributeName, boldFont);
 	CFRelease(boldFont);
@@ -643,7 +649,6 @@
 - (void)applyColor:(NSString*)value toText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
 {
 	CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB();
-	CGColorSpaceRelease(rgbColorSpace);
 	if ([value rangeOfString:@"#"].location==0)
 	{
 		value = [value stringByReplacingOccurrencesOfString:@"#" withString:@""];
@@ -667,12 +672,12 @@
 			
 		}				
 	}
+	CGColorSpaceRelease(rgbColorSpace);
 }
 
 - (void)applyUnderlineColor:(NSString*)value toText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
 {
 	CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB();
-	CGColorSpaceRelease(rgbColorSpace);
 	value = [value stringByReplacingOccurrencesOfString:@"'" withString:@""];
 	if ([value rangeOfString:@"#"].location==0)
 	{
@@ -681,7 +686,7 @@
 		CGFloat components[] = { [[colorComponents objectAtIndex:0] floatValue] , [[colorComponents objectAtIndex:1] floatValue] , [[colorComponents objectAtIndex:2] floatValue] , [[colorComponents objectAtIndex:3] floatValue] };
 		CGColorRef color = CGColorCreate(rgbColorSpace, components);
 		CFAttributedStringSetAttribute(text, CFRangeMake(position, length),kCTUnderlineColorAttributeName, color);
-		//CFRelease(color);
+		CGColorRelease(color);
 	}
 	else
 	{
@@ -693,9 +698,10 @@
 			_color = [UIColor performSelector:colorSel];
 			CGColorRef color = [_color CGColor];
 			CFAttributedStringSetAttribute(text, CFRangeMake(position, length),kCTUnderlineColorAttributeName, color);
-			//CFRelease(color);
+			// CGColorRelease(color);
 		}				
 	}
+	CGColorSpaceRelease(rgbColorSpace);
 }
 
 #pragma mark -
@@ -890,9 +896,19 @@
 			for (int i=1; i<[textComponents count]; i++)
 			{
 				NSArray *pair = [[textComponents objectAtIndex:i] componentsSeparatedByString:@"="];
-				if ([pair count]>=2)
-				{
-					[attributes setObject:[[pair subarrayWithRange:NSMakeRange(1, [pair count] - 1)] componentsJoinedByString:@"="] forKey:[pair objectAtIndex:0]];
+				if ([pair count] > 0) {
+					NSString *key = [[pair objectAtIndex:0] lowercaseString];
+					
+					if ([pair count]>=2) {
+						// Trim " charactere
+						NSString *value = [[pair subarrayWithRange:NSMakeRange(1, [pair count] - 1)] componentsJoinedByString:@"="];
+						value = [value stringByReplacingOccurrencesOfString:@"\"" withString:@"" options:NSLiteralSearch range:NSMakeRange(0, 1)];
+						value = [value stringByReplacingOccurrencesOfString:@"\"" withString:@"" options:NSLiteralSearch range:NSMakeRange([value length]-1, 1)];
+						
+						[attributes setObject:value forKey:key];
+					} else if ([pair count]==1) {
+						[attributes setObject:key forKey:key];
+					}
 				}
 			}
 			//NSLog(@"%@", attributes);
@@ -1013,7 +1029,7 @@
 	hexColor = [[hexColor stringByTrimmingCharactersInSet:
 				 [NSCharacterSet whitespaceAndNewlineCharacterSet]
 				 ] uppercaseString];  
-
+	
     NSRange range;  
     range.location = 0;  
     range.length = 2; 
@@ -1042,45 +1058,45 @@
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
     /*
-	UITouch *touch = [touches anyObject];
-	CGPoint currentTouch = [touch locationInView:self];
-	//NSLog(@"%i %i", currentTouch.x, currentTouch.y);
-
-	float height = 0.0;
-	CFArrayRef frameLines = CTFrameGetLines(frame);
-	for (CFIndex i=0; i<CFArrayGetCount(frameLines); i++)
-	{
-		CTLineRef line = (CTLineRef)CFArrayGetValueAtIndex(frameLines, i);
-		CFRange lineRange = CTLineGetStringRange(line);
-		CGFloat ascent;
-		CGFloat descent;
-		CGFloat leading;
-		
-		CTLineGetTypographicBounds(line, &ascent, &descent, &leading);
-
-		CGPoint origin;
-		CTFrameGetLineOrigins(frame, CFRangeMake(i, 1), &origin);
-		origin.y = self.frame.size.height - origin.y;
-		height = origin.y + descent + _lineSpacing;
-		
-		if (currentTouch.y < height)
-		{
-			for (int j=0; j<lineRange.length; j++)
-			{
-				CGFloat secondaryOffset;
-				double primaryOffset = CTLineGetOffsetForStringIndex(CFArrayGetValueAtIndex(frameLines,i),lineRange.location+j, &secondaryOffset);
-				//NSLog(@"? %i %i %f", j, lineRange.location, primaryOffset);
-				if (primaryOffset>currentTouch.x)
-				{
-					//NSLog(@">>>>> %i", lineRange.location+j);
-					//NSLog(@"clicked on [%@]", [self._plainText substringWithRange:NSMakeRange(lineRange.location+j-1, 1)]);
-					break;
-				}
-				
-			}
-			break;
-		}
-	}*/
+	 UITouch *touch = [touches anyObject];
+	 CGPoint currentTouch = [touch locationInView:self];
+	 //NSLog(@"%i %i", currentTouch.x, currentTouch.y);
+	 
+	 float height = 0.0;
+	 CFArrayRef frameLines = CTFrameGetLines(frame);
+	 for (CFIndex i=0; i<CFArrayGetCount(frameLines); i++)
+	 {
+	 CTLineRef line = (CTLineRef)CFArrayGetValueAtIndex(frameLines, i);
+	 CFRange lineRange = CTLineGetStringRange(line);
+	 CGFloat ascent;
+	 CGFloat descent;
+	 CGFloat leading;
+	 
+	 CTLineGetTypographicBounds(line, &ascent, &descent, &leading);
+	 
+	 CGPoint origin;
+	 CTFrameGetLineOrigins(frame, CFRangeMake(i, 1), &origin);
+	 origin.y = self.frame.size.height - origin.y;
+	 height = origin.y + descent + _lineSpacing;
+	 
+	 if (currentTouch.y < height)
+	 {
+	 for (int j=0; j<lineRange.length; j++)
+	 {
+	 CGFloat secondaryOffset;
+	 double primaryOffset = CTLineGetOffsetForStringIndex(CFArrayGetValueAtIndex(frameLines,i),lineRange.location+j, &secondaryOffset);
+	 //NSLog(@"? %i %i %f", j, lineRange.location, primaryOffset);
+	 if (primaryOffset>currentTouch.x)
+	 {
+	 //NSLog(@">>>>> %i", lineRange.location+j);
+	 //NSLog(@"clicked on [%@]", [self._plainText substringWithRange:NSMakeRange(lineRange.location+j-1, 1)]);
+	 break;
+	 }
+	 
+	 }
+	 break;
+	 }
+	 }*/
 }
 
 
