@@ -66,11 +66,12 @@ typedef enum
 	RTTextAlignment _textAlignment;
 	RTTextLineBreakMode _lineBreakMode;
 	NSString *_plainText;
-	NSMutableArray *_textComponent;
+	NSMutableArray *_textComponents;
 	CGSize _optimumSize;
 	CGFloat _lineSpacing;
 	int currentSelectedButtonComponentIndex;
-	NSDictionary *linkAttributes, *selectedLinkAttributes;
+	NSDictionary *linkAttributes;
+    NSDictionary *selectedLinkAttributes;
 	id<RTLabelDelegate> delegate;
 	CTFrameRef frame;
     CFRange visibleRange;
@@ -79,15 +80,17 @@ typedef enum
 
 @property (nonatomic, retain) UIColor *textColor;
 @property (nonatomic, retain) UIFont *font;
-@property (nonatomic, retain) NSDictionary *linkAttributes, *selectedLinkAttributes;
+@property (nonatomic, retain) NSDictionary *linkAttributes;
+@property (nonatomic, retain) NSDictionary *selectedLinkAttributes;
 @property (nonatomic, assign) id<RTLabelDelegate> delegate;
 @property (nonatomic, copy) NSString *paragraphReplacement;
 
-- (void)render;
 - (NSString*)text;
 - (void)setText:(NSString*)text;
+
 - (void)setTextAlignment:(RTTextAlignment)textAlignment;
 - (void)setLineBreakMode:(RTTextLineBreakMode)lineBreakMode;
+
 - (CGSize)optimumSize;
 - (void)setLineSpacing:(CGFloat)lineSpacing;
 - (NSString*)visibleText;

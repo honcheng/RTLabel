@@ -39,6 +39,7 @@
 
 @interface RTLabelButton : UIButton
 {
+@private
 	int componentIndex;
 	NSURL *url;
 }
@@ -47,68 +48,81 @@
 @end
 
 @implementation RTLabelButton
+
 @synthesize componentIndex;
 @synthesize url;
+
+- (void)dealloc 
+{
+    [url release];
+    
+    [super dealloc];
+}
+
 @end
 
 
 @interface RTLabelComponent : NSObject
 {
+@private
 	NSString *text;
 	NSString *tagLabel;
 	NSMutableDictionary *attributes;
 	int position;
 	int componentIndex;
 }
+
 @property (nonatomic, assign) int componentIndex;
-@property (nonatomic, retain) NSString *text, *tagLabel;
+@property (nonatomic, copy) NSString *text;
+@property (nonatomic, copy) NSString *tagLabel;
 @property (nonatomic, retain) NSMutableDictionary *attributes;
 @property (nonatomic, assign) int position;
 
-- (id)initWithString:(NSString*)_text tag:(NSString*)_tagLabel attributes:(NSMutableDictionary*)_attributes;
-+ (id)componentWithString:(NSString*)_text tag:(NSString*)_tagLabel attributes:(NSMutableDictionary*)_attributes;
-- (id)initWithTag:(NSString*)_tagLabel position:(int)_position attributes:(NSMutableDictionary*)_attributes;
-+ (id)componentWithTag:(NSString*)_tagLabel position:(int)_position attributes:(NSMutableDictionary*)_attributes;
+- (id)initWithString:(NSString*)aText tag:(NSString*)aTagLabel attributes:(NSMutableDictionary*)theAttributes;
++ (id)componentWithString:(NSString*)aText tag:(NSString*)aTagLabel attributes:(NSMutableDictionary*)theAttributes;
+- (id)initWithTag:(NSString*)aTagLabel position:(int)_position attributes:(NSMutableDictionary*)_attributes;
++ (id)componentWithTag:(NSString*)aTagLabel position:(int)aPosition attributes:(NSMutableDictionary*)theAttributes;
 
 @end
 
 @implementation RTLabelComponent
-@synthesize text, tagLabel;
+
+@synthesize text;
+@synthesize tagLabel;
 @synthesize attributes;
 @synthesize position;
 @synthesize componentIndex;
 
-- (id)initWithString:(NSString*)_text tag:(NSString*)_tagLabel attributes:(NSMutableDictionary*)_attributes;
+- (id)initWithString:(NSString*)aText tag:(NSString*)aTagLabel attributes:(NSMutableDictionary*)theAttributes;
 {
     self = [super init];
-	if (self) 
-	{
-		self.text = _text;
-		self.tagLabel = _tagLabel;
-		self.attributes = _attributes;
+	if (self) {
+		text = [aText copy];
+		tagLabel = [aTagLabel copy];
+		attributes = [theAttributes retain];
 	}
 	return self;
 }
 
-+ (id)componentWithString:(NSString*)_text tag:(NSString*)_tagLabel attributes:(NSMutableDictionary*)_attributes
++ (id)componentWithString:(NSString*)aText tag:(NSString*)aTagLabel attributes:(NSMutableDictionary*)theAttributes
 {
-	return [[[self alloc] initWithString:_text tag:_tagLabel attributes:_attributes] autorelease];
+	return [[[self alloc] initWithString:aText tag:aTagLabel attributes:theAttributes] autorelease];
 }
 
-- (id)initWithTag:(NSString*)_tagLabel position:(int)_position attributes:(NSMutableDictionary*)_attributes
+- (id)initWithTag:(NSString*)aTagLabel position:(int)aPosition attributes:(NSMutableDictionary*)theAttributes 
 {
-	if (self = [super init]) 
-	{
-		self.tagLabel = _tagLabel;
-		self.position = _position;
-		self.attributes = _attributes;
-	}
-	return self;
+    self = [super init];
+    if (self) {
+        tagLabel = [aTagLabel copy];
+		position = aPosition;
+		attributes = [theAttributes retain];
+    }
+    return self;
 }
 
-+(id)componentWithTag:(NSString*)_tagLabel position:(int)_position attributes:(NSMutableDictionary*)_attributes
++(id)componentWithTag:(NSString*)aTagLabel position:(int)aPosition attributes:(NSMutableDictionary*)theAttributes
 {
-	return [[[self alloc] initWithTag:_tagLabel position:_position attributes:_attributes] autorelease];
+	return [[[self alloc] initWithTag:aTagLabel position:aPosition attributes:theAttributes] autorelease];
 }
 
 - (NSString*)description
@@ -121,24 +135,35 @@
 	return desc;
 }
 
+- (void)dealloc 
+{
+    [text release];
+    [tagLabel release];
+    [attributes release];
+    
+    [super dealloc];
+}
+
 @end
 
 @interface RTLabel()
+
 @property (nonatomic, retain) NSString *_text;
 @property (nonatomic, retain) NSString *_plainText;
-@property (nonatomic, retain) NSMutableArray *_textComponent;
+@property (nonatomic, retain) NSMutableArray *_textComponents;
 @property (nonatomic, assign) CGSize _optimumSize;
 
 - (CGFloat)frameHeight:(CTFrameRef)frame;
 - (NSArray *)components;
 - (void)parse:(NSString *)data valid_tags:(NSArray *)valid_tags;
 - (NSArray*) colorForHex:(NSString *)hexColor;
-//- (void)render;
+- (void)render;
 - (void)extractTextStyle:(NSString*)text;
 
 
 #pragma mark -
 #pragma mark styling
+
 - (void)applyItalicStyleToText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length;
 - (void)applyBoldStyleToText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length;
 - (void)applyColor:(NSString*)value toText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length;
@@ -150,12 +175,14 @@
 @end
 
 @implementation RTLabel
+
 @synthesize _text;
 @synthesize font;
 @synthesize textColor;
-@synthesize _plainText, _textComponent;
+@synthesize _plainText, _textComponents;
 @synthesize _optimumSize;
-@synthesize linkAttributes, selectedLinkAttributes;
+@synthesize linkAttributes;
+@synthesize selectedLinkAttributes;
 @synthesize delegate;
 @synthesize paragraphReplacement;
 
@@ -243,9 +270,9 @@
 	
 	NSMutableArray *links = [NSMutableArray array];
 	
-	for (RTLabelComponent *component in self._textComponent)
+	for (RTLabelComponent *component in self._textComponents)
 	{
-		int index = [self._textComponent indexOfObject:component];
+		int index = [self._textComponents indexOfObject:component];
 		component.componentIndex = index;
 		
 		if ([component.tagLabel isEqualToString:@"i"])
@@ -370,7 +397,7 @@
 					float button_width = primaryOffset2 - primaryOffset;
 					
 					RTLabelButton *button = [[RTLabelButton alloc] initWithFrame:CGRectMake(primaryOffset, height, button_width, ascent+descent)];
-					[self addSubview:button];
+					
 					[button setBackgroundColor:[UIColor colorWithWhite:0 alpha:0]];
 					[button setComponentIndex:linkableComponents.componentIndex];
 					
@@ -378,6 +405,8 @@
 					[button addTarget:self action:@selector(onButtonTouchDown:) forControlEvents:UIControlEventTouchDown];
 					[button addTarget:self action:@selector(onButtonTouchUpOutside:) forControlEvents:UIControlEventTouchUpOutside];
 					[button addTarget:self action:@selector(onButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+                    [self addSubview:button];
+                    [button release];
 					
 				}
 				
@@ -543,6 +572,7 @@
 	
 	CFAttributedStringSetAttributes( text, CFRangeMake(position, length), styleDict, 0 ); 
 	CFRelease(theParagraphRef);
+    CFRelease(styleDict);
 }
 
 - (void)applySingleUnderlineText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
@@ -641,55 +671,45 @@
 }
 
 - (void)applyColor:(NSString*)value toText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
-{
-	CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB();
-	CGColorSpaceRelease(rgbColorSpace);
-	if ([value rangeOfString:@"#"].location==0)
-	{
+{    
+	if ([value rangeOfString:@"#"].location == 0) {
+        CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB();
 		value = [value stringByReplacingOccurrencesOfString:@"#" withString:@""];
 		NSArray *colorComponents = [self colorForHex:value];
 		CGFloat components[] = { [[colorComponents objectAtIndex:0] floatValue] , [[colorComponents objectAtIndex:1] floatValue] , [[colorComponents objectAtIndex:2] floatValue] , [[colorComponents objectAtIndex:3] floatValue] };
 		CGColorRef color = CGColorCreate(rgbColorSpace, components);
 		CFAttributedStringSetAttribute(text, CFRangeMake(position, length),kCTForegroundColorAttributeName, color);
 		CFRelease(color);
-	}
-	else
-	{
-		
+        CGColorSpaceRelease(rgbColorSpace);
+	} else {
 		value = [value stringByAppendingString:@"Color"];
 		SEL colorSel = NSSelectorFromString(value);
 		UIColor *_color = nil;
-		if ([UIColor respondsToSelector:colorSel])
-		{
+		if ([UIColor respondsToSelector:colorSel]) {
 			_color = [UIColor performSelector:colorSel];
 			CGColorRef color = [_color CGColor];
 			CFAttributedStringSetAttribute(text, CFRangeMake(position, length),kCTForegroundColorAttributeName, color);
-			
 		}				
 	}
 }
 
 - (void)applyUnderlineColor:(NSString*)value toText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
 {
-	CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB();
-	CGColorSpaceRelease(rgbColorSpace);
 	value = [value stringByReplacingOccurrencesOfString:@"'" withString:@""];
-	if ([value rangeOfString:@"#"].location==0)
-	{
+	if ([value rangeOfString:@"#"].location==0) {
+        CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB();
 		value = [value stringByReplacingOccurrencesOfString:@"#" withString:@"0x"];
 		NSArray *colorComponents = [self colorForHex:value];
 		CGFloat components[] = { [[colorComponents objectAtIndex:0] floatValue] , [[colorComponents objectAtIndex:1] floatValue] , [[colorComponents objectAtIndex:2] floatValue] , [[colorComponents objectAtIndex:3] floatValue] };
 		CGColorRef color = CGColorCreate(rgbColorSpace, components);
 		CFAttributedStringSetAttribute(text, CFRangeMake(position, length),kCTUnderlineColorAttributeName, color);
-		//CFRelease(color);
-	}
-	else
-	{
+		CFRelease(color);
+        CGColorSpaceRelease(rgbColorSpace);
+	} else {
 		value = [value stringByAppendingString:@"Color"];
 		SEL colorSel = NSSelectorFromString(value);
 		UIColor *_color = nil;
-		if ([UIColor respondsToSelector:colorSel])
-		{
+		if ([UIColor respondsToSelector:colorSel]) {
 			_color = [UIColor performSelector:colorSel];
 			CGColorRef color = [_color CGColor];
 			CFAttributedStringSetAttribute(text, CFRangeMake(position, length),kCTUnderlineColorAttributeName, color);
@@ -766,15 +786,21 @@
     return ceil(height);
 }
 
-- (void)dealloc {
+- (void)dealloc 
+{
+    delegate = nil;
 	//CFRelease(frame);
 	//CFRelease(framesetter);
-    self._textComponent = nil;
-    self._plainText = nil;
-    self.textColor = nil;
-    self.font = nil;
-	self._text = nil;
-    self.paragraphReplacement = nil;
+    [_textComponents release];
+    [_plainText release];
+    [textColor release];
+    [font release];
+	[_text release];
+    [paragraphReplacement release];
+    
+    [linkAttributes release];
+    [selectedLinkAttributes release];
+    
     [super dealloc];
 }
 
@@ -828,7 +854,7 @@
 {
 	//NSLog(@"%@", data);
 	
-	NSScanner *scanner; 
+	NSScanner *scanner = nil; 
 	NSString *text = nil;
 	NSString *tag = nil;
 	
@@ -837,7 +863,7 @@
 	int last_position = 0;
 	scanner = [NSScanner scannerWithString:data];
 	while (![scanner isAtEnd])
-	{
+    {
 		[scanner scanUpToString:@"<" intoString:NULL];
 		[scanner scanUpToString:@">" intoString:&text];
 		
@@ -907,7 +933,7 @@
 	}
 	
 	//NSLog(@"%@", components);
-	self._textComponent = components;
+	self._textComponents = components;
 	self._plainText = data;
 }
 
@@ -915,7 +941,7 @@
 - (void)parse:(NSString *)data valid_tags:(NSArray *)valid_tags
 {
 	//use to strip the HTML tags from the data
-	NSScanner *scanner;
+	NSScanner *scanner = nil;
 	NSString *text = nil;
 	NSString *tag = nil;
 	
@@ -1002,7 +1028,7 @@
 		}
 	}
 	
-	self._textComponent = components;
+	self._textComponents = components;
 	self._plainText = data;
 	//self._plainText = [self._plainText stringByReplacingOccurrencesOfString:@"&lt;" withString:@"<"];
 	//self._plainText = [self._plainText stringByReplacingOccurrencesOfString:@"&gt;" withString:@">"];
