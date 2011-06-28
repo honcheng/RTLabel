@@ -33,7 +33,7 @@
 	
 	CGSize optimumSize = [self.rtLabel optimumSize];
 	CGRect frame = [self.rtLabel frame];
-	frame.size.height = (int)optimumSize.height;
+	frame.size.height = (int)optimumSize.height+5; // +5 to fix height issue, this should be automatically fixed in iOS5
 	[self.rtLabel setFrame:frame];
 }
 

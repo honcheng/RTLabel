@@ -289,9 +289,9 @@
 		{
 			if (currentSelectedButtonComponentIndex==index)
 			{
-				if (selectedLinkAttributes)
+				if (self.selectedLinkAttributes)
 				{
-					[self applyFontAttributes:selectedLinkAttributes toText:attrString atPosition:component.position withLength:[component.text length]];
+					[self applyFontAttributes:self.selectedLinkAttributes toText:attrString atPosition:component.position withLength:[component.text length]];
 				}
 				else
 				{
@@ -301,9 +301,9 @@
 			}
 			else
 			{
-				if (linkAttributes)
+				if (self.linkAttributes)
 				{
-					[self applyFontAttributes:linkAttributes toText:attrString atPosition:component.position withLength:[component.text length]];
+					[self applyFontAttributes:self.linkAttributes toText:attrString atPosition:component.position withLength:[component.text length]];
 				}
 				else
 				{
@@ -793,13 +793,13 @@
 	//CFRelease(framesetter);
     [_textComponents release];
     [_plainText release];
-    [textColor release];
-    [font release];
-	[_text release];
+    [self.textColor release];
+    [self.font release];
+	[self._text release];
     [paragraphReplacement release];
     
-    [linkAttributes release];
-    [selectedLinkAttributes release];
+    [self.linkAttributes release];
+    [self.selectedLinkAttributes release];
     
     [super dealloc];
 }
@@ -1113,7 +1113,7 @@
 - (NSString*)visibleText
 {
     [self render];
-    NSString *text = [_text substringWithRange:NSMakeRange(visibleRange.location, visibleRange.length)];
+    NSString *text = [self._text substringWithRange:NSMakeRange(visibleRange.location, visibleRange.length)];
     return text;
 }
 
