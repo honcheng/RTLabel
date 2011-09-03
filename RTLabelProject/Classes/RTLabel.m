@@ -1067,6 +1067,7 @@
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    [super touchesBegan:touches withEvent:event];
     /*
 	UITouch *touch = [touches anyObject];
 	CGPoint currentTouch = [touch locationInView:self];
