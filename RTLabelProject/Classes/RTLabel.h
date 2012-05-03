@@ -72,17 +72,17 @@ typedef enum
 	int currentSelectedButtonComponentIndex;
 	NSDictionary *linkAttributes;
     NSDictionary *selectedLinkAttributes;
-	id<RTLabelDelegate> delegate;
+	id<RTLabelDelegate> __unsafe_unretained delegate;
 	CTFrameRef frame;
     CFRange visibleRange;
     NSString *paragraphReplacement;
 }
 
-@property (nonatomic, retain) UIColor *textColor;
-@property (nonatomic, retain) UIFont *font;
-@property (nonatomic, retain) NSDictionary *linkAttributes;
-@property (nonatomic, retain) NSDictionary *selectedLinkAttributes;
-@property (nonatomic, assign) id<RTLabelDelegate> delegate;
+@property (nonatomic) UIColor *textColor;
+@property (nonatomic) UIFont *font;
+@property (nonatomic) NSDictionary *linkAttributes;
+@property (nonatomic) NSDictionary *selectedLinkAttributes;
+@property (nonatomic, unsafe_unretained) id<RTLabelDelegate> delegate;
 @property (nonatomic, copy) NSString *paragraphReplacement;
 
 - (NSString*)text;

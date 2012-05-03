@@ -12,6 +12,6 @@
 @interface DemoTableViewCell : UITableViewCell {
 	RTLabel *rtLabel;
 }
-@property (nonatomic, retain) RTLabel *rtLabel;
+@property (nonatomic) RTLabel *rtLabel;
 + (RTLabel*)textLabel;
 @end

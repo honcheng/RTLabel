@@ -44,7 +44,7 @@
 	NSURL *url;
 }
 @property (nonatomic, assign) int componentIndex;
-@property (nonatomic, retain) NSURL *url;
+@property (nonatomic) NSURL *url;
 @end
 
 @implementation RTLabelButton
@@ -52,12 +52,6 @@
 @synthesize componentIndex;
 @synthesize url;
 
-- (void)dealloc 
-{
-    [url release];
-    
-    [super dealloc];
-}
 
 @end
 
@@ -75,7 +69,7 @@
 @property (nonatomic, assign) int componentIndex;
 @property (nonatomic, copy) NSString *text;
 @property (nonatomic, copy) NSString *tagLabel;
-@property (nonatomic, retain) NSMutableDictionary *attributes;
+@property (nonatomic) NSMutableDictionary *attributes;
 @property (nonatomic, assign) int position;
 
 - (id)initWithString:(NSString*)aText tag:(NSString*)aTagLabel attributes:(NSMutableDictionary*)theAttributes;
@@ -99,14 +93,14 @@
 	if (self) {
 		text = [aText copy];
 		tagLabel = [aTagLabel copy];
-		attributes = [theAttributes retain];
+		attributes = theAttributes;
 	}
 	return self;
 }
 
 + (id)componentWithString:(NSString*)aText tag:(NSString*)aTagLabel attributes:(NSMutableDictionary*)theAttributes
 {
-	return [[[self alloc] initWithString:aText tag:aTagLabel attributes:theAttributes] autorelease];
+	return [[self alloc] initWithString:aText tag:aTagLabel attributes:theAttributes];
 }
 
 - (id)initWithTag:(NSString*)aTagLabel position:(int)aPosition attributes:(NSMutableDictionary*)theAttributes 
@@ -115,14 +109,14 @@
     if (self) {
         tagLabel = [aTagLabel copy];
 		position = aPosition;
-		attributes = [theAttributes retain];
+		attributes = theAttributes;
     }
     return self;
 }
 
 +(id)componentWithTag:(NSString*)aTagLabel position:(int)aPosition attributes:(NSMutableDictionary*)theAttributes
 {
-	return [[[self alloc] initWithTag:aTagLabel position:aPosition attributes:theAttributes] autorelease];
+	return [[self alloc] initWithTag:aTagLabel position:aPosition attributes:theAttributes];
 }
 
 - (NSString*)description
@@ -135,22 +129,14 @@
 	return desc;
 }
 
-- (void)dealloc 
-{
-    [text release];
-    [tagLabel release];
-    [attributes release];
-    
-    [super dealloc];
-}
 
 @end
 
 @interface RTLabel()
 
-@property (nonatomic, retain) NSString *_text;
-@property (nonatomic, retain) NSString *_plainText;
-@property (nonatomic, retain) NSMutableArray *_textComponents;
+@property (nonatomic) NSString *_text;
+@property (nonatomic) NSString *_plainText;
+@property (nonatomic) NSMutableArray *_textComponents;
 @property (nonatomic, assign) CGSize _optimumSize;
 
 - (CGFloat)frameHeight:(CTFrameRef)frame;
@@ -249,7 +235,7 @@
     }
 	
 	// Initialize an attributed string.
-	CFStringRef string = (CFStringRef)self._plainText;
+	CFStringRef string = (__bridge CFStringRef)self._plainText;
 	CFMutableAttributedStringRef attrString = CFAttributedStringCreateMutable(kCFAllocatorDefault, 0);
 	CFAttributedStringReplaceString (attrString, CFRangeMake(0, 0), string);
 	
@@ -265,7 +251,7 @@
 	[self applyParagraphStyleToText:attrString attributes:nil atPosition:0 withLength:CFAttributedStringGetLength(attrString)];
 
 	
-	CTFontRef thisFont = CTFontCreateWithName ((CFStringRef)[self.font fontName], [self.font pointSize], NULL); 
+	CTFontRef thisFont = CTFontCreateWithName ((__bridge CFStringRef)[self.font fontName], [self.font pointSize], NULL); 
 	CFAttributedStringSetAttribute(attrString, CFRangeMake(0, CFAttributedStringGetLength(attrString)), kCTFontAttributeName, thisFont);
 	
 	NSMutableArray *links = [NSMutableArray array];
@@ -406,7 +392,6 @@
 					[button addTarget:self action:@selector(onButtonTouchUpOutside:) forControlEvents:UIControlEventTouchUpOutside];
 					[button addTarget:self action:@selector(onButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
                     [self addSubview:button];
-                    [button release];
 					
 				}
 				
@@ -577,18 +562,18 @@
 
 - (void)applySingleUnderlineText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
 {
-	CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTUnderlineStyleAttributeName,  (CFNumberRef)[NSNumber numberWithInt:kCTUnderlineStyleSingle]);
+	CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTUnderlineStyleAttributeName,  (__bridge CFNumberRef)[NSNumber numberWithInt:kCTUnderlineStyleSingle]);
 }
 
 - (void)applyDoubleUnderlineText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
 {
-	CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTUnderlineStyleAttributeName,  (CFNumberRef)[NSNumber numberWithInt:kCTUnderlineStyleDouble]);
+	CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTUnderlineStyleAttributeName,  (__bridge CFNumberRef)[NSNumber numberWithInt:kCTUnderlineStyleDouble]);
 }
 
 - (void)applyItalicStyleToText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
 {
 	UIFont *_font = [UIFont italicSystemFontOfSize:self.font.pointSize];
-	CTFontRef italicFont = CTFontCreateWithName ((CFStringRef)[_font fontName], [_font pointSize], NULL); 
+	CTFontRef italicFont = CTFontCreateWithName ((__bridge CFStringRef)[_font fontName], [_font pointSize], NULL); 
 	CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTFontAttributeName, italicFont);
 	CFRelease(italicFont);
 }
@@ -606,11 +591,11 @@
 		}
 		else if ([key isEqualToString:@"stroke"])
 		{
-			CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTStrokeWidthAttributeName, [NSNumber numberWithFloat:[[attributes objectForKey:@"stroke"] intValue]]);
+			CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTStrokeWidthAttributeName, (__bridge CFTypeRef)([NSNumber numberWithFloat:[[attributes objectForKey:@"stroke"] intValue]]));
 		}
 		else if ([key isEqualToString:@"kern"])
 		{
-			CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTKernAttributeName, [NSNumber numberWithFloat:[[attributes objectForKey:@"kern"] intValue]]);
+			CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTKernAttributeName, (__bridge CFTypeRef)([NSNumber numberWithFloat:[[attributes objectForKey:@"kern"] intValue]]));
 		}
 		else if ([key isEqualToString:@"underline"])
 		{
@@ -656,7 +641,7 @@
 	}
 	if (_font)
 	{
-		CTFontRef customFont = CTFontCreateWithName ((CFStringRef)[_font fontName], [_font pointSize], NULL); 
+		CTFontRef customFont = CTFontCreateWithName ((__bridge CFStringRef)[_font fontName], [_font pointSize], NULL); 
 		CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTFontAttributeName, customFont);
 		CFRelease(customFont);
 	}
@@ -665,7 +650,7 @@
 - (void)applyBoldStyleToText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
 {
 	UIFont *_font = [UIFont boldSystemFontOfSize:self.font.pointSize];
-	CTFontRef boldFont = CTFontCreateWithName ((CFStringRef)[_font fontName], [_font pointSize], NULL); 
+	CTFontRef boldFont = CTFontCreateWithName ((__bridge CFStringRef)[_font fontName], [_font pointSize], NULL); 
 	CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTFontAttributeName, boldFont);
 	CFRelease(boldFont);
 }
@@ -791,17 +776,13 @@
     delegate = nil;
 	//CFRelease(frame);
 	//CFRelease(framesetter);
-    [_textComponents release];
-    [_plainText release];
-    [self.textColor release];
-    [self.font release];
-	[self._text release];
-    [paragraphReplacement release];
+    self.textColor;
+    self.font;
+	self._text;
     
-    [self.linkAttributes release];
-    [self.selectedLinkAttributes release];
+    self.linkAttributes;
+    self.selectedLinkAttributes;
     
-    [super dealloc];
 }
 
 - (NSArray *)components;
@@ -847,7 +828,7 @@
 			}
 		}
 	}
-	return [[components copy] autorelease];
+	return [components copy];
 }
 
 - (void)extractTextStyle:(NSString*)data

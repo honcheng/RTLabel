@@ -19,7 +19,7 @@
         // Initialization code.
 		self.rtLabel = [DemoTableViewCell textLabel];
 		[self.contentView addSubview:self.rtLabel];
-		[self.rtLabel release];
+		self.rtLabel;
 		[self.rtLabel setBackgroundColor:[UIColor clearColor]];
         
         [self setSelectionStyle:UITableViewCellEditingStyleNone];
@@ -42,7 +42,7 @@
 	RTLabel *label = [[RTLabel alloc] initWithFrame:CGRectMake(10,10,300,100)];
 	//[label setFont:[UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:20]];
     [label setParagraphReplacement:@""];
-	return [label autorelease];
+	return label;
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
@@ -54,8 +54,7 @@
 
 
 - (void)dealloc {
-	[self.rtLabel release];
-    [super dealloc];
+	self.rtLabel;
 }
 
 

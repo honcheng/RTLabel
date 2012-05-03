@@ -58,7 +58,6 @@
 		[titleLabel setFont:[UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:20]];
 		[titleLabel setText:@"RTLabel"];
 		[self.navigationItem setTitleView:titleLabel];
-		[titleLabel release];
 		[titleLabel setTextAlignment:UITextAlignmentCenter];
 		
 		self.dataArray = [NSMutableArray array];
@@ -182,7 +181,7 @@
     DemoTableViewCell *cell = (DemoTableViewCell*)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) 
 	{
-        cell = [[[DemoTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+        cell = [[DemoTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
 	[cell.rtLabel setText:[[self.dataArray objectAtIndex:indexPath.row] objectForKey:@"text"]];
     return cell;
@@ -205,8 +204,7 @@
 
 
 - (void)dealloc {
-	[self.dataArray release];
-    [super dealloc];
+	self.dataArray;
 }
 
 
