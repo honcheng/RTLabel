@@ -766,6 +766,15 @@
 	[self setNeedsDisplay];
 }
 
+- (void)setText:(NSString *)text extractTextStyle:(NSDictionary*)extractTextStyle;
+{
+	self._text = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
+    self._textComponents = [extractTextStyle objectForKey:@"textComponents"];
+    self._plainText = [extractTextStyle objectForKey:@"plainText"];
+	[self setNeedsDisplay];
+}
+
+
 - (NSString*)text
 {
 	return self._text;
@@ -1117,5 +1126,93 @@
     NSString *text = [self._text substringWithRange:NSMakeRange(visibleRange.location, visibleRange.length)];
     return text;
 }
+
++ (NSDictionary*)preExtractTextStyle:(NSString*)data
+{
+    NSString* paragraphReplacement = @"\n";
+	//NSLog(@"%@", data);
+	
+	NSScanner *scanner = nil; 
+	NSString *text = nil;
+	NSString *tag = nil;
+	
+	NSMutableArray *components = [NSMutableArray array];
+	
+	int last_position = 0;
+	scanner = [NSScanner scannerWithString:data];
+	while (![scanner isAtEnd])
+    {
+		[scanner scanUpToString:@"<" intoString:NULL];
+		[scanner scanUpToString:@">" intoString:&text];
+		
+		NSString *delimiter = [NSString stringWithFormat:@"%@>", text];
+		int position = [data rangeOfString:delimiter].location;
+		if (position!=NSNotFound)
+		{
+			if ([delimiter rangeOfString:@"<p"].location==0)
+			{
+				data = [data stringByReplacingOccurrencesOfString:delimiter withString:paragraphReplacement options:NSCaseInsensitiveSearch range:NSMakeRange(last_position, position+delimiter.length-last_position)];
+			}
+			else
+			{
+				data = [data stringByReplacingOccurrencesOfString:delimiter withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(last_position, position+delimiter.length-last_position)];
+			}
+			
+			data = [data stringByReplacingOccurrencesOfString:@"&lt;" withString:@"<"];
+			data = [data stringByReplacingOccurrencesOfString:@"&gt;" withString:@">"];
+		}
+		
+		if ([text rangeOfString:@"</"].location==0)
+		{
+			// end of tag
+			tag = [text substringFromIndex:2];
+			//NSLog(@"end of tag: %@", tag);
+			if (position!=NSNotFound)
+			{
+				
+				for (int i=[components count]-1; i>=0; i--)
+				{
+					RTLabelComponent *component = [components objectAtIndex:i];
+					if (component.text==nil && [component.tagLabel isEqualToString:tag])
+					{
+						NSString *text2 = [data substringWithRange:NSMakeRange(component.position, position-component.position)];
+						component.text = text2;
+						break;
+					}
+				}
+			}
+			
+			
+		}
+		else
+		{
+			// start of tag
+			NSArray *textComponents = [[text substringFromIndex:1] componentsSeparatedByString:@" "];
+			tag = [textComponents objectAtIndex:0];
+			//NSLog(@"start of tag: %@", tag);
+			NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
+			for (int i=1; i<[textComponents count]; i++)
+			{
+				NSArray *pair = [[textComponents objectAtIndex:i] componentsSeparatedByString:@"="];
+				if ([pair count]>=2)
+				{
+					[attributes setObject:[[pair subarrayWithRange:NSMakeRange(1, [pair count] - 1)] componentsJoinedByString:@"="] forKey:[pair objectAtIndex:0]];
+				}
+			}
+			//NSLog(@"%@", attributes);
+			
+			RTLabelComponent *component = [RTLabelComponent componentWithString:nil tag:tag attributes:attributes];
+			component.position = position;
+			[components addObject:component];
+		}
+		
+		last_position = position;
+		
+	}
+	
+	//NSLog(@"%@", components);
+	return [NSDictionary dictionaryWithObjectsAndKeys:components, @"textComponents", data, @"plainText", nil];
+}
+
 
 @end
