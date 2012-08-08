@@ -166,6 +166,7 @@
 
 - (void)applyItalicStyleToText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length;
 - (void)applyBoldStyleToText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length;
+- (void)applyBoldItalicStyleToText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length;
 - (void)applyColor:(NSString*)value toText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length;
 - (void)applySingleUnderlineText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length;
 - (void)applyDoubleUnderlineText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length;
@@ -285,6 +286,10 @@
 			// make font bold
 			[self applyBoldStyleToText:attrString atPosition:component.position withLength:[component.text length]];
 		}
+        else if ([component.tagLabel isEqualToString:@"bi"])
+        {
+            [self applyBoldItalicStyleToText:attrString atPosition:component.position withLength:[component.text length]];
+        }
 		else if ([component.tagLabel isEqualToString:@"a"])
 		{
 			if (currentSelectedButtonComponentIndex==index)
@@ -668,6 +673,14 @@
 	CTFontRef boldFont = CTFontCreateWithName ((CFStringRef)[_font fontName], [_font pointSize], NULL); 
 	CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTFontAttributeName, boldFont);
 	CFRelease(boldFont);
+}
+
+- (void)applyBoldItalicStyleToText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
+{
+    NSString *fontName = [NSString stringWithFormat:@"%@-BoldOblique", self.font.fontName];
+	CTFontRef refFont = CTFontCreateWithName ((CFStringRef)fontName, [self.font pointSize], NULL); 
+	CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTFontAttributeName, refFont);
+	CFRelease(refFont);
 }
 
 - (void)applyColor:(NSString*)value toText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
