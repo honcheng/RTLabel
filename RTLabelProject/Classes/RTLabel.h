@@ -86,7 +86,11 @@ typedef enum
 @property (nonatomic, copy) NSString *paragraphReplacement;
 
 - (NSString*)text;
+
 - (void)setText:(NSString*)text;
+// from susieyy http://github.com/susieyy
+// The purpose of this code is to cache pre-create the textComponents, is to improve the performance when drawing the text.
+// This improvement is effective if the text is long.
 - (void)setText:(NSString *)text extractTextStyle:(NSDictionary*)extractTextStyle;
 
 - (void)setTextAlignment:(RTTextAlignment)textAlignment;
