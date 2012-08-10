@@ -87,6 +87,7 @@ typedef enum
 
 - (NSString*)text;
 - (void)setText:(NSString*)text;
+- (void)setText:(NSString *)text extractTextStyle:(NSDictionary*)extractTextStyle;
 
 - (void)setTextAlignment:(RTTextAlignment)textAlignment;
 - (void)setLineBreakMode:(RTTextLineBreakMode)lineBreakMode;
@@ -95,4 +96,7 @@ typedef enum
 - (void)setLineSpacing:(CGFloat)lineSpacing;
 - (NSString*)visibleText;
 
+
++ (NSDictionary*)preExtractTextStyle:(NSString*)data;
+// key:textComponents, key:plainText
 @end
