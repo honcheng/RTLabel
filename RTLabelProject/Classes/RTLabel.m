@@ -38,34 +38,15 @@
 #import "RTLabel.h"
 
 @interface RTLabelButton : UIButton
-{
-@private
-	int componentIndex;
-	NSURL *url;
-}
 @property (nonatomic, assign) int componentIndex;
 @property (nonatomic) NSURL *url;
 @end
 
 @implementation RTLabelButton
-
-@synthesize componentIndex;
-@synthesize url;
-
-
 @end
 
 
 @interface RTLabelComponent : NSObject
-{
-@private
-	NSString *text;
-	NSString *tagLabel;
-	NSMutableDictionary *attributes;
-	int position;
-	int componentIndex;
-}
-
 @property (nonatomic, assign) int componentIndex;
 @property (nonatomic, copy) NSString *text;
 @property (nonatomic, copy) NSString *tagLabel;
@@ -81,19 +62,13 @@
 
 @implementation RTLabelComponent
 
-@synthesize text;
-@synthesize tagLabel;
-@synthesize attributes;
-@synthesize position;
-@synthesize componentIndex;
-
 - (id)initWithString:(NSString*)aText tag:(NSString*)aTagLabel attributes:(NSMutableDictionary*)theAttributes;
 {
     self = [super init];
 	if (self) {
-		text = [aText copy];
-		tagLabel = [aTagLabel copy];
-		attributes = theAttributes;
+		_text = aText;
+		_tagLabel = aTagLabel;
+		_attributes = theAttributes;
 	}
 	return self;
 }
@@ -107,9 +82,9 @@
 {
     self = [super init];
     if (self) {
-        tagLabel = [aTagLabel copy];
-		position = aPosition;
-		attributes = theAttributes;
+        _tagLabel = aTagLabel;
+		_position = aPosition;
+		_attributes = theAttributes;
     }
     return self;
 }
@@ -133,12 +108,6 @@
 @end
 
 @interface RTLabel()
-
-@property (nonatomic) NSString *_text;
-@property (nonatomic) NSString *_plainText;
-@property (nonatomic) NSMutableArray *_textComponents;
-@property (nonatomic, assign) CGSize _optimumSize;
-
 - (CGFloat)frameHeight:(CTFrameRef)frame;
 - (NSArray *)components;
 - (void)parse:(NSString *)data valid_tags:(NSArray *)valid_tags;
@@ -163,31 +132,20 @@
 
 @implementation RTLabel
 
-@synthesize _text;
-@synthesize font;
-@synthesize textColor;
-@synthesize _plainText, _textComponents;
-@synthesize _optimumSize;
-@synthesize linkAttributes;
-@synthesize selectedLinkAttributes;
-@synthesize delegate;
-@synthesize paragraphReplacement;
-
 - (id)initWithFrame:(CGRect)_frame {
     
     self = [super initWithFrame:_frame];
     if (self) {
-        // Initialization code.
+
 		[self setBackgroundColor:[UIColor clearColor]];
-		self.font = [UIFont systemFontOfSize:15];
-		self.textColor = [UIColor blackColor];
-		//self._text = @"";
-		[self setText:@""];
+		_font = [UIFont systemFontOfSize:15];
+		_textColor = [UIColor blackColor];
+		_text = @"";
 		_textAlignment = RTTextAlignmentLeft;
 		_lineBreakMode = RTTextLineBreakModeWordWrapping;
 		_lineSpacing = 3;
-		currentSelectedButtonComponentIndex = -1;
-        self.paragraphReplacement = @"\n";
+		_currentSelectedButtonComponentIndex = -1;
+        _paragraphReplacement = @"\n";
 		
 		[self setMultipleTouchEnabled:YES];
     }
@@ -213,7 +171,7 @@
 
 - (void)render
 {
-	if (currentSelectedButtonComponentIndex==-1)
+	if (self.currentSelectedButtonComponentIndex==-1)
 	{
 		for (id view in [self subviews])
 		{
@@ -224,7 +182,7 @@
 		}
 	}
 	
-    if (!self._plainText) return;
+    if (!self.plainText) return;
 	
     CGContextRef context = UIGraphicsGetCurrentContext();
     if (context != NULL)
@@ -236,7 +194,7 @@
     }
 	
 	// Initialize an attributed string.
-	CFStringRef string = (__bridge CFStringRef)self._plainText;
+	CFStringRef string = (__bridge CFStringRef)self.plainText;
 	CFMutableAttributedStringRef attrString = CFAttributedStringCreateMutable(kCFAllocatorDefault, 0);
 	CFAttributedStringReplaceString (attrString, CFRangeMake(0, 0), string);
 	
@@ -257,9 +215,9 @@
 	
 	NSMutableArray *links = [NSMutableArray array];
 	
-	for (RTLabelComponent *component in self._textComponents)
+	for (RTLabelComponent *component in self.textComponents)
 	{
-		int index = [self._textComponents indexOfObject:component];
+		int index = [self.textComponents indexOfObject:component];
 		component.componentIndex = index;
 		
 		if ([component.tagLabel caseInsensitiveCompare:@"i"] == NSOrderedSame)
@@ -278,7 +236,7 @@
         }
 		else if ([component.tagLabel caseInsensitiveCompare:@"a"] == NSOrderedSame)
 		{
-			if (currentSelectedButtonComponentIndex==index)
+			if (self.currentSelectedButtonComponentIndex==index)
 			{
 				if (self.selectedLinkAttributes)
 				{
@@ -349,21 +307,21 @@
 	
 	// Create the frame and draw it into the graphics context
 	//CTFrameRef 
-	frame = CTFramesetterCreateFrame(framesetter,CFRangeMake(0, 0), path, NULL);
+	self.frameRef = CTFramesetterCreateFrame(framesetter,CFRangeMake(0, 0), path, NULL);
 	
 	CFRange range;
 	CGSize constraint = CGSizeMake(self.frame.size.width, CGFLOAT_MAX);
-	self._optimumSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, [self._plainText length]), nil, constraint, &range);
+	self.optimumSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, [self.plainText length]), nil, constraint, &range);
 	
 	
-	if (currentSelectedButtonComponentIndex==-1)
+	if (self.currentSelectedButtonComponentIndex==-1)
 	{
 		// only check for linkable items the first time, not when it's being redrawn on button pressed
 		
 		for (RTLabelComponent *linkableComponents in links)
 		{
 			float height = 0.0;
-			CFArrayRef frameLines = CTFrameGetLines(frame);
+			CFArrayRef frameLines = CTFrameGetLines(self.frameRef);
 			for (CFIndex i=0; i<CFArrayGetCount(frameLines); i++)
 			{
 				CTLineRef line = (CTLineRef)CFArrayGetValueAtIndex(frameLines, i);
@@ -376,14 +334,9 @@
 				
 				if ( (linkableComponents.position<lineRange.location && linkableComponents.position+linkableComponents.text.length>lineRange.location) || (linkableComponents.position>=lineRange.location && linkableComponents.position<lineRange.location+lineRange.length))
 				{
-					//NSLog(@"line %i: location %i, length %i", i+1, lineRange.location, lineRange.length);
-					//NSLog(@"ascent %f, descent %f, leading %f, width %f", ascent, descent, leading, width);
-					//NSLog(@"height %f", height);
-					
 					CGFloat secondaryOffset;
 					double primaryOffset = CTLineGetOffsetForStringIndex(CFArrayGetValueAtIndex(frameLines,i), linkableComponents.position, &secondaryOffset);
 					double primaryOffset2 = CTLineGetOffsetForStringIndex(CFArrayGetValueAtIndex(frameLines,i), linkableComponents.position+linkableComponents.text.length, NULL);
-					//NSLog(@"primary offset %f, secondary offset %f", primaryOffset, secondaryOffset);
 					
 					float button_width = primaryOffset2 - primaryOffset;
 					
@@ -399,65 +352,22 @@
                     [self addSubview:button];
 					
 				}
-				
-				//height += (ascent + fabsf(descent) + leading);
-				
-				//CGRect rect = CTLineGetImageBounds(line, context);
-				//NSLog(@"???? %f %f", rect.origin.y, rect.size.height);
-				
 				CGPoint origin;
-				CTFrameGetLineOrigins(frame, CFRangeMake(i, 1), &origin);
+				CTFrameGetLineOrigins(self.frameRef, CFRangeMake(i, 1), &origin);
 				origin.y = self.frame.size.height - origin.y;
-				//NSLog(@"---------- %f", origin.y);
 				height = origin.y + descent + _lineSpacing;
 			}
 		}
 	}
 	
-	visibleRange = CTFrameGetVisibleStringRange(frame);
-	//NSLog(@"??? >>>> %i %i", visibleRange.location, visibleRange.length);
-	
-	//CFArrayRef frameLines = CTFrameGetLines(frame);
-	//NSLog(@">>>>>>>>>>>>> %f %f %f", [self frameHeight:frame], self._optimumSize.height, (self._optimumSize.height-[self frameHeight:frame])/(CFArrayGetCount(frameLines)-1));
-	
+	self.visibleRange = CTFrameGetVisibleStringRange(self.frameRef);
+
 	CFRelease(thisFont);
-	//CFRelease(theParagraphRef);
 	CFRelease(path);
 	CFRelease(styleDict1);
 	CFRelease(styleDict);
-	//CFRelease(weight);
 	CFRelease(framesetter);
-	
-	CTFrameDraw(frame, context);
-	//CFRelease(frame);
-	
-	/*
-	 CFArrayRef frameLines = CTFrameGetLines(frame);
-	 for (CFIndex i=0; i<CFArrayGetCount(frameLines); i++)
-	 {
-	 CTLineRef line = (CTLineRef)CFArrayGetValueAtIndex(frameLines, i);
-	 CFRange cfStringRange = CTLineGetStringRange(line);
-	 NSRange stringRange = NSMakeRange(cfStringRange.location, cfStringRange.length);
-	 static const unichar softHypen = 0x00AD;
-	 unichar lastChar = [self._plainText characterAtIndex:stringRange.location + stringRange.length-1];
-	 
-	 if(softHypen == lastChar) {
-	 NSMutableAttributedString* lineAttrString = [[attrString attributedSubstringFromRange:stringRange] mutableCopy];
-	 NSRange replaceRange = NSMakeRange(stringRange.length-1, 1);
-	 [lineAttrString replaceCharactersInRange:replaceRange withString:@"-"];
-	 
-	 CTLineRef hyphenLine = CTLineCreateWithAttributedString((CFAttributedStringRef)lineAttrString);
-	 CTLineRef justifiedLine = CTLineCreateJustifiedLine(hyphenLine, 1.0, self.frame.size.width); 
-	 
-	 CTLineDraw(justifiedLine, context);
-	 } else {
-	 //CTLineDraw(originalLine, context);
-	 }
-	 }
-	 */
-    
-	
-    
+	CTFrameDraw(self.frameRef, context);
 }
 
 #pragma mark -
@@ -465,8 +375,6 @@
 
 - (void)applyParagraphStyleToText:(CFMutableAttributedStringRef)text attributes:(NSMutableDictionary*)attributes atPosition:(int)position withLength:(int)length
 {
-	//NSLog(@"%@", attributes);
-	
 	CFMutableDictionaryRef styleDict = ( CFDictionaryCreateMutable( (0), 0, (0), (0) ) );
 	
 	// direction
@@ -579,8 +487,8 @@
 {
 	CTFontRef actualFontSize = CFAttributedStringGetAttribute(text, position, kCTFontAttributeName, NULL);
 	
-	UIFont *_font = [UIFont boldSystemFontOfSize:CTFontGetSize(actualFontSize)];
-	CTFontRef italicFont = CTFontCreateWithName ((__bridge CFStringRef)[_font fontName], [_font pointSize], NULL); 
+	UIFont *font = [UIFont boldSystemFontOfSize:CTFontGetSize(actualFontSize)];
+	CTFontRef italicFont = CTFontCreateWithName ((__bridge CFStringRef)[font fontName], [font pointSize], NULL); 
 	CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTFontAttributeName, italicFont);
 	
 	CFRelease(italicFont);
@@ -630,26 +538,26 @@
 		}
 	}
 	
-	UIFont *_font = nil;
+	UIFont *font = nil;
 	if ([attributes objectForKey:@"face"] && [attributes objectForKey:@"size"])
 	{
 		NSString *fontName = [attributes objectForKey:@"face"];
 		fontName = [fontName stringByReplacingOccurrencesOfString:@"'" withString:@""];
-		_font = [UIFont fontWithName:fontName size:[[attributes objectForKey:@"size"] intValue]];
+		font = [UIFont fontWithName:fontName size:[[attributes objectForKey:@"size"] intValue]];
 	}
 	else if ([attributes objectForKey:@"face"] && ![attributes objectForKey:@"size"])
 	{
 		NSString *fontName = [attributes objectForKey:@"face"];
 		fontName = [fontName stringByReplacingOccurrencesOfString:@"'" withString:@""];
-		_font = [UIFont fontWithName:fontName size:self.font.pointSize];
+		font = [UIFont fontWithName:fontName size:self.font.pointSize];
 	}
 	else if (![attributes objectForKey:@"face"] && [attributes objectForKey:@"size"])
 	{
-		_font = [UIFont fontWithName:[self.font fontName] size:[[attributes objectForKey:@"size"] intValue]];
+		font = [UIFont fontWithName:[self.font fontName] size:[[attributes objectForKey:@"size"] intValue]];
 	}
-	if (_font)
+	if (font)
 	{
-		CTFontRef customFont = CTFontCreateWithName ((__bridge CFStringRef)[_font fontName], [_font pointSize], NULL); 
+		CTFontRef customFont = CTFontCreateWithName ((__bridge CFStringRef)[font fontName], [font pointSize], NULL); 
 		CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTFontAttributeName, customFont);
 		CFRelease(customFont);
 	}
@@ -658,8 +566,8 @@
 - (void)applyBoldStyleToText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
 {
 	CTFontRef actualFontSize = CFAttributedStringGetAttribute(text, position, kCTFontAttributeName, NULL);
-	UIFont *_font = [UIFont boldSystemFontOfSize:CTFontGetSize(actualFontSize)];
-	CTFontRef boldFont = CTFontCreateWithName ((__bridge CFStringRef)[_font fontName], [_font pointSize], NULL); 
+	UIFont *font = [UIFont boldSystemFontOfSize:CTFontGetSize(actualFontSize)];
+	CTFontRef boldFont = CTFontCreateWithName ((__bridge CFStringRef)[font fontName], [font pointSize], NULL); 
 	CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTFontAttributeName, boldFont);
 	CFRelease(boldFont);
 }
@@ -674,9 +582,10 @@
 
 - (void)applyColor:(NSString*)value toText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
 {
-	CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB();
+	
 	if ([value rangeOfString:@"#"].location==0)
 	{
+        CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB();
 		value = [value stringByReplacingOccurrencesOfString:@"#" withString:@""];
 		NSArray *colorComponents = [self colorForHex:value];
 		CGFloat components[] = { [[colorComponents objectAtIndex:0] floatValue] , [[colorComponents objectAtIndex:1] floatValue] , [[colorComponents objectAtIndex:2] floatValue] , [[colorComponents objectAtIndex:3] floatValue] };
@@ -694,12 +603,11 @@
 			CFAttributedStringSetAttribute(text, CFRangeMake(position, length),kCTForegroundColorAttributeName, color);
 		}				
 	}
-	CGColorSpaceRelease(rgbColorSpace);
 }
 
 - (void)applyUnderlineColor:(NSString*)value toText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
 {
-	CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB();
+	
 	value = [value stringByReplacingOccurrencesOfString:@"'" withString:@""];
 	if ([value rangeOfString:@"#"].location==0) {
         CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB();
@@ -709,20 +617,20 @@
 		CGColorRef color = CGColorCreate(rgbColorSpace, components);
 		CFAttributedStringSetAttribute(text, CFRangeMake(position, length),kCTUnderlineColorAttributeName, color);
 		CGColorRelease(color);
+        CGColorSpaceRelease(rgbColorSpace);
 	}
 	else
 	{
 		value = [value stringByAppendingString:@"Color"];
 		SEL colorSel = NSSelectorFromString(value);
-		UIColor *_color = nil;
 		if ([UIColor respondsToSelector:colorSel]) {
-			_color = [UIColor performSelector:colorSel];
+			UIColor *_color = [UIColor performSelector:colorSel];
 			CGColorRef color = [_color CGColor];
 			CFAttributedStringSetAttribute(text, CFRangeMake(position, length),kCTUnderlineColorAttributeName, color);
-			// CGColorRelease(color);
+			//CGColorRelease(color);
 		}				
 	}
-	CGColorSpaceRelease(rgbColorSpace);
+	
 }
 
 #pragma mark -
@@ -731,33 +639,32 @@
 - (void)onButtonTouchDown:(id)sender
 {
 	RTLabelButton *button = (RTLabelButton*)sender;
-	currentSelectedButtonComponentIndex = button.componentIndex;
+    [self setCurrentSelectedButtonComponentIndex:button.componentIndex];
 	[self setNeedsDisplay];
 }
 
 - (void)onButtonTouchUpOutside:(id)sender
 {
-	//RTLabelButton *button = (RTLabelButton*)sender;
-	currentSelectedButtonComponentIndex = -1;
+	[self setCurrentSelectedButtonComponentIndex:-1];
 	[self setNeedsDisplay];
 }
 
 - (void)onButtonPressed:(id)sender
 {
 	RTLabelButton *button = (RTLabelButton*)sender;
-	currentSelectedButtonComponentIndex = -1;
+	[self setCurrentSelectedButtonComponentIndex:-1];
 	[self setNeedsDisplay];
 	
-	if ([delegate respondsToSelector:@selector(rtLabel:didSelectLinkWithURL:)])
+	if ([self.delegate respondsToSelector:@selector(rtLabel:didSelectLinkWithURL:)])
 	{
-		[delegate rtLabel:self didSelectLinkWithURL:button.url];
+		[self.delegate rtLabel:self didSelectLinkWithURL:button.url];
 	}
 }
 
 - (CGSize)optimumSize
 {
 	[self render];
-	return self._optimumSize;
+	return _optimumSize;
 }
 
 - (void)setLineSpacing:(CGFloat)lineSpacing
@@ -768,23 +675,17 @@
 
 - (void)setText:(NSString *)text
 {
-	self._text = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
-	[self extractTextStyle:self._text];
+	_text = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
+	[self extractTextStyle:_text];
 	[self setNeedsDisplay];
 }
 
 - (void)setText:(NSString *)text extractTextStyle:(NSDictionary*)extractTextStyle;
 {
-	self._text = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
-    self._textComponents = [extractTextStyle objectForKey:@"textComponents"];
-    self._plainText = [extractTextStyle objectForKey:@"plainText"];
+	_text = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
+    [self setTextComponents:[extractTextStyle objectForKey:@"textComponents"]];
+    [self setPlainText:[extractTextStyle objectForKey:@"plainText"]];
 	[self setNeedsDisplay];
-}
-
-
-- (NSString*)text
-{
-	return self._text;
 }
 
 // http://forums.macrumors.com/showthread.php?t=925312
@@ -809,7 +710,7 @@
 
 - (NSArray *)components;
 {
-	NSScanner *scanner = [NSScanner scannerWithString:self._text];
+	NSScanner *scanner = [NSScanner scannerWithString:self.text];
 	[scanner setCharactersToBeSkipped:nil]; 
 	
 	NSMutableArray *components = [NSMutableArray array];
@@ -817,9 +718,7 @@
 	while (![scanner isAtEnd]) 
 	{
 		NSString *currentComponent;
-		//NSLog(@">>>>>>> %@", currentComponent);
 		BOOL foundComponent = [scanner scanUpToString:@"http" intoString:&currentComponent];
-		//NSLog(@">>>>>>>11 %@", currentComponent);
 		if (foundComponent) 
 		{
 			[components addObject:currentComponent];
@@ -855,8 +754,6 @@
 
 - (void)extractTextStyle:(NSString*)data
 {
-	//NSLog(@"%@", data);
-	
 	NSScanner *scanner = nil; 
 	NSString *text = nil;
 	NSString *tag = nil;
@@ -891,10 +788,8 @@
 		{
 			// end of tag
 			tag = [text substringFromIndex:2];
-			//NSLog(@"end of tag: %@", tag);
 			if (position!=NSNotFound)
 			{
-				
 				for (int i=[components count]-1; i>=0; i--)
 				{
 					RTLabelComponent *component = [components objectAtIndex:i];
@@ -906,8 +801,6 @@
 					}
 				}
 			}
-			
-			
 		}
 		else
 		{
@@ -934,20 +827,15 @@
 					}
 				}
 			}
-			//NSLog(@"%@", attributes);
-			
 			RTLabelComponent *component = [RTLabelComponent componentWithString:nil tag:tag attributes:attributes];
 			component.position = position;
 			[components addObject:component];
 		}
-		
 		last_position = position;
-		
 	}
 	
-	//NSLog(@"%@", components);
-	self._textComponents = components;
-	self._plainText = data;
+    [self setTextComponents:components];
+    [self setPlainText:data];
 }
 
 
@@ -1011,40 +899,28 @@
 				if (isEnd)
 				{
 					// is inside a tag
-					//NSLog(@">>>>>>> %@: %@ %@", tag, text2, lastAttributes);
 					[components addObject:[RTLabelComponent componentWithString:text2 tag:tag attributes:lastAttributes]];
 				}
 				else
 				{
 					// is outside a tag
-					//NSLog(@">>>>>>> normal: %@ %@", text2, lastAttributes);
 					[components addObject:[RTLabelComponent componentWithString:text2 tag:nil attributes:lastAttributes]];
 				}
-				
-				//NSLog(@".......... %i %i %i %@", [data length], last_position, position, [data stringByReplacingOccurrencesOfString:delimiter withString:@"" options:NULL range:NSMakeRange(last_position, position+delimiter.length)]);
 				data = [data stringByReplacingOccurrencesOfString:delimiter withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(last_position, position+delimiter.length-last_position)];
 				
 				last_position = position;
-				
 			}
 			else
 			{
 				NSString *text2 = [data substringFromIndex:last_position];
 				// is outside a tag
-				//NSLog(@">>>>>>> normal: %@ %@", text2, lastAttributes);
 				[components addObject:[RTLabelComponent componentWithString:text2 tag:nil attributes:lastAttributes]];
 			}
-			
-			//data = [data stringByReplacingOccurrencesOfString:delimiter withString:@""];
-			
 			lastAttributes = attributes;
 		}
 	}
-	
-	self._textComponents = components;
-	self._plainText = data;
-	//self._plainText = [self._plainText stringByReplacingOccurrencesOfString:@"&lt;" withString:@"<"];
-	//self._plainText = [self._plainText stringByReplacingOccurrencesOfString:@"&gt;" withString:@">"];
+    [self setTextComponents:components];
+    [self setPlainText:data];
 }
 
 - (NSArray*)colorForHex:(NSString *)hexColor 
@@ -1076,65 +952,16 @@
 	
 }
 
-#pragma mark touch delegate
-
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    [super touchesBegan:touches withEvent:event];
-    /*
-	 UITouch *touch = [touches anyObject];
-	 CGPoint currentTouch = [touch locationInView:self];
-	 //NSLog(@"%i %i", currentTouch.x, currentTouch.y);
-	 
-	 float height = 0.0;
-	 CFArrayRef frameLines = CTFrameGetLines(frame);
-	 for (CFIndex i=0; i<CFArrayGetCount(frameLines); i++)
-	 {
-	 CTLineRef line = (CTLineRef)CFArrayGetValueAtIndex(frameLines, i);
-	 CFRange lineRange = CTLineGetStringRange(line);
-	 CGFloat ascent;
-	 CGFloat descent;
-	 CGFloat leading;
-	 
-	 CTLineGetTypographicBounds(line, &ascent, &descent, &leading);
-	 
-	 CGPoint origin;
-	 CTFrameGetLineOrigins(frame, CFRangeMake(i, 1), &origin);
-	 origin.y = self.frame.size.height - origin.y;
-	 height = origin.y + descent + _lineSpacing;
-	 
-	 if (currentTouch.y < height)
-	 {
-	 for (int j=0; j<lineRange.length; j++)
-	 {
-	 CGFloat secondaryOffset;
-	 double primaryOffset = CTLineGetOffsetForStringIndex(CFArrayGetValueAtIndex(frameLines,i),lineRange.location+j, &secondaryOffset);
-	 //NSLog(@"? %i %i %f", j, lineRange.location, primaryOffset);
-	 if (primaryOffset>currentTouch.x)
-	 {
-	 //NSLog(@">>>>> %i", lineRange.location+j);
-	 //NSLog(@"clicked on [%@]", [self._plainText substringWithRange:NSMakeRange(lineRange.location+j-1, 1)]);
-	 break;
-	 }
-	 
-	 }
-	 break;
-	 }
-	 }*/
-}
-
-
 - (NSString*)visibleText
 {
     [self render];
-    NSString *text = [self._text substringWithRange:NSMakeRange(visibleRange.location, visibleRange.length)];
+    NSString *text = [self.text substringWithRange:NSMakeRange(self.visibleRange.location, self.visibleRange.length)];
     return text;
 }
 
 + (NSDictionary*)preExtractTextStyle:(NSString*)data
 {
     NSString* paragraphReplacement = @"\n";
-	//NSLog(@"%@", data);
 	
 	NSScanner *scanner = nil; 
 	NSString *text = nil;
@@ -1170,10 +997,8 @@
 		{
 			// end of tag
 			tag = [text substringFromIndex:2];
-			//NSLog(@"end of tag: %@", tag);
 			if (position!=NSNotFound)
 			{
-				
 				for (int i=[components count]-1; i>=0; i--)
 				{
 					RTLabelComponent *component = [components objectAtIndex:i];
@@ -1185,15 +1010,12 @@
 					}
 				}
 			}
-			
-			
 		}
 		else
 		{
 			// start of tag
 			NSArray *textComponents = [[text substringFromIndex:1] componentsSeparatedByString:@" "];
 			tag = [textComponents objectAtIndex:0];
-			//NSLog(@"start of tag: %@", tag);
 			NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
 			for (int i=1; i<[textComponents count]; i++)
 			{
@@ -1203,18 +1025,12 @@
 					[attributes setObject:[[pair subarrayWithRange:NSMakeRange(1, [pair count] - 1)] componentsJoinedByString:@"="] forKey:[pair objectAtIndex:0]];
 				}
 			}
-			//NSLog(@"%@", attributes);
-			
 			RTLabelComponent *component = [RTLabelComponent componentWithString:nil tag:tag attributes:attributes];
 			component.position = position;
 			[components addObject:component];
 		}
-		
 		last_position = position;
-		
 	}
-	
-	//NSLog(@"%@", components);
 	return [NSDictionary dictionaryWithObjectsAndKeys:components, @"textComponents", data, @"plainText", nil];
 }
 

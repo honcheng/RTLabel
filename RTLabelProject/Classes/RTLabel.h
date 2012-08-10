@@ -54,53 +54,36 @@ typedef enum
 }RTTextLineBreakMode;
 
 @protocol RTLabelDelegate <NSObject>
-
 - (void)rtLabel:(id)rtLabel didSelectLinkWithURL:(NSURL*)url;
-
 @end
 
-@interface RTLabel : UIView {
-	NSString *_text;
-	UIFont *font;
-	UIColor *textColor;
-	RTTextAlignment _textAlignment;
-	RTTextLineBreakMode _lineBreakMode;
-	NSString *_plainText;
-	NSMutableArray *_textComponents;
-	CGSize _optimumSize;
-	CGFloat _lineSpacing;
-	int currentSelectedButtonComponentIndex;
-	NSDictionary *linkAttributes;
-    NSDictionary *selectedLinkAttributes;
-	id<RTLabelDelegate> __unsafe_unretained delegate;
-	CTFrameRef frame;
-    CFRange visibleRange;
-    NSString *paragraphReplacement;
-}
-
+@interface RTLabel : UIView
+@property (nonatomic, copy) NSString *text, *plainText;
 @property (nonatomic, strong) UIColor *textColor;
 @property (nonatomic, strong) UIFont *font;
 @property (nonatomic, strong) NSDictionary *linkAttributes;
 @property (nonatomic, strong) NSDictionary *selectedLinkAttributes;
 @property (nonatomic, unsafe_unretained) id<RTLabelDelegate> delegate;
 @property (nonatomic, copy) NSString *paragraphReplacement;
+@property (nonatomic, strong) NSMutableArray *textComponents;
+@property (nonatomic, assign) RTTextAlignment textAlignment;
+@property (nonatomic, assign) CGSize optimumSize;
+@property (nonatomic, assign) RTTextLineBreakMode lineBreakMode;
+@property (nonatomic, assign) CGFloat lineSpacing;
+@property (nonatomic, assign) int currentSelectedButtonComponentIndex;
+@property (nonatomic, assign) CTFrameRef frameRef;
+@property (nonatomic, assign) CFRange visibleRange;
 
-- (NSString*)text;
-
+// set text
 - (void)setText:(NSString*)text;
+// alternative 
 // from susieyy http://github.com/susieyy
 // The purpose of this code is to cache pre-create the textComponents, is to improve the performance when drawing the text.
 // This improvement is effective if the text is long.
 - (void)setText:(NSString *)text extractTextStyle:(NSDictionary*)extractTextStyle;
++ (NSDictionary*)preExtractTextStyle:(NSString*)data;
 
-- (void)setTextAlignment:(RTTextAlignment)textAlignment;
-- (void)setLineBreakMode:(RTTextLineBreakMode)lineBreakMode;
-
-- (CGSize)optimumSize;
-- (void)setLineSpacing:(CGFloat)lineSpacing;
+// get the visible text
 - (NSString*)visibleText;
 
-
-+ (NSDictionary*)preExtractTextStyle:(NSString*)data;
-// key:textComponents, key:plainText
 @end
