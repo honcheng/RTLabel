@@ -89,7 +89,7 @@
 		[self.dataArray addObject:row7];
 		
 		NSMutableDictionary *row20 = [NSMutableDictionary dictionary];
-		[row20 setObject:@"<p indent=20>Indented bla bla bla bla bla bla bla bla bla bla bla bla bla</p>" forKey:@"text"];
+		[row20 setObject:@"<p indent=20>Indented bla bla <bi>bla bla bla bla</bi> bla bla bla bla bla bla bla</p>" forKey:@"text"];
 		[self.dataArray addObject:row20];
     }
     return self;
