@@ -10,17 +10,16 @@
 
 
 @implementation DemoTableViewCell
-@synthesize rtLabel;
+@synthesize rtLabel = _rtLabel;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         // Initialization code.
-		self.rtLabel = [DemoTableViewCell textLabel];
-		[self.contentView addSubview:self.rtLabel];
-		self.rtLabel;
-		[self.rtLabel setBackgroundColor:[UIColor clearColor]];
+		_rtLabel = [DemoTableViewCell textLabel];
+		[self.contentView addSubview:_rtLabel];
+		[_rtLabel setBackgroundColor:[UIColor clearColor]];
         
         [self setSelectionStyle:UITableViewCellEditingStyleNone];
     }
@@ -51,11 +50,5 @@
     
     // Configure the view for the selected state.
 }
-
-
-- (void)dealloc {
-	self.rtLabel;
-}
-
 
 @end

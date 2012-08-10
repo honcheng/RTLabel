@@ -9,9 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "RTLabel.h"
 
-@interface DemoTableViewCell : UITableViewCell {
-	RTLabel *rtLabel;
-}
-@property (nonatomic) RTLabel *rtLabel;
+@interface DemoTableViewCell : UITableViewCell
+@property (nonatomic, strong) RTLabel *rtLabel;
 + (RTLabel*)textLabel;
 @end

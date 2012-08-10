@@ -58,47 +58,11 @@
 #pragma mark Application lifecycle
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
-    
-    // Override point for customization after application launch.
-    
-    [self.window makeKeyAndVisible];
-	//[window setBackgroundColor:[UIColor blackColor]];
-	
-	/*
-	RTLabel *label = [[RTLabel alloc] initWithFrame:CGRectMake(10,30,300,440)];
-    [label setFont:[UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:15]];
-	
-	NSMutableDictionary *linkAttributes = [NSMutableDictionary dictionary];
-	[linkAttributes setObject:@"bold" forKey:@"style"];
-	[linkAttributes setObject:@"blue" forKey:@"color"];
-	[linkAttributes setObject:@"1" forKey:@"underline"];
-	
-	NSMutableDictionary *selectedLinkAttributes = [NSMutableDictionary dictionary];
-	[selectedLinkAttributes setObject:@"bold" forKey:@"style"];
-	[selectedLinkAttributes setObject:@"red" forKey:@"color"];
-	[selectedLinkAttributes setObject:@"2" forKey:@"underline"];
-	
-	//NSMutableString *text = [NSMutableString stringWithString:@""];
-	NSString *text = @"<p indent=0>!!!Lorem <font kern=35 underline=2 style=italic color=blue>ipsum</font> dolor \tsit amet, <i>consectetur adipisicing elit, sed do eiusmod tempor</i> <u color=red>incididunt ut</u> <uu color=green>labore et dolore</uu> magna aliqua.</p><p indent=20><i>Ut enim ad minim</i> veniam, <b>quis nostrud</b> exercitation <font color=#CCFF00 face=HelveticaNeue-CondensedBold size=30>ullamco laboris <i>nisi</i> ut aliquip</font> <font color='blue' size=30 stroke=1>ex ea commodo consequat.</font> Duis aute irure dolor in <font face=Cochin-Bold size=40>reprehenderit</font> <font face=AmericanTypewriter size=20 color=purple>in voluptate velit esse cillum dolore</font> eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat <i>non <font color=cyan>proident,</p> <b>sunt in <u>culpa qui</u> officia</b> deserunt</font> mollit</i> anim id est laborum.\n<p><a href='http://honcheng.com'>clickable link</a></p> ";
-	//NSString *text = @"Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor";
-	//NSString *text = @"Lorem ipsum dolor sit amet";
-	[label setLinkAttributes:linkAttributes];
-	[label setSelectedLinkAttributes:selectedLinkAttributes];
-	[label setText:text];
-	[label setTextAlignment:RTTextAlignmentJustify];
-	[label setLineSpacing:5];
-	[label setDelegate:self];
-    
-    [window addSubview:label];
-	[label release];
 
-	
-	[window setBackgroundColor:[UIColor whiteColor]];
-	*/
-	
+    [self.window makeKeyAndVisible];
 	DemoTableViewController *demoTableViewController = [[DemoTableViewController alloc] initWithStyle:UITableViewStylePlain];
 	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:demoTableViewController];
-	[window addSubview:navController.view];
+	[window setRootViewController:navController];
 	
 	
 	return YES;

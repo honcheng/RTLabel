@@ -38,10 +38,6 @@
 #import <UIKit/UIKit.h>
 
 
-@interface DemoTableViewController : UITableViewController {
-	NSMutableArray *dataArray;
-}
-
-@property (nonatomic) NSMutableArray *dataArray;
-
+@interface DemoTableViewController : UITableViewController
+@property (nonatomic, strong) NSMutableArray *dataArray;
 @end

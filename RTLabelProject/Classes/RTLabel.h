@@ -78,10 +78,10 @@ typedef enum
     NSString *paragraphReplacement;
 }
 
-@property (nonatomic) UIColor *textColor;
-@property (nonatomic) UIFont *font;
-@property (nonatomic) NSDictionary *linkAttributes;
-@property (nonatomic) NSDictionary *selectedLinkAttributes;
+@property (nonatomic, strong) UIColor *textColor;
+@property (nonatomic, strong) UIFont *font;
+@property (nonatomic, strong) NSDictionary *linkAttributes;
+@property (nonatomic, strong) NSDictionary *selectedLinkAttributes;
 @property (nonatomic, unsafe_unretained) id<RTLabelDelegate> delegate;
 @property (nonatomic, copy) NSString *paragraphReplacement;
 

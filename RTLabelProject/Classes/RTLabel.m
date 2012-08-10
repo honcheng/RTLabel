@@ -773,16 +773,7 @@
 
 - (void)dealloc 
 {
-    delegate = nil;
-	//CFRelease(frame);
-	//CFRelease(framesetter);
-    self.textColor;
-    self.font;
-	self._text;
-    
-    self.linkAttributes;
-    self.selectedLinkAttributes;
-    
+    self.delegate = nil;
 }
 
 - (NSArray *)components;
