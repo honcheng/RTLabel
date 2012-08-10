@@ -138,9 +138,17 @@
     if (cell == nil) 
 	{
         cell = [[DemoTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        [cell.rtLabel setDelegate:self];
     }
 	[cell.rtLabel setText:[[self.dataArray objectAtIndex:indexPath.row] objectForKey:@"text"]];
     return cell;
+}
+
+#pragma mark RTLabel delegate
+
+- (void)rtLabel:(id)rtLabel didSelectLinkWithURL:(NSURL*)url
+{
+	NSLog(@"did select url %@", url);
 }
 
 

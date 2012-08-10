@@ -35,9 +35,8 @@
  */
 
 #import <UIKit/UIKit.h>
-#import "RTLabel.h"
 
-@interface RTLabelProjectAppDelegate : NSObject <UIApplicationDelegate, RTLabelDelegate> {
+@interface RTLabelProjectAppDelegate : NSObject <UIApplicationDelegate> {
     UIWindow *window;
 }
 
