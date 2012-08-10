@@ -663,7 +663,7 @@
 - (void)applyBoldItalicStyleToText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
 {
     NSString *fontName = [NSString stringWithFormat:@"%@-BoldOblique", self.font.fontName];
-	CTFontRef refFont = CTFontCreateWithName ((CFStringRef)fontName, [self.font pointSize], NULL); 
+	CTFontRef refFont = CTFontCreateWithName ((__bridge CFStringRef)fontName, [self.font pointSize], NULL);
 	CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTFontAttributeName, refFont);
 	CFRelease(refFont);
 }
