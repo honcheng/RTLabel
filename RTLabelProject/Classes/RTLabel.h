@@ -63,14 +63,14 @@ typedef enum
 @end
 
 @interface RTLabel : UIView
-@property (nonatomic, copy) NSString *text, *plainText;
+@property (nonatomic, copy) NSString *text, *plainText, *highlightedText;
 @property (nonatomic, strong) UIColor *textColor;
 @property (nonatomic, strong) UIFont *font;
 @property (nonatomic, strong) NSDictionary *linkAttributes;
 @property (nonatomic, strong) NSDictionary *selectedLinkAttributes;
 @property (nonatomic, unsafe_unretained) id<RTLabelDelegate> delegate;
 @property (nonatomic, copy) NSString *paragraphReplacement;
-@property (nonatomic, strong) NSMutableArray *textComponents;
+@property (nonatomic, strong) NSMutableArray *textComponents, *highlightedTextComponents;
 @property (nonatomic, assign) RTTextAlignment textAlignment;
 @property (nonatomic, assign) CGSize optimumSize;
 @property (nonatomic, assign) RTTextLineBreakMode lineBreakMode;
@@ -78,20 +78,22 @@ typedef enum
 @property (nonatomic, assign) int currentSelectedButtonComponentIndex;
 @property (nonatomic, assign) CTFrameRef frameRef;
 @property (nonatomic, assign) CFRange visibleRange;
+@property (nonatomic, assign) BOOL highlighted;
 
 // set text
 - (void)setText:(NSString*)text;
-// alternative 
++ (RTLabelExtractedComponent*)extractTextStyleFromText:(NSString*)data paragraphReplacement:(NSString*)paragraphReplacement;
+// get the visible text
+- (NSString*)visibleText;
+
+// alternative
 // from susieyy http://github.com/susieyy
 // The purpose of this code is to cache pre-create the textComponents, is to improve the performance when drawing the text.
 // This improvement is effective if the text is long.
 - (void)setText:(NSString *)text extractedTextComponent:(RTLabelExtractedComponent*)extractedComponent;
-+ (RTLabelExtractedComponent*)extractTextStyleFromText:(NSString*)data paragraphReplacement:(NSString*)paragraphReplacement;
-
 - (void)setText:(NSString *)text extractedTextStyle:(NSDictionary*)extractTextStyle __attribute__((deprecated));
 + (NSDictionary*)preExtractTextStyle:(NSString*)data __attribute__((deprecated));
 
-// get the visible text
-- (NSString*)visibleText;
+
 
 @end

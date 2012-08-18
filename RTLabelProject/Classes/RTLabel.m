@@ -224,10 +224,13 @@
 	CFAttributedStringSetAttribute(attrString, CFRangeMake(0, CFAttributedStringGetLength(attrString)), kCTFontAttributeName, thisFont);
 	
 	NSMutableArray *links = [NSMutableArray array];
-	
-	for (RTLabelComponent *component in self.textComponents)
+	NSMutableArray *textComponents = nil;
+    if (self.highlighted) textComponents = self.highlightedTextComponents;
+    else textComponents = self.textComponents;
+    
+	for (RTLabelComponent *component in textComponents)
 	{
-		int index = [self.textComponents indexOfObject:component];
+		int index = [textComponents indexOfObject:component];
 		component.componentIndex = index;
 		
 		if ([component.tagLabel caseInsensitiveCompare:@"i"] == NSOrderedSame)
@@ -681,6 +684,19 @@
 {
 	_lineSpacing = lineSpacing;
 	[self setNeedsDisplay];
+}
+
+- (void)setHighlighted:(BOOL)highlighted
+{
+    _highlighted = highlighted;
+    [self setNeedsDisplay];
+}
+
+- (void)setHighlightedText:(NSString *)text
+{
+	_highlightedText = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
+	RTLabelExtractedComponent *component = [RTLabel extractTextStyleFromText:_highlightedText paragraphReplacement:self.paragraphReplacement];
+    [self setHighlightedTextComponents:component.textComponents];
 }
 
 - (void)setText:(NSString *)text
