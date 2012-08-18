@@ -57,6 +57,11 @@ typedef enum
 - (void)rtLabel:(id)rtLabel didSelectLinkWithURL:(NSURL*)url;
 @end
 
+@interface RTLabelExtractedComponent : NSObject
+@property (nonatomic, strong) NSMutableArray *textComponents;
+@property (nonatomic, copy) NSString *plainText;
+@end
+
 @interface RTLabel : UIView
 @property (nonatomic, copy) NSString *text, *plainText;
 @property (nonatomic, strong) UIColor *textColor;
@@ -80,8 +85,11 @@ typedef enum
 // from susieyy http://github.com/susieyy
 // The purpose of this code is to cache pre-create the textComponents, is to improve the performance when drawing the text.
 // This improvement is effective if the text is long.
-- (void)setText:(NSString *)text extractTextStyle:(NSDictionary*)extractTextStyle;
-+ (NSDictionary*)preExtractTextStyle:(NSString*)data;
+- (void)setText:(NSString *)text extractedTextComponent:(RTLabelExtractedComponent*)extractedComponent;
++ (RTLabelExtractedComponent*)extractTextStyleFromText:(NSString*)data paragraphReplacement:(NSString*)paragraphReplacement;
+
+- (void)setText:(NSString *)text extractedTextStyle:(NSDictionary*)extractTextStyle __attribute__((deprecated));
++ (NSDictionary*)preExtractTextStyle:(NSString*)data __attribute__((deprecated));
 
 // get the visible text
 - (NSString*)visibleText;

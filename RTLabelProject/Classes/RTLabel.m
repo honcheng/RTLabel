@@ -107,14 +107,24 @@
 
 @end
 
+@implementation RTLabelExtractedComponent
+
++ (RTLabelExtractedComponent*)rtLabelExtractComponentsWithTextComponent:(NSMutableArray*)textComponents plainText:(NSString*)plainText
+{
+    RTLabelExtractedComponent *component = [[RTLabelExtractedComponent alloc] init];
+    [component setTextComponents:textComponents];
+    [component setPlainText:plainText];
+    return component;
+}
+
+@end
+
 @interface RTLabel()
 - (CGFloat)frameHeight:(CTFrameRef)frame;
 - (NSArray *)components;
 - (void)parse:(NSString *)data valid_tags:(NSArray *)valid_tags;
 - (NSArray*) colorForHex:(NSString *)hexColor;
 - (void)render;
-- (void)extractTextStyle:(NSString*)text;
-
 
 #pragma mark -
 #pragma mark styling
@@ -676,15 +686,17 @@
 - (void)setText:(NSString *)text
 {
 	_text = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
-	[self extractTextStyle:_text];
-	[self setNeedsDisplay];
+	RTLabelExtractedComponent *component = [RTLabel extractTextStyleFromText:_text paragraphReplacement:self.paragraphReplacement];
+    [self setTextComponents:component.textComponents];
+    [self setPlainText:component.plainText];
+    [self setNeedsDisplay];
 }
 
-- (void)setText:(NSString *)text extractTextStyle:(NSDictionary*)extractTextStyle;
+- (void)setText:(NSString *)text extractedTextComponent:(RTLabelExtractedComponent*)extractedComponent
 {
 	_text = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
-    [self setTextComponents:[extractTextStyle objectForKey:@"textComponents"]];
-    [self setPlainText:[extractTextStyle objectForKey:@"plainText"]];
+    [self setTextComponents:extractedComponent.textComponents];
+    [self setPlainText:extractedComponent.plainText];
 	[self setNeedsDisplay];
 }
 
@@ -752,7 +764,7 @@
 	return [components copy];
 }
 
-- (void)extractTextStyle:(NSString*)data
++ (RTLabelExtractedComponent*)extractTextStyleFromText:(NSString*)data paragraphReplacement:(NSString*)paragraphReplacement
 {
 	NSScanner *scanner = nil; 
 	NSString *text = nil;
@@ -773,7 +785,7 @@
 		{
 			if ([delimiter rangeOfString:@"<p"].location==0)
 			{
-				data = [data stringByReplacingOccurrencesOfString:delimiter withString:self.paragraphReplacement options:NSCaseInsensitiveSearch range:NSMakeRange(last_position, position+delimiter.length-last_position)];
+				data = [data stringByReplacingOccurrencesOfString:delimiter withString:paragraphReplacement options:NSCaseInsensitiveSearch range:NSMakeRange(last_position, position+delimiter.length-last_position)];
 			}
 			else
 			{
@@ -834,8 +846,7 @@
 		last_position = position;
 	}
 	
-    [self setTextComponents:components];
-    [self setPlainText:data];
+    return [RTLabelExtractedComponent rtLabelExtractComponentsWithTextComponent:components plainText:data];
 }
 
 
@@ -959,79 +970,22 @@
     return text;
 }
 
+#pragma mark deprecated methods
+
+- (void)setText:(NSString *)text extractTextStyle:(NSDictionary*)extractTextStyle;
+{
+	_text = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
+    [self setTextComponents:[extractTextStyle objectForKey:@"textComponents"]];
+    [self setPlainText:[extractTextStyle objectForKey:@"plainText"]];
+	[self setNeedsDisplay];
+}
+
 + (NSDictionary*)preExtractTextStyle:(NSString*)data
 {
     NSString* paragraphReplacement = @"\n";
 	
-	NSScanner *scanner = nil; 
-	NSString *text = nil;
-	NSString *tag = nil;
-	
-	NSMutableArray *components = [NSMutableArray array];
-	
-	int last_position = 0;
-	scanner = [NSScanner scannerWithString:data];
-	while (![scanner isAtEnd])
-    {
-		[scanner scanUpToString:@"<" intoString:NULL];
-		[scanner scanUpToString:@">" intoString:&text];
-		
-		NSString *delimiter = [NSString stringWithFormat:@"%@>", text];
-		int position = [data rangeOfString:delimiter].location;
-		if (position!=NSNotFound)
-		{
-			if ([delimiter rangeOfString:@"<p"].location==0)
-			{
-				data = [data stringByReplacingOccurrencesOfString:delimiter withString:paragraphReplacement options:NSCaseInsensitiveSearch range:NSMakeRange(last_position, position+delimiter.length-last_position)];
-			}
-			else
-			{
-				data = [data stringByReplacingOccurrencesOfString:delimiter withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(last_position, position+delimiter.length-last_position)];
-			}
-			
-			data = [data stringByReplacingOccurrencesOfString:@"&lt;" withString:@"<"];
-			data = [data stringByReplacingOccurrencesOfString:@"&gt;" withString:@">"];
-		}
-		
-		if ([text rangeOfString:@"</"].location==0)
-		{
-			// end of tag
-			tag = [text substringFromIndex:2];
-			if (position!=NSNotFound)
-			{
-				for (int i=[components count]-1; i>=0; i--)
-				{
-					RTLabelComponent *component = [components objectAtIndex:i];
-					if (component.text==nil && [component.tagLabel isEqualToString:tag])
-					{
-						NSString *text2 = [data substringWithRange:NSMakeRange(component.position, position-component.position)];
-						component.text = text2;
-						break;
-					}
-				}
-			}
-		}
-		else
-		{
-			// start of tag
-			NSArray *textComponents = [[text substringFromIndex:1] componentsSeparatedByString:@" "];
-			tag = [textComponents objectAtIndex:0];
-			NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
-			for (int i=1; i<[textComponents count]; i++)
-			{
-				NSArray *pair = [[textComponents objectAtIndex:i] componentsSeparatedByString:@"="];
-				if ([pair count]>=2)
-				{
-					[attributes setObject:[[pair subarrayWithRange:NSMakeRange(1, [pair count] - 1)] componentsJoinedByString:@"="] forKey:[pair objectAtIndex:0]];
-				}
-			}
-			RTLabelComponent *component = [RTLabelComponent componentWithString:nil tag:tag attributes:attributes];
-			component.position = position;
-			[components addObject:component];
-		}
-		last_position = position;
-	}
-	return [NSDictionary dictionaryWithObjectsAndKeys:components, @"textComponents", data, @"plainText", nil];
+    RTLabelExtractedComponent *component = [RTLabel extractTextStyleFromText:data paragraphReplacement:paragraphReplacement];
+	return [NSDictionary dictionaryWithObjectsAndKeys:component.textComponents, @"textComponents", component.plainText, @"plainText", nil];
 }
 
 
