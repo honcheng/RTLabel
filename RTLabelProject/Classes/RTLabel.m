@@ -45,21 +45,6 @@
 @implementation RTLabelButton
 @end
 
-
-@interface RTLabelComponent : NSObject
-@property (nonatomic, assign) int componentIndex;
-@property (nonatomic, copy) NSString *text;
-@property (nonatomic, copy) NSString *tagLabel;
-@property (nonatomic) NSMutableDictionary *attributes;
-@property (nonatomic, assign) int position;
-
-- (id)initWithString:(NSString*)aText tag:(NSString*)aTagLabel attributes:(NSMutableDictionary*)theAttributes;
-+ (id)componentWithString:(NSString*)aText tag:(NSString*)aTagLabel attributes:(NSMutableDictionary*)theAttributes;
-- (id)initWithTag:(NSString*)aTagLabel position:(int)_position attributes:(NSMutableDictionary*)_attributes;
-+ (id)componentWithTag:(NSString*)aTagLabel position:(int)aPosition attributes:(NSMutableDictionary*)theAttributes;
-
-@end
-
 @implementation RTLabelComponent
 
 - (id)initWithString:(NSString*)aText tag:(NSString*)aTagLabel attributes:(NSMutableDictionary*)theAttributes;
@@ -688,8 +673,11 @@
 
 - (void)setHighlighted:(BOOL)highlighted
 {
-    _highlighted = highlighted;
-    [self setNeedsDisplay];
+    if (highlighted!=_highlighted)
+    {
+        _highlighted = highlighted;
+        [self setNeedsDisplay];
+    }
 }
 
 - (void)setHighlightedText:(NSString *)text
@@ -714,6 +702,12 @@
     [self setTextComponents:extractedComponent.textComponents];
     [self setPlainText:extractedComponent.plainText];
 	[self setNeedsDisplay];
+}
+
+- (void)setHighlightedText:(NSString *)text extractedTextComponent:(RTLabelExtractedComponent*)extractedComponent
+{
+    _highlightedText = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
+    [self setHighlightedTextComponents:extractedComponent.textComponents];
 }
 
 // http://forums.macrumors.com/showthread.php?t=925312

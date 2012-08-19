@@ -57,9 +57,24 @@ typedef enum
 - (void)rtLabel:(id)rtLabel didSelectLinkWithURL:(NSURL*)url;
 @end
 
+@interface RTLabelComponent : NSObject
+@property (nonatomic, assign) int componentIndex;
+@property (nonatomic, copy) NSString *text;
+@property (nonatomic, copy) NSString *tagLabel;
+@property (nonatomic) NSMutableDictionary *attributes;
+@property (nonatomic, assign) int position;
+
+- (id)initWithString:(NSString*)aText tag:(NSString*)aTagLabel attributes:(NSMutableDictionary*)theAttributes;
++ (id)componentWithString:(NSString*)aText tag:(NSString*)aTagLabel attributes:(NSMutableDictionary*)theAttributes;
+- (id)initWithTag:(NSString*)aTagLabel position:(int)_position attributes:(NSMutableDictionary*)_attributes;
++ (id)componentWithTag:(NSString*)aTagLabel position:(int)aPosition attributes:(NSMutableDictionary*)theAttributes;
+
+@end
+
 @interface RTLabelExtractedComponent : NSObject
 @property (nonatomic, strong) NSMutableArray *textComponents;
 @property (nonatomic, copy) NSString *plainText;
++ (RTLabelExtractedComponent*)rtLabelExtractComponentsWithTextComponent:(NSMutableArray*)textComponents plainText:(NSString*)plainText;
 @end
 
 @interface RTLabel : UIView
@@ -91,6 +106,7 @@ typedef enum
 // The purpose of this code is to cache pre-create the textComponents, is to improve the performance when drawing the text.
 // This improvement is effective if the text is long.
 - (void)setText:(NSString *)text extractedTextComponent:(RTLabelExtractedComponent*)extractedComponent;
+- (void)setHighlightedText:(NSString *)text extractedTextComponent:(RTLabelExtractedComponent*)extractedComponent;
 - (void)setText:(NSString *)text extractedTextStyle:(NSDictionary*)extractTextStyle __attribute__((deprecated));
 + (NSDictionary*)preExtractTextStyle:(NSString*)data __attribute__((deprecated));
 
