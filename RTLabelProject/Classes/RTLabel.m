@@ -982,7 +982,7 @@
 
 #pragma mark deprecated methods
 
-- (void)setText:(NSString *)text extractTextStyle:(NSDictionary*)extractTextStyle
+- (void)setText:(NSString *)text extractedTextStyle:(NSDictionary*)extractTextStyle
 {
 	_text = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
     [self setTextComponents:[extractTextStyle objectForKey:@"textComponents"]];

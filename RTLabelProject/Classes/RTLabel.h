@@ -107,6 +107,7 @@ typedef enum
 // This improvement is effective if the text is long.
 - (void)setText:(NSString *)text extractedTextComponent:(RTLabelExtractedComponent*)extractedComponent;
 - (void)setHighlightedText:(NSString *)text extractedTextComponent:(RTLabelExtractedComponent*)extractedComponent;
+- (void)setText:(NSString *)text extractedTextStyle:(NSDictionary*)extractTextStyle __attribute__((deprecated));
 + (NSDictionary*)preExtractTextStyle:(NSString*)data __attribute__((deprecated));
 
 
