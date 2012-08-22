@@ -390,7 +390,7 @@
 	int lineBreakMode = _lineBreakMode;
 	int lineSpacing = _lineSpacing;
 	
-	for (int i=0; i<[[attributes allKeys] count]; i++)
+	for (NSUInteger i=0; i<[[attributes allKeys] count]; i++)
 	{
 		NSString *key = [[attributes allKeys] objectAtIndex:i];
 		id value = [attributes objectForKey:key];
@@ -831,7 +831,7 @@
 			tag = [textComponents objectAtIndex:0];
 			//NSLog(@"start of tag: %@", tag);
 			NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
-			for (int i=1; i<[textComponents count]; i++)
+			for (NSUInteger i=1; i<[textComponents count]; i++)
 			{
 				NSArray *pair = [[textComponents objectAtIndex:i] componentsSeparatedByString:@"="];
 				if ([pair count] > 0) {
@@ -894,7 +894,7 @@
 			{
 				attributes = [NSMutableDictionary dictionary];
 				NSArray *rawAttributes = [tag componentsSeparatedByString:@" "];
-				for (int i=1; i<[rawAttributes count]; i++)
+				for (NSUInteger i=1; i<[rawAttributes count]; i++)
 				{
 					NSArray *pair = [[rawAttributes objectAtIndex:i] componentsSeparatedByString:@"="];
 					if ([pair count]==2)
@@ -965,7 +965,7 @@
     // Scan values  
     unsigned int r, g, b;  
     [[NSScanner scannerWithString:rString] scanHexInt:&r];  
-    [[NSScanner scannerWithString:gString] scanHexInt:&g];  
+    [[NSScanner scannerWithString:gString] scanHexInt:&g];
     [[NSScanner scannerWithString:bString] scanHexInt:&b];  
 	
 	NSArray *components = [NSArray arrayWithObjects:[NSNumber numberWithFloat:((float) r / 255.0f)],[NSNumber numberWithFloat:((float) g / 255.0f)],[NSNumber numberWithFloat:((float) b / 255.0f)],[NSNumber numberWithFloat:1.0],nil];
