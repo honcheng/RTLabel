@@ -47,7 +47,7 @@
 
 @implementation RTLabelComponent
 
-- (id)initWithString:(NSString*)aText tag:(NSString*)aTagLabel attributes:(NSMutableDictionary*)theAttributes;
+- (id)initWithString:(NSString*)aText tag:(NSString*)aTagLabel attributes:(NSMutableDictionary*)theAttributes
 {
     self = [super init];
 	if (self) {
@@ -730,7 +730,7 @@
     self.delegate = nil;
 }
 
-- (NSArray *)components;
+- (NSArray *)components
 {
 	NSScanner *scanner = [NSScanner scannerWithString:self.text];
 	[scanner setCharactersToBeSkipped:nil]; 
@@ -982,7 +982,7 @@
 
 #pragma mark deprecated methods
 
-- (void)setText:(NSString *)text extractTextStyle:(NSDictionary*)extractTextStyle;
+- (void)setText:(NSString *)text extractTextStyle:(NSDictionary*)extractTextStyle
 {
 	_text = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
     [self setTextComponents:[extractTextStyle objectForKey:@"textComponents"]];
