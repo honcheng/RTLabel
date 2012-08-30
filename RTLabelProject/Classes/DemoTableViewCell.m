@@ -36,13 +36,25 @@
 	[self.rtLabel setFrame:frame];
 }
 
-+ (RTLabel*)textLabel
++(CGSize) cellSizeOnOrientation
 {
-	RTLabel *label = [[RTLabel alloc] initWithFrame:CGRectMake(10,10,300,100)];
-	//[label setFont:[UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:20]];
+    UIInterfaceOrientation o = [UIApplication sharedApplication].statusBarOrientation;
+    if (o == UIInterfaceOrientationPortrait) {
+        return CGSizeMake(300, 100);
+    }else {
+        return CGSizeMake(460, 75);
+    }
+}
+
++(RTLabel*)textLabel
+{
+    CGSize s = [self cellSizeOnOrientation];
+    RTLabel *label = [[RTLabel alloc] initWithFrame:CGRectMake(10,10,s.width,s.height)];
+    //[label setFont:[UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:20]];
     [label setParagraphReplacement:@""];
 	return label;
 }
+
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     
