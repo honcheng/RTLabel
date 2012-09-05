@@ -291,7 +291,10 @@
 		{
 			[self applyParagraphStyleToText:attrString attributes:component.attributes atPosition:component.position withLength:[component.text length]];
 		}
-		
+		else if ([component.tagLabel caseInsensitiveCompare:@"center"] == NSOrderedSame)
+		{
+			[self applyCenterStyleToText:attrString attributes:component.attributes atPosition:component.position withLength:[component.text length]];
+		}
 	}
     
     // Create the framesetter with the attributed string.
@@ -467,6 +470,51 @@
 	CFDictionaryAddValue( styleDict, kCTParagraphStyleAttributeName, theParagraphRef );
 	
 	CFAttributedStringSetAttributes( text, CFRangeMake(position, length), styleDict, 0 ); 
+	CFRelease(theParagraphRef);
+    CFRelease(styleDict);
+}
+
+- (void)applyCenterStyleToText:(CFMutableAttributedStringRef)text attributes:(NSMutableDictionary*)attributes atPosition:(int)position withLength:(int)length
+{
+	CFMutableDictionaryRef styleDict = ( CFDictionaryCreateMutable( (0), 0, (0), (0) ) );
+	
+	// direction
+	CTWritingDirection direction = kCTWritingDirectionLeftToRight;
+	// leading
+	CGFloat firstLineIndent = 0.0;
+	CGFloat headIndent = 0.0;
+	CGFloat tailIndent = 0.0;
+	CGFloat lineHeightMultiple = 1.0;
+	CGFloat maxLineHeight = 0;
+	CGFloat minLineHeight = 0;
+	CGFloat paragraphSpacing = 0.0;
+	CGFloat paragraphSpacingBefore = 0.0;
+	int textAlignment = _textAlignment;
+	int lineBreakMode = _lineBreakMode;
+	int lineSpacing = _lineSpacing;
+
+    textAlignment = kCTCenterTextAlignment;
+	
+	CTParagraphStyleSetting theSettings[] =
+	{
+		{ kCTParagraphStyleSpecifierAlignment, sizeof(CTTextAlignment), &textAlignment },
+		{ kCTParagraphStyleSpecifierLineBreakMode, sizeof(CTLineBreakMode), &lineBreakMode  },
+		{ kCTParagraphStyleSpecifierBaseWritingDirection, sizeof(CTWritingDirection), &direction },
+		{ kCTParagraphStyleSpecifierLineSpacing, sizeof(CGFloat), &lineSpacing },
+		{ kCTParagraphStyleSpecifierFirstLineHeadIndent, sizeof(CGFloat), &firstLineIndent },
+		{ kCTParagraphStyleSpecifierHeadIndent, sizeof(CGFloat), &headIndent },
+		{ kCTParagraphStyleSpecifierTailIndent, sizeof(CGFloat), &tailIndent },
+		{ kCTParagraphStyleSpecifierLineHeightMultiple, sizeof(CGFloat), &lineHeightMultiple },
+		{ kCTParagraphStyleSpecifierMaximumLineHeight, sizeof(CGFloat), &maxLineHeight },
+		{ kCTParagraphStyleSpecifierMinimumLineHeight, sizeof(CGFloat), &minLineHeight },
+		{ kCTParagraphStyleSpecifierParagraphSpacing, sizeof(CGFloat), &paragraphSpacing },
+		{ kCTParagraphStyleSpecifierParagraphSpacingBefore, sizeof(CGFloat), &paragraphSpacingBefore }
+	};
+	
+	CTParagraphStyleRef theParagraphRef = CTParagraphStyleCreate(theSettings, sizeof(theSettings) / sizeof(CTParagraphStyleSetting));
+	CFDictionaryAddValue( styleDict, kCTParagraphStyleAttributeName, theParagraphRef );
+	
+	CFAttributedStringSetAttributes( text, CFRangeMake(position, length), styleDict, 0 );
 	CFRelease(theParagraphRef);
     CFRelease(styleDict);
 }
