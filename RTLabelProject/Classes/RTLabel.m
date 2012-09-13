@@ -332,7 +332,9 @@
 				CGFloat leading;
 				
 				CTLineGetTypographicBounds(line, &ascent, &descent, &leading);
-
+                CGPoint origin;
+				CTFrameGetLineOrigins(self.frameRef, CFRangeMake(i, 1), &origin);
+                
 				if ( (linkableComponents.position<lineRange.location && linkableComponents.position+linkableComponents.text.length>(u_int16_t)(lineRange.location)) || (linkableComponents.position>=lineRange.location && linkableComponents.position<lineRange.location+lineRange.length))
 				{
 					CGFloat secondaryOffset;
@@ -341,7 +343,7 @@
 					
 					float button_width = primaryOffset2 - primaryOffset;
 					
-					RTLabelButton *button = [[RTLabelButton alloc] initWithFrame:CGRectMake(primaryOffset, height, button_width, ascent+descent)];
+					RTLabelButton *button = [[RTLabelButton alloc] initWithFrame:CGRectMake(primaryOffset+origin.x, height, button_width, ascent+descent)];
 					
 					[button setBackgroundColor:[UIColor colorWithWhite:0 alpha:0]];
 					[button setComponentIndex:linkableComponents.componentIndex];
@@ -353,8 +355,7 @@
                     [self addSubview:button];
 					
 				}
-				CGPoint origin;
-				CTFrameGetLineOrigins(self.frameRef, CFRangeMake(i, 1), &origin);
+				
 				origin.y = self.frame.size.height - origin.y;
 				height = origin.y + descent + _lineSpacing;
 			}
