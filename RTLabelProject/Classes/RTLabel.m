@@ -533,7 +533,7 @@
 {
 	CTFontRef actualFontSize = CFAttributedStringGetAttribute(text, position, kCTFontAttributeName, NULL);
 	
-	UIFont *font = [UIFont boldSystemFontOfSize:CTFontGetSize(actualFontSize)];
+	UIFont *font = [UIFont italicSystemFontOfSize:CTFontGetSize(actualFontSize)];
 	CTFontRef italicFont = CTFontCreateWithName ((__bridge CFStringRef)[font fontName], [font pointSize], NULL); 
 	CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTFontAttributeName, italicFont);
 	
