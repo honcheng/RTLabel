@@ -336,10 +336,10 @@
 				if ( (linkableComponents.position<lineRange.location && linkableComponents.position+linkableComponents.text.length>(u_int16_t)(lineRange.location)) || (linkableComponents.position>=lineRange.location && linkableComponents.position<lineRange.location+lineRange.length))
 				{
 					CGFloat secondaryOffset;
-					double primaryOffset = CTLineGetOffsetForStringIndex(CFArrayGetValueAtIndex(frameLines,i), linkableComponents.position, &secondaryOffset);
-					double primaryOffset2 = CTLineGetOffsetForStringIndex(CFArrayGetValueAtIndex(frameLines,i), linkableComponents.position+linkableComponents.text.length, NULL);
+					CGFloat primaryOffset = CTLineGetOffsetForStringIndex(CFArrayGetValueAtIndex(frameLines,i), linkableComponents.position, &secondaryOffset);
+					CGFloat primaryOffset2 = CTLineGetOffsetForStringIndex(CFArrayGetValueAtIndex(frameLines,i), linkableComponents.position+linkableComponents.text.length, NULL);
 					
-					float button_width = primaryOffset2 - primaryOffset;
+					CGFloat button_width = primaryOffset2 - primaryOffset;
 					
 					RTLabelButton *button = [[RTLabelButton alloc] initWithFrame:CGRectMake(primaryOffset, height, button_width, ascent+descent)];
 					
@@ -391,7 +391,7 @@
 	CGFloat paragraphSpacingBefore = 0.0;
 	int textAlignment = _textAlignment;
 	int lineBreakMode = _lineBreakMode;
-	int lineSpacing = _lineSpacing;
+	int lineSpacing = (int)_lineSpacing;
 	
 	for (NSUInteger i=0; i<[[attributes allKeys] count]; i++)
 	{
@@ -491,7 +491,7 @@
 	CGFloat paragraphSpacingBefore = 0.0;
 	int textAlignment = _textAlignment;
 	int lineBreakMode = _lineBreakMode;
-	int lineSpacing = _lineSpacing;
+	int lineSpacing = (int)_lineSpacing;
 
     textAlignment = kCTCenterTextAlignment;
 	
@@ -770,7 +770,7 @@
         CTLineGetTypographicBounds(line, &ascent,  &descent, &leading);
         height += (ascent + fabsf(descent) + leading);
     }
-    return ceil(height);
+    return ceilf(height);
 }
 
 - (void)dealloc 
