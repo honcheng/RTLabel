@@ -531,13 +531,15 @@
 
 - (void)applyItalicStyleToText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
 {
-	CTFontRef actualFontSize = CFAttributedStringGetAttribute(text, position, kCTFontAttributeName, NULL);
-	
-	UIFont *font = [UIFont italicSystemFontOfSize:CTFontGetSize(actualFontSize)];
-	CTFontRef italicFont = CTFontCreateWithName ((__bridge CFStringRef)[font fontName], [font pointSize], NULL); 
-	CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTFontAttributeName, italicFont);
-	
-	CFRelease(italicFont);
+    CFTypeRef actualFontRef = CFAttributedStringGetAttribute(text, position, kCTFontAttributeName, NULL);
+    CTFontRef italicFontRef = CTFontCreateCopyWithSymbolicTraits(actualFontRef, 0.0, NULL, kCTFontItalicTrait, kCTFontItalicTrait);
+    if (!italicFontRef) {
+        //fallback to system italic font
+        UIFont *font = [UIFont italicSystemFontOfSize:CTFontGetSize(actualFontRef)];
+        italicFontRef = CTFontCreateWithName ((__bridge CFStringRef)[font fontName], [font pointSize], NULL);
+    }
+    CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTFontAttributeName, italicFontRef);
+    CFRelease(italicFontRef);
 }
 
 - (void)applyFontAttributes:(NSDictionary*)attributes toText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
@@ -611,19 +613,32 @@
 
 - (void)applyBoldStyleToText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
 {
-	CTFontRef actualFontSize = CFAttributedStringGetAttribute(text, position, kCTFontAttributeName, NULL);
-	UIFont *font = [UIFont boldSystemFontOfSize:CTFontGetSize(actualFontSize)];
-	CTFontRef boldFont = CTFontCreateWithName ((__bridge CFStringRef)[font fontName], [font pointSize], NULL); 
-	CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTFontAttributeName, boldFont);
-	CFRelease(boldFont);
+    CFTypeRef actualFontRef = CFAttributedStringGetAttribute(text, position, kCTFontAttributeName, NULL);
+    CTFontRef boldFontRef = CTFontCreateCopyWithSymbolicTraits(actualFontRef, 0.0, NULL, kCTFontBoldTrait, kCTFontBoldTrait);
+    if (!boldFontRef) {
+        //fallback to system bold font
+        UIFont *font = [UIFont boldSystemFontOfSize:CTFontGetSize(actualFontRef)];
+        boldFontRef = CTFontCreateWithName ((__bridge CFStringRef)[font fontName], [font pointSize], NULL);
+    }
+    CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTFontAttributeName, boldFontRef);
+    CFRelease(boldFontRef);
 }
 
 - (void)applyBoldItalicStyleToText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
 {
-    NSString *fontName = [NSString stringWithFormat:@"%@-BoldOblique", self.font.fontName];
-	CTFontRef refFont = CTFontCreateWithName ((__bridge CFStringRef)fontName, [self.font pointSize], NULL);
-	CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTFontAttributeName, refFont);
-	CFRelease(refFont);
+    CFTypeRef actualFontRef = CFAttributedStringGetAttribute(text, position, kCTFontAttributeName, NULL);
+    CTFontRef boldItalicFontRef = CTFontCreateCopyWithSymbolicTraits(actualFontRef, 0.0, NULL, kCTFontBoldTrait | kCTFontItalicTrait , kCTFontBoldTrait | kCTFontItalicTrait);
+    if (!boldItalicFontRef) {
+        //try fallback to system boldItalic font
+        NSString *fontName = [NSString stringWithFormat:@"%@-BoldOblique", self.font.fontName];
+        boldItalicFontRef = CTFontCreateWithName ((__bridge CFStringRef)fontName, [self.font pointSize], NULL);
+    }
+    
+    if (boldItalicFontRef) {
+        CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTFontAttributeName, boldItalicFontRef);
+        CFRelease(boldItalicFontRef);
+    }
+
 }
 
 - (void)applyColor:(NSString*)value toText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
