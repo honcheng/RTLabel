@@ -109,15 +109,15 @@
 	NSMutableDictionary *rowInfo = [self.dataArray objectAtIndex:indexPath.row];
 	if ([rowInfo objectForKey:@"cell_height"])
 	{
-		return [[rowInfo objectForKey:@"cell_height"] intValue];
+		return [[rowInfo objectForKey:@"cell_height"] floatValue];
 	}
 	else 
 	{
 		RTLabel *rtLabel = [DemoTableViewCell textLabel];
 		[rtLabel setText:[rowInfo objectForKey:@"text"]];
 		CGSize optimumSize = [rtLabel optimumSize];
-		[rowInfo setObject:[NSNumber numberWithInt:optimumSize.height+20] forKey:@"cell_height"];
-		return [[rowInfo objectForKey:@"cell_height"] intValue];
+		[rowInfo setObject:[NSNumber numberWithFloat:optimumSize.height+20] forKey:@"cell_height"];
+		return [[rowInfo objectForKey:@"cell_height"] floatValue];
 	}
 
 }
