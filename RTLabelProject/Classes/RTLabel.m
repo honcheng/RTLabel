@@ -390,9 +390,9 @@
 	CGFloat minLineHeight = 0; 
 	CGFloat paragraphSpacing = 0.0;
 	CGFloat paragraphSpacingBefore = 0.0;
-	int textAlignment = _textAlignment;
-	int lineBreakMode = _lineBreakMode;
-	int lineSpacing = (int)_lineSpacing;
+	CTTextAlignment textAlignment = (CTTextAlignment)_textAlignment;
+	CTLineBreakMode lineBreakMode = (CTLineBreakMode)_lineBreakMode;
+	CGFloat lineSpacing = _lineSpacing;
 	
 	for (NSUInteger i=0; i<[[attributes allKeys] count]; i++)
 	{
@@ -455,8 +455,9 @@
 		{ kCTParagraphStyleSpecifierAlignment, sizeof(CTTextAlignment), &textAlignment },
 		{ kCTParagraphStyleSpecifierLineBreakMode, sizeof(CTLineBreakMode), &lineBreakMode  },
 		{ kCTParagraphStyleSpecifierBaseWritingDirection, sizeof(CTWritingDirection), &direction }, 
-		{ kCTParagraphStyleSpecifierLineSpacing, sizeof(CGFloat), &lineSpacing }, // leading
-		{ kCTParagraphStyleSpecifierFirstLineHeadIndent, sizeof(CGFloat), &firstLineIndent }, 
+		{ kCTParagraphStyleSpecifierMinimumLineSpacing, sizeof(CGFloat), &lineSpacing }, // leading
+		{ kCTParagraphStyleSpecifierMaximumLineSpacing, sizeof(CGFloat), &lineSpacing }, // leading
+		{ kCTParagraphStyleSpecifierFirstLineHeadIndent, sizeof(CGFloat), &firstLineIndent },
 		{ kCTParagraphStyleSpecifierHeadIndent, sizeof(CGFloat), &headIndent }, 
 		{ kCTParagraphStyleSpecifierTailIndent, sizeof(CGFloat), &tailIndent }, 
 		{ kCTParagraphStyleSpecifierLineHeightMultiple, sizeof(CGFloat), &lineHeightMultiple }, 

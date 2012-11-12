@@ -114,6 +114,7 @@
 	else 
 	{
 		RTLabel *rtLabel = [DemoTableViewCell textLabel];
+        rtLabel.lineSpacing = 20.0;
 		[rtLabel setText:[rowInfo objectForKey:@"text"]];
 		CGSize optimumSize = [rtLabel optimumSize];
 		[rowInfo setObject:[NSNumber numberWithFloat:optimumSize.height+20] forKey:@"cell_height"];
@@ -141,6 +142,7 @@
         [cell.rtLabel setDelegate:self];
     }
 	[cell.rtLabel setText:[[self.dataArray objectAtIndex:indexPath.row] objectForKey:@"text"]];
+    cell.rtLabel.lineSpacing = 20.0;
     return cell;
 }
 
