@@ -54,6 +54,8 @@ typedef enum
 }RTTextLineBreakMode;
 
 @protocol RTLabelDelegate <NSObject>
+
+@optional
 - (void)rtLabel:(id)rtLabel didSelectLinkWithURL:(NSURL*)url;
 @end
 
@@ -91,7 +93,6 @@ typedef enum
 @property (nonatomic, assign) RTTextLineBreakMode lineBreakMode;
 @property (nonatomic, assign) CGFloat lineSpacing;
 @property (nonatomic, assign) int currentSelectedButtonComponentIndex;
-@property (nonatomic, assign) CTFrameRef frameRef;
 @property (nonatomic, assign) CFRange visibleRange;
 @property (nonatomic, assign) BOOL highlighted;
 
