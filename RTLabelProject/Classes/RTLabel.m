@@ -718,7 +718,7 @@
 	RTLabelButton *button = (RTLabelButton*)sender;
 	[self setCurrentSelectedButtonComponentIndex:-1];
 	[self setNeedsDisplay];
-	
+
 	if ([self.delegate respondsToSelector:@selector(rtLabel:didSelectLinkWithURL:)])
 	{
 		[self.delegate rtLabel:self didSelectLinkWithURL:button.url];
