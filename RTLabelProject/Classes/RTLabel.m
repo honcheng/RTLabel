@@ -127,24 +127,41 @@
 
 @implementation RTLabel
 
-- (id)initWithFrame:(CGRect)_frame {
-    
+- (id)initWithFrame:(CGRect)_frame
+{
     self = [super initWithFrame:_frame];
-    if (self) {
-
-		[self setBackgroundColor:[UIColor clearColor]];
-		_font = [UIFont systemFontOfSize:15];
-		_textColor = [UIColor blackColor];
-		_text = @"";
-		_textAlignment = RTTextAlignmentLeft;
-		_lineBreakMode = RTTextLineBreakModeWordWrapping;
-		_lineSpacing = 3;
-		_currentSelectedButtonComponentIndex = -1;
-        _paragraphReplacement = @"\n";
-		
-		[self setMultipleTouchEnabled:YES];
+    if (self)
+	{
+		[self initialize];
     }
     return self;
+}
+
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{    
+    self = [super initWithCoder:aDecoder];
+    if (self)
+	{
+		[self initialize];
+    }
+    return self;
+}
+
+- (void)initialize
+{
+	[self setBackgroundColor:[UIColor clearColor]];
+
+	_font = [UIFont systemFontOfSize:15];
+	_textColor = [UIColor blackColor];
+	_text = @"";
+	_textAlignment = RTTextAlignmentLeft;
+	_lineBreakMode = RTTextLineBreakModeWordWrapping;
+	_lineSpacing = 3;
+	_currentSelectedButtonComponentIndex = -1;
+	_paragraphReplacement = @"\n";
+	
+	[self setMultipleTouchEnabled:YES];
 }
 
 - (void)setTextAlignment:(RTTextAlignment)textAlignment
