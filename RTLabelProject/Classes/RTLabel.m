@@ -765,14 +765,14 @@
 
 - (void)setHighlightedText:(NSString *)text
 {
-	_highlightedText = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
+	_highlightedText = [self replaceLineBreakTag:text];
 	RTLabelExtractedComponent *component = [RTLabel extractTextStyleFromText:_highlightedText paragraphReplacement:self.paragraphReplacement];
     [self setHighlightedTextComponents:component.textComponents];
 }
 
 - (void)setText:(NSString *)text
 {
-	_text = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
+	_text = [self replaceLineBreakTag:text];
 	RTLabelExtractedComponent *component = [RTLabel extractTextStyleFromText:_text paragraphReplacement:self.paragraphReplacement];
     [self setTextComponents:component.textComponents];
     [self setPlainText:component.plainText];
@@ -781,7 +781,7 @@
 
 - (void)setText:(NSString *)text extractedTextComponent:(RTLabelExtractedComponent*)extractedComponent
 {
-	_text = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
+	_text = [self replaceLineBreakTag:text];
     [self setTextComponents:extractedComponent.textComponents];
     [self setPlainText:extractedComponent.plainText];
 	[self setNeedsDisplay];
@@ -789,7 +789,7 @@
 
 - (void)setHighlightedText:(NSString *)text extractedTextComponent:(RTLabelExtractedComponent*)extractedComponent
 {
-    _highlightedText = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
+    _highlightedText = [self replaceLineBreakTag:text];
     [self setHighlightedTextComponents:extractedComponent.textComponents];
 }
 
@@ -1063,11 +1063,17 @@
     return text;
 }
 
+- (NSString *)replaceLineBreakTag:(NSString *)text {
+    text = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
+    text = [text stringByReplacingOccurrencesOfString:@"<br/>" withString:@"\n"];
+    return text;
+}
+
 #pragma mark deprecated methods
 
 - (void)setText:(NSString *)text extractedTextStyle:(NSDictionary*)extractTextStyle
 {
-	_text = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
+	_text = [self replaceLineBreakTag:text];
     [self setTextComponents:[extractTextStyle objectForKey:@"textComponents"]];
     [self setPlainText:[extractTextStyle objectForKey:@"plainText"]];
 	[self setNeedsDisplay];
