@@ -875,6 +875,8 @@
             text = [text stringByReplacingOccurrencesOfString:@"&lt;" withString:@"<"];
             text = [text stringByReplacingOccurrencesOfString:@"&gt;" withString:@">"];
             text = [text stringByReplacingOccurrencesOfString:@"&amp;" withString:@"&"];
+            text = [text stringByReplacingOccurrencesOfString:@"&apos;" withString:@"'"];
+            text = [text stringByReplacingOccurrencesOfString:@"&quot;" withString:@"\""];
             [plainText appendString:text];
         }
 
