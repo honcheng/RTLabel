@@ -858,61 +858,54 @@
 }
 
 + (RTLabelExtractedComponent*)extractTextStyleFromText:(NSString*)data paragraphReplacement:(NSString*)paragraphReplacement
-{
-	NSScanner *scanner = nil; 
-	NSString *text = nil;
-	NSString *tag = nil;
-	
+{	
 	NSMutableArray *components = [NSMutableArray array];
-	
-	int last_position = 0;
-	scanner = [NSScanner scannerWithString:data];
+    NSMutableString *plainText = [NSMutableString new];
+    NSScanner *scanner = [NSScanner scannerWithString:data];
+    scanner.charactersToBeSkipped = nil;
+    
 	while (![scanner isAtEnd])
     {
-		[scanner scanUpToString:@"<" intoString:NULL];
-		[scanner scanUpToString:@">" intoString:&text];
-		
-		NSString *delimiter = [NSString stringWithFormat:@"%@>", text];
-		int position = [data rangeOfString:delimiter].location;
-		if (position!=NSNotFound)
+        // Scan plain text
+        NSString *text = nil;
+		[scanner scanUpToString:@"<" intoString:&text];
+
+        if(text) {
+            // Replace html entities
+            text = [text stringByReplacingOccurrencesOfString:@"&lt;" withString:@"<"];
+            text = [text stringByReplacingOccurrencesOfString:@"&gt;" withString:@">"];
+            text = [text stringByReplacingOccurrencesOfString:@"&amp;" withString:@"&"];
+            [plainText appendString:text];
+        }
+
+        // Scan html tag
+        [scanner scanUpToString:@">" intoString:&text];
+        [scanner scanString:@">" intoString:nil];   // Skip closing '>'
+        NSString *tag = [text stringByAppendingString:@">"];
+
+        if ([tag rangeOfString:@"<p"].location==0)
+            [plainText appendString:paragraphReplacement];
+
+		if ([tag rangeOfString:@"</"].location==0)
 		{
-			if ([delimiter rangeOfString:@"<p"].location==0)
-			{
-				data = [data stringByReplacingOccurrencesOfString:delimiter withString:paragraphReplacement options:NSCaseInsensitiveSearch range:NSMakeRange(last_position, position+delimiter.length-last_position)];
-			}
-			else
-			{
-				data = [data stringByReplacingOccurrencesOfString:delimiter withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(last_position, position+delimiter.length-last_position)];
-			}
-			
-			data = [data stringByReplacingOccurrencesOfString:@"&lt;" withString:@"<"];
-			data = [data stringByReplacingOccurrencesOfString:@"&gt;" withString:@">"];
-		}
-		
-		if ([text rangeOfString:@"</"].location==0)
-		{
-			// end of tag
-			tag = [text substringFromIndex:2];
-			if (position!=NSNotFound)
-			{
-				for (int i=[components count]-1; i>=0; i--)
-				{
-					RTLabelComponent *component = [components objectAtIndex:i];
-					if (component.text==nil && [component.tagLabel isEqualToString:tag])
-					{
-						NSString *text2 = [data substringWithRange:NSMakeRange(component.position, position-component.position)];
-						component.text = text2;
-						break;
-					}
+			// End of tag
+            NSString *tag_name = [tag substringWithRange:NSMakeRange(2, tag.length - 3)];
+            for (int i=[components count]-1; i>=0; i--)
+            {
+                RTLabelComponent *component = [components objectAtIndex:i];
+                if (component.text==nil && [component.tagLabel isEqualToString:tag_name])
+                {
+                    NSString *text2 = [plainText substringWithRange:NSMakeRange(component.position, plainText.length - component.position)];
+                    component.text = text2;
+                    break;
 				}
 			}
 		}
-		else
+		else if([tag rangeOfString:@"<"].location == 0)
 		{
-			// start of tag
-			NSArray *textComponents = [[text substringFromIndex:1] componentsSeparatedByString:@" "];
-			tag = [textComponents objectAtIndex:0];
-			//NSLog(@"start of tag: %@", tag);
+			// Start of tag
+			NSArray *textComponents = [[tag substringWithRange:NSMakeRange(1, tag.length - 2)] componentsSeparatedByString:@" "];
+			NSString *tag_name = [textComponents objectAtIndex:0];
 			NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
 			for (NSUInteger i=1; i<[textComponents count]; i++)
 			{
@@ -932,14 +925,13 @@
 					}
 				}
 			}
-			RTLabelComponent *component = [RTLabelComponent componentWithString:nil tag:tag attributes:attributes];
-			component.position = position;
+			RTLabelComponent *component = [RTLabelComponent componentWithString:nil tag:tag_name attributes:attributes];
+			component.position = plainText.length;
 			[components addObject:component];
 		}
-		last_position = position;
 	}
 	
-    return [RTLabelExtractedComponent rtLabelExtractComponentsWithTextComponent:components plainText:data];
+    return [RTLabelExtractedComponent rtLabelExtractComponentsWithTextComponent:components plainText:plainText];
 }
 
 
