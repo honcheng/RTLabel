@@ -312,6 +312,14 @@
 		{
 			[self applyCenterStyleToText:attrString attributes:component.attributes atPosition:component.position withLength:[component.text length]];
 		}
+        else if ([component.tagLabel caseInsensitiveCompare:@"sup"] == NSOrderedSame)
+        {
+            [self applySuperscriptStyle:1 toText:attrString atPosition:component.position withLength:[component.text length]];
+        }
+        else if ([component.tagLabel caseInsensitiveCompare:@"sub"] == NSOrderedSame)
+        {
+            [self applySuperscriptStyle:-1 toText:attrString atPosition:component.position withLength:[component.text length]];
+        }
 	}
     
     // Create the framesetter with the attributed string.
@@ -712,6 +720,33 @@
 		}				
 	}
 	
+}
+
+
+- (void)applySuperscriptStyle:(int)value toText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
+{
+    // Get current font
+    CFTypeRef actualFontRef = CFAttributedStringGetAttribute(text, position, kCTFontAttributeName, NULL);
+    if(!actualFontRef)
+        actualFontRef = (__bridge CTFontRef)[UIFont systemFontOfSize:[UIFont systemFontSize]];
+
+    // Make font smaller
+    CFNumberRef sizeRef = CTFontCopyAttribute(actualFontRef, kCTFontSizeAttribute);
+    float size = 0;
+    CFNumberGetValue(sizeRef, kCFNumberFloat32Type, &size);
+    CTFontRef customFont = CTFontCreateCopyWithAttributes(actualFontRef, size * 0.7f, 0, 0);
+    CFRelease(sizeRef);
+    CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTFontAttributeName, customFont);
+
+    // Move base line
+    CFMutableDictionaryRef styleDict = CFDictionaryCreateMutable( 0, 0, NULL, &kCFTypeDictionaryValueCallBacks);
+	CFDictionaryAddValue(styleDict, kCTBaselineReferenceFont, customFont);
+    CFDictionaryAddValue(styleDict, kCTBaselineClassIdeographicLow, (__bridge CFNumberRef)@(value * size/3.5));
+    CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTBaselineClassAttributeName, kCTBaselineClassIdeographicLow);
+    CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTBaselineReferenceInfoAttributeName, styleDict);
+
+    CFRelease(customFont);
+    CFRelease(styleDict);
 }
 
 #pragma mark -

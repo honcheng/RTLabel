@@ -18,6 +18,7 @@ Features
 * kerning
 * line spacing
 * clickable links
+* superscript and subscript
 
 Usage
 -----
@@ -47,6 +48,7 @@ Usage
 	<font face='HelveticaNeue-CondensedBold' size=20 color='#CCFF00' kern=35>custom font with kerning</font>
 	<p align=justify>alignment</p>
 	<p indent=20>indentation</p>
+	super<sup>script</sup> and sub<sub>script</sub>
 
 Minimum Requirements
 --------------------
