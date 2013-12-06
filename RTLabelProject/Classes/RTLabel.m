@@ -857,6 +857,23 @@
 	return [components copy];
 }
 
++ (NSString *) fixSpacesNearEquals:(NSString *)text
+{
+    NSArray *textComponents = [text componentsSeparatedByString:@"="];
+    NSMutableArray * ret;
+    NSEnumerator * en;
+    NSString *str;
+    
+    en = [textComponents objectEnumerator];
+    ret = [[NSMutableArray alloc] initWithCapacity:[textComponents count]];
+    
+    while (str = [en nextObject]) {
+        [ret addObject:[str stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]];
+    }
+    
+    return [ret componentsJoinedByString:@"="];
+}
+
 + (RTLabelExtractedComponent*)extractTextStyleFromText:(NSString*)data paragraphReplacement:(NSString*)paragraphReplacement
 {
 	NSScanner *scanner = nil; 
@@ -910,7 +927,8 @@
 		else
 		{
 			// start of tag
-			NSArray *textComponents = [[text substringFromIndex:1] componentsSeparatedByString:@" "];
+            NSString * fixedText = [self fixSpacesNearEquals:[text substringFromIndex:1]];
+			NSArray *textComponents = [fixedText componentsSeparatedByString:@" "];
 			tag = [textComponents objectAtIndex:0];
 			//NSLog(@"start of tag: %@", tag);
 			NSMutableDictionary *attributes = [NSMutableDictionary dictionary];

@@ -69,7 +69,7 @@
 		[self.dataArray addObject:row2];
 		
 		NSMutableDictionary *row3 = [NSMutableDictionary dictionary];
-		[row3 setObject:@"clickable link - <a href='http://store.apple.com'>link to apple store</a> <a href='http://www.google.com'>link to google</a> <a href='http://www.yahoo.com'>link to yahoo</a> <a href='https://github.com/honcheng/RTLabel'>link to RTLabel in GitHub</a> <a href='http://www.wiki.com'>link to wiki.com website</a>" forKey:@"text"];
+		[row3 setObject:@"clickable link - <a target = _blank href = 'http://store.apple.com'>link to apple store</a> <a href='http://www.google.com'>link to google</a> <a href='http://www.yahoo.com'>link to yahoo</a> <a href='https://github.com/honcheng/RTLabel'>link to RTLabel in GitHub</a> <a href='http://www.wiki.com'>link to wiki.com website</a>" forKey:@"text"];
 		[self.dataArray addObject:row3];
         
         NSMutableDictionary *row4 = [NSMutableDictionary dictionary];
