@@ -271,7 +271,7 @@
 				}
 				else
 				{
-					[self applyBoldStyleToText:attrString atPosition:component.position withLength:[component.text length]];
+					//[self applyBoldStyleToText:attrString atPosition:component.position withLength:[component.text length]];
 					[self applySingleUnderlineText:attrString atPosition:component.position withLength:[component.text length]];
 				}
 			}
