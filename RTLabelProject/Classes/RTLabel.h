@@ -64,12 +64,12 @@ typedef enum
 @property (nonatomic, copy) NSString *text;
 @property (nonatomic, copy) NSString *tagLabel;
 @property (nonatomic) NSMutableDictionary *attributes;
-@property (nonatomic, assign) int position;
+@property (nonatomic, assign) NSInteger position;
 
 - (id)initWithString:(NSString*)aText tag:(NSString*)aTagLabel attributes:(NSMutableDictionary*)theAttributes;
 + (id)componentWithString:(NSString*)aText tag:(NSString*)aTagLabel attributes:(NSMutableDictionary*)theAttributes;
-- (id)initWithTag:(NSString*)aTagLabel position:(int)_position attributes:(NSMutableDictionary*)_attributes;
-+ (id)componentWithTag:(NSString*)aTagLabel position:(int)aPosition attributes:(NSMutableDictionary*)theAttributes;
+- (id)initWithTag:(NSString*)aTagLabel position:(NSInteger)_position attributes:(NSMutableDictionary*)_attributes;
++ (id)componentWithTag:(NSString*)aTagLabel position:(NSInteger)aPosition attributes:(NSMutableDictionary*)theAttributes;
 
 @end
 
@@ -85,7 +85,7 @@ typedef enum
 @property (nonatomic, strong) UIFont *font;
 @property (nonatomic, strong) NSDictionary *linkAttributes;
 @property (nonatomic, strong) NSDictionary *selectedLinkAttributes;
-@property (nonatomic, unsafe_unretained) id<RTLabelDelegate> delegate;
+@property (nonatomic, weak) id<RTLabelDelegate> delegate;
 @property (nonatomic, copy) NSString *paragraphReplacement;
 @property (nonatomic, strong) NSMutableArray *textComponents, *highlightedTextComponents;
 @property (nonatomic, assign) RTTextAlignment textAlignment;
