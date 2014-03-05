@@ -893,12 +893,15 @@
 }
 
 + (RTLabelExtractedComponent*)extractTextStyleFromText:(NSString*)data paragraphReplacement:(NSString*)paragraphReplacement
-{	
+{
 	NSMutableArray *components = [NSMutableArray array];
     NSMutableString *plainText = [NSMutableString new];
+
+    NSRegularExpression *regex = [[NSRegularExpression alloc] initWithPattern:@">\\s*<" options:NSRegularExpressionCaseInsensitive error:nil];
+    data = [regex stringByReplacingMatchesInString:data options:0 range:NSMakeRange(0, data.length) withTemplate:@"><"];
     NSScanner *scanner = [NSScanner scannerWithString:data];
     scanner.charactersToBeSkipped = nil;
-    
+
 	while (![scanner isAtEnd])
     {
         // Scan plain text
