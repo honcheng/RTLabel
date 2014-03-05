@@ -127,6 +127,30 @@
 
 @implementation RTLabel
 
+static NSString *ListPointString(NSString *type, NSInteger index) {
+    static NSString *RomanMap[] = {@"I", @"II", @"III", @"IV", @"V", @"VI", @"VII", @"VIII", @"IX", @"X", @"XI", @"XII", @"XIII", @"XIV", @"XIV"};  // Who needs more ?
+
+    NSString *point = @"";
+    if([type isEqualToString:@"1"])
+        point = [NSString stringWithFormat:@"%d. ", index];
+    else if([type isEqualToString:@"A"])
+        point = [NSString stringWithFormat:@"%c. ", 'A' + index - 1];
+    else if([type isEqualToString:@"a"])
+        point = [NSString stringWithFormat:@"%c. ", 'a' + index - 1];
+    else if([type isEqualToString:@"I"])
+        point = [NSString stringWithFormat:@"%@. ", RomanMap[index - 1]];
+    else if([type isEqualToString:@"i"])
+        point =  [NSString stringWithFormat:@"%@. ", [RomanMap[index - 1] lowercaseString]];
+    else if([type isEqualToString:@"circle"])
+        point = @"\u25CB ";
+    else if([type isEqualToString:@"disc"])
+        point = @"\u25CF ";
+    else if([type isEqualToString:@"square"])
+        point = @"\u25A0 ";
+
+    return point;
+}
+
 - (id)initWithFrame:(CGRect)_frame
 {
     self = [super initWithFrame:_frame];
@@ -275,11 +299,7 @@
 					[self applySingleUnderlineText:attrString atPosition:component.position withLength:[component.text length]];
 				}
 			}
-			
-			NSString *value = [component.attributes objectForKey:@"href"];
-			value = [value stringByReplacingOccurrencesOfString:@"'" withString:@""];
-			[component.attributes setObject:value forKey:@"href"];
-			
+
 			[links addObject:component];
 		}
 		else if ([component.tagLabel caseInsensitiveCompare:@"u"] == NSOrderedSame || [component.tagLabel caseInsensitiveCompare:@"uu"] == NSOrderedSame)
@@ -575,7 +595,6 @@
 	for (NSString *key in attributes)
 	{
 		NSString *value = [attributes objectForKey:key];
-		value = [value stringByReplacingOccurrencesOfString:@"'" withString:@""];
 		
 		if ([key caseInsensitiveCompare:@"color"] == NSOrderedSame)
 		{
@@ -618,13 +637,11 @@
 	if ([attributes objectForKey:@"face"] && [attributes objectForKey:@"size"])
 	{
 		NSString *fontName = [attributes objectForKey:@"face"];
-		fontName = [fontName stringByReplacingOccurrencesOfString:@"'" withString:@""];
 		font = [UIFont fontWithName:fontName size:[[attributes objectForKey:@"size"] intValue]];
 	}
 	else if ([attributes objectForKey:@"face"] && ![attributes objectForKey:@"size"])
 	{
 		NSString *fontName = [attributes objectForKey:@"face"];
-		fontName = [fontName stringByReplacingOccurrencesOfString:@"'" withString:@""];
 		font = [UIFont fontWithName:fontName size:self.font.pointSize];
 	}
 	else if (![attributes objectForKey:@"face"] && [attributes objectForKey:@"size"])
@@ -696,8 +713,6 @@
 
 - (void)applyUnderlineColor:(NSString*)value toText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
 {
-	
-	value = [value stringByReplacingOccurrencesOfString:@"'" withString:@""];
 	if ([value rangeOfString:@"#"].location==0) {
         CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB();
 		value = [value stringByReplacingOccurrencesOfString:@"#" withString:@"0x"];
@@ -896,6 +911,10 @@
 {
 	NSMutableArray *components = [NSMutableArray array];
     NSMutableString *plainText = [NSMutableString new];
+    int listIndent = 0;
+    int listPointCounter[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+    NSString *listPointType[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+    BOOL listPoint = NO;
 
     NSRegularExpression *regex = [[NSRegularExpression alloc] initWithPattern:@">\\s*<" options:NSRegularExpressionCaseInsensitive error:nil];
     data = [regex stringByReplacingMatchesInString:data options:0 range:NSMakeRange(0, data.length) withTemplate:@"><"];
@@ -915,6 +934,16 @@
             text = [text stringByReplacingOccurrencesOfString:@"&amp;" withString:@"&"];
             text = [text stringByReplacingOccurrencesOfString:@"&apos;" withString:@"'"];
             text = [text stringByReplacingOccurrencesOfString:@"&quot;" withString:@"\""];
+
+            if(listPoint && listIndent) {
+                listPoint = NO;
+
+                NSString *point = ListPointString(listPointType[listIndent], listPointCounter[listIndent]);
+                text = [NSString stringWithFormat:@"%@%@", point, text];
+                for(int i = 0; i < listIndent - 1; i++)
+                    text = [NSString stringWithFormat:@"\t%@", text];
+            }
+
             [plainText appendString:text];
         }
 
@@ -923,13 +952,19 @@
         [scanner scanString:@">" intoString:nil];   // Skip closing '>'
         NSString *tag = [text stringByAppendingString:@">"];
 
-        if ([tag rangeOfString:@"<p"].location==0)
-            [plainText appendString:paragraphReplacement];
-
 		if ([tag rangeOfString:@"</"].location==0)
 		{
 			// End of tag
             NSString *tag_name = [tag substringWithRange:NSMakeRange(2, tag.length - 3)];
+
+            if ([tag_name caseInsensitiveCompare:@"ul"] == NSOrderedSame || [tag_name caseInsensitiveCompare:@"ol"] == NSOrderedSame) {
+                [plainText deleteCharactersInRange:NSMakeRange(plainText.length - 1, 1)];
+                listPointCounter[listIndent] = 0;
+                listIndent--;
+            }
+            else if([tag_name caseInsensitiveCompare:@"li"] == NSOrderedSame)
+                [plainText appendString:@"\n"];
+
             for (int i=[components count]-1; i>=0; i--)
             {
                 RTLabelComponent *component = [components objectAtIndex:i];
@@ -946,6 +981,7 @@
 			// Start of tag
 			NSArray *textComponents = [[tag substringWithRange:NSMakeRange(1, tag.length - 2)] componentsSeparatedByString:@" "];
 			NSString *tag_name = [textComponents objectAtIndex:0];
+
 			NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
 			for (NSUInteger i=1; i<[textComponents count]; i++)
 			{
@@ -958,6 +994,8 @@
 						NSString *value = [[pair subarrayWithRange:NSMakeRange(1, [pair count] - 1)] componentsJoinedByString:@"="];
 						value = [value stringByReplacingOccurrencesOfString:@"\"" withString:@"" options:NSLiteralSearch range:NSMakeRange(0, 1)];
 						value = [value stringByReplacingOccurrencesOfString:@"\"" withString:@"" options:NSLiteralSearch range:NSMakeRange([value length]-1, 1)];
+                        value = [value stringByReplacingOccurrencesOfString:@"'" withString:@"" options:NSLiteralSearch range:NSMakeRange(0, 1)];
+						value = [value stringByReplacingOccurrencesOfString:@"'" withString:@"" options:NSLiteralSearch range:NSMakeRange([value length]-1, 1)];
 						
 						[attributes setObject:value forKey:key];
 					} else if ([pair count]==1) {
@@ -965,6 +1003,26 @@
 					}
 				}
 			}
+
+            if ([tag_name caseInsensitiveCompare:@"p"] == NSOrderedSame)
+                [plainText appendString:paragraphReplacement];
+            else if ([tag_name caseInsensitiveCompare:@"ul"] == NSOrderedSame || [tag_name caseInsensitiveCompare:@"ol"] == NSOrderedSame) {
+                // Start of html list
+                listIndent++;
+                listPointType[listIndent] = [tag_name caseInsensitiveCompare:@"ol"] == NSOrderedSame ? @"1" : @"circle";    // Default types
+                if(attributes[@"type"])
+                    listPointType[listIndent] = attributes[@"type"];
+                
+                if(plainText.length && ![plainText hasSuffix:@"\n"])
+                    [plainText appendString:@"\n"];
+            }
+            else if([tag_name caseInsensitiveCompare:@"li"] == NSOrderedSame) {
+                // New list point
+                listPoint = YES;
+                listPointCounter[listIndent]++;
+            }
+
+
 			RTLabelComponent *component = [RTLabelComponent componentWithString:nil tag:tag_name attributes:attributes];
 			component.position = plainText.length;
 			[components addObject:component];
@@ -981,7 +1039,7 @@
 	NSScanner *scanner = nil;
 	NSString *text = nil;
 	NSString *tag = nil;
-	
+
 	NSMutableArray *components = [NSMutableArray array];
 	
 	//set up the scanner
