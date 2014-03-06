@@ -340,6 +340,10 @@ static NSString *ListPointString(NSString *type, NSInteger index) {
         {
             [self applySuperscriptStyle:-1 toText:attrString atPosition:component.position withLength:[component.text length]];
         }
+        else if ([component.tagLabel caseInsensitiveCompare:@"li"] == NSOrderedSame)
+        {
+            [self applyLiAttributes:component.attributes toText:attrString atPosition:component.position withLength:component.text.length];
+        }
 	}
     
     // Create the framesetter with the attributed string.
@@ -669,6 +673,29 @@ static NSString *ListPointString(NSString *type, NSInteger index) {
     CFRelease(boldFontRef);
 }
 
+- (void)applyLiAttributes:(NSDictionary*)attributes toText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
+{
+	CFMutableDictionaryRef styleDict = ( CFDictionaryCreateMutable( (0), 0, (0), (0) ) );
+	CGFloat fistLineIndent = 15.0f * [attributes[@"indent"] intValue];
+    CGFloat headIndent = 15.0f + fistLineIndent;
+
+	CTParagraphStyleSetting theSettings[] =
+	{
+
+		{ kCTParagraphStyleSpecifierFirstLineHeadIndent, sizeof(CGFloat), &fistLineIndent },
+		{ kCTParagraphStyleSpecifierHeadIndent, sizeof(CGFloat), &headIndent },
+        { kCTParagraphStyleSpecifierMinimumLineSpacing, sizeof(CGFloat), &_lineSpacing }, // leading
+		{ kCTParagraphStyleSpecifierMaximumLineSpacing, sizeof(CGFloat), &_lineSpacing }, // leading
+	};
+
+	CTParagraphStyleRef theParagraphRef = CTParagraphStyleCreate(theSettings, sizeof(theSettings) / sizeof(CTParagraphStyleSetting));
+	CFDictionaryAddValue( styleDict, kCTParagraphStyleAttributeName, theParagraphRef );
+
+	CFAttributedStringSetAttributes( text, CFRangeMake(position, length), styleDict, 0 );
+	CFRelease(theParagraphRef);
+    CFRelease(styleDict);
+}
+
 - (void)applyBoldItalicStyleToText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
 {
     CFTypeRef actualFontRef = CFAttributedStringGetAttribute(text, position, kCTFontAttributeName, NULL);
@@ -940,8 +967,6 @@ static NSString *ListPointString(NSString *type, NSInteger index) {
 
                 NSString *point = ListPointString(listPointType[listIndent], listPointCounter[listIndent]);
                 text = [NSString stringWithFormat:@"%@%@", point, text];
-                for(int i = 0; i < listIndent - 1; i++)
-                    text = [NSString stringWithFormat:@"\t%@", text];
             }
 
             [plainText appendString:text];
@@ -957,14 +982,6 @@ static NSString *ListPointString(NSString *type, NSInteger index) {
 			// End of tag
             NSString *tag_name = [tag substringWithRange:NSMakeRange(2, tag.length - 3)];
 
-            if ([tag_name caseInsensitiveCompare:@"ul"] == NSOrderedSame || [tag_name caseInsensitiveCompare:@"ol"] == NSOrderedSame) {
-                [plainText deleteCharactersInRange:NSMakeRange(plainText.length - 1, 1)];
-                listPointCounter[listIndent] = 0;
-                listIndent--;
-            }
-            else if([tag_name caseInsensitiveCompare:@"li"] == NSOrderedSame)
-                [plainText appendString:@"\n"];
-
             for (int i=[components count]-1; i>=0; i--)
             {
                 RTLabelComponent *component = [components objectAtIndex:i];
@@ -975,6 +992,11 @@ static NSString *ListPointString(NSString *type, NSInteger index) {
                     break;
 				}
 			}
+
+            if ([tag_name caseInsensitiveCompare:@"ul"] == NSOrderedSame || [tag_name caseInsensitiveCompare:@"ol"] == NSOrderedSame) {
+                listPointCounter[listIndent] = 0;
+                listIndent--;
+            }
 		}
 		else if([tag rangeOfString:@"<"].location == 0)
 		{
@@ -1012,14 +1034,15 @@ static NSString *ListPointString(NSString *type, NSInteger index) {
                 listPointType[listIndent] = [tag_name caseInsensitiveCompare:@"ol"] == NSOrderedSame ? @"1" : @"circle";    // Default types
                 if(attributes[@"type"])
                     listPointType[listIndent] = attributes[@"type"];
-                
-                if(plainText.length && ![plainText hasSuffix:@"\n"])
-                    [plainText appendString:@"\n"];
             }
             else if([tag_name caseInsensitiveCompare:@"li"] == NSOrderedSame) {
                 // New list point
+                attributes[@"indent"] = @(listIndent);
                 listPoint = YES;
                 listPointCounter[listIndent]++;
+
+                if(plainText.length && [tag_name caseInsensitiveCompare:@"li"] == NSOrderedSame)
+                    [plainText appendString:@"\n"];
             }
 
 
