@@ -141,9 +141,26 @@ static NSString *LettersForIndex(NSInteger index) {
     return result;
 }
 
-static NSString *ListPointString(NSString *type, NSInteger index) {
-    static NSString *RomanMap[] = {@"I", @"II", @"III", @"IV", @"V", @"VI", @"VII", @"VIII", @"IX", @"X", @"XI", @"XII", @"XIII", @"XIV", @"XIV"};  // Who needs more ?
+static NSString *RomanForIndex(int index) {
+    static NSString *huns[] = {@"", @"C", @"CC", @"CCC", @"CD", @"D", @"DC", @"DCC", @"DCCC", @"CM"};
+    static NSString *tens[] = {@"", @"X", @"XX", @"XXX", @"XL", @"L", @"LX", @"LXX", @"LXXX", @"XC"};
+    static NSString *ones[] = {@"", @"I", @"II", @"III", @"IV", @"V", @"VI", @"VII", @"VIII", @"IX"};
 
+    NSMutableString *result = [NSMutableString new];
+    while (index >= 1000) {
+        [result appendString:@"M"];
+        index -= 1000;
+    }
+
+    [result appendString:huns[index / 100]];
+    index %= 100;
+    [result appendString:tens[index / 10]];
+    index %= 10;
+    [result appendString:ones[index]];
+    return result;
+}
+
+static NSString *ListPointString(NSString *type, NSInteger index) {
     NSString *point = @"";
     if([type isEqualToString:@"1"])
         point = [NSString stringWithFormat:@"%d. ", index];
@@ -152,9 +169,9 @@ static NSString *ListPointString(NSString *type, NSInteger index) {
     else if([type isEqualToString:@"a"])
         point = [[LettersForIndex(index) lowercaseString] stringByAppendingString:@". "];
     else if([type isEqualToString:@"I"])
-        point = [NSString stringWithFormat:@"%@. ", RomanMap[index - 1]];
+        point = [NSString stringWithFormat:@"%@. ", RomanForIndex(index)];
     else if([type isEqualToString:@"i"])
-        point =  [NSString stringWithFormat:@"%@. ", [RomanMap[index - 1] lowercaseString]];
+        point =  [NSString stringWithFormat:@"%@. ", [RomanForIndex(index) lowercaseString]];
     else if([type isEqualToString:@"circle"])
         point = @"\u25CB ";
     else if([type isEqualToString:@"disc"])
