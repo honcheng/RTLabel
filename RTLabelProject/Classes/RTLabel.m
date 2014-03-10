@@ -127,6 +127,20 @@
 
 @implementation RTLabel
 
+
+static NSString *LettersForIndex(NSInteger index) {
+    NSString *result = @"";
+    index--;
+    do {
+        if(result.length)
+            index--;
+        int rest = index % ('Z' - 'A' + 1);
+        index /= 'Z' - 'A' + 1;
+        result = [[NSString stringWithFormat:@"%c", rest + 'A'] stringByAppendingString:result];
+    } while (index > 0);
+    return result;
+}
+
 static NSString *ListPointString(NSString *type, NSInteger index) {
     static NSString *RomanMap[] = {@"I", @"II", @"III", @"IV", @"V", @"VI", @"VII", @"VIII", @"IX", @"X", @"XI", @"XII", @"XIII", @"XIV", @"XIV"};  // Who needs more ?
 
@@ -134,9 +148,9 @@ static NSString *ListPointString(NSString *type, NSInteger index) {
     if([type isEqualToString:@"1"])
         point = [NSString stringWithFormat:@"%d. ", index];
     else if([type isEqualToString:@"A"])
-        point = [NSString stringWithFormat:@"%c. ", 'A' + index - 1];
+        point = [LettersForIndex(index) stringByAppendingString:@". "];
     else if([type isEqualToString:@"a"])
-        point = [NSString stringWithFormat:@"%c. ", 'a' + index - 1];
+        point = [[LettersForIndex(index) lowercaseString] stringByAppendingString:@". "];
     else if([type isEqualToString:@"I"])
         point = [NSString stringWithFormat:@"%@. ", RomanMap[index - 1]];
     else if([type isEqualToString:@"i"])
