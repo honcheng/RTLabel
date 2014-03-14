@@ -63,7 +63,7 @@ typedef enum
 @property (nonatomic, assign) int componentIndex;
 @property (nonatomic, copy) NSString *text;
 @property (nonatomic, copy) NSString *tagLabel;
-@property (nonatomic) NSMutableDictionary *attributes;
+@property (nonatomic, strong) NSMutableDictionary *attributes;
 @property (nonatomic, assign) int position;
 
 - (id)initWithString:(NSString*)aText tag:(NSString*)aTagLabel attributes:(NSMutableDictionary*)theAttributes;

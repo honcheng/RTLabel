@@ -39,6 +39,12 @@
 #import "DemoTableViewCell.h"
 #import "RTLabel.h"
 
+#if (__IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_6_0)
+#define TextAlignmentCenter NSTextAlignmentCenter
+#else
+#define TextAlignmentCenter UITextAlignmentCenter
+#endif
+
 @implementation DemoTableViewController
 
 #pragma mark -
@@ -57,7 +63,7 @@
 		[titleLabel setFont:[UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:20]];
 		[titleLabel setText:@"RTLabel"];
 		[self.navigationItem setTitleView:titleLabel];
-		[titleLabel setTextAlignment:UITextAlignmentCenter];
+		[titleLabel setTextAlignment:TextAlignmentCenter];
 		
 		_dataArray = [NSMutableArray array];
 		NSMutableDictionary *row1 = [NSMutableDictionary dictionary];
