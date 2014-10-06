@@ -64,7 +64,7 @@ typedef enum
 @property (nonatomic, copy) NSString *text;
 @property (nonatomic, copy) NSString *tagLabel;
 @property (nonatomic) NSMutableDictionary *attributes;
-@property (nonatomic, assign) NSUInteger position;
+@property (nonatomic, assign) NSInteger position;
 
 - (id)initWithString:(NSString*)aText tag:(NSString*)aTagLabel attributes:(NSMutableDictionary*)theAttributes;
 + (id)componentWithString:(NSString*)aText tag:(NSString*)aTagLabel attributes:(NSMutableDictionary*)theAttributes;
@@ -92,7 +92,7 @@ typedef enum
 @property (nonatomic, assign) CGSize optimumSize;
 @property (nonatomic, assign) RTTextLineBreakMode lineBreakMode;
 @property (nonatomic, assign) CGFloat lineSpacing;
-@property (nonatomic, assign) NSUInteger currentSelectedButtonComponentIndex;
+@property (nonatomic, assign) NSInteger currentSelectedButtonComponentIndex;
 @property (nonatomic, assign) CFRange visibleRange;
 @property (nonatomic, assign) BOOL highlighted;
 

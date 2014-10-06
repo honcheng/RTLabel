@@ -37,6 +37,7 @@
 
 #import "RTLabel.h"
 
+static const NSInteger NEG_ONE = -1;
 @interface RTLabelButton : UIButton
 @property (nonatomic, assign) NSUInteger componentIndex;
 @property (nonatomic) NSURL *url;
@@ -158,7 +159,7 @@
 	_textAlignment = RTTextAlignmentLeft;
 	_lineBreakMode = RTTextLineBreakModeWordWrapping;
 	_lineSpacing = 3;
-	_currentSelectedButtonComponentIndex = -1;
+	_currentSelectedButtonComponentIndex = NEG_ONE;
 	_paragraphReplacement = @"\n";
 	
 	[self setMultipleTouchEnabled:YES];
@@ -183,7 +184,7 @@
 
 - (void)render
 {
-	if (self.currentSelectedButtonComponentIndex== (unsigned int)-1)
+	if (self.currentSelectedButtonComponentIndex== NEG_ONE)
 	{
 		for (id view in [self subviews])
 		{
@@ -232,7 +233,7 @@
     
 	for (RTLabelComponent *component in textComponents)
 	{
-		NSUInteger index = [textComponents indexOfObject:component];
+		NSInteger index = [textComponents indexOfObject:component];
 		component.componentIndex = index;
 		
 		if ([component.tagLabel caseInsensitiveCompare:@"i"] == NSOrderedSame)
@@ -332,7 +333,7 @@
 	self.optimumSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, [self.plainText length]), nil, constraint, &range);
 	
 	
-	if (self.currentSelectedButtonComponentIndex==(unsigned int)-1)
+	if (self.currentSelectedButtonComponentIndex==NEG_ONE)
 	{
 		// only check for linkable items the first time, not when it's being redrawn on button pressed
 		
@@ -352,7 +353,7 @@
                 CGPoint origin;
 				CTFrameGetLineOrigins(frame, CFRangeMake(i, 1), &origin);
                 
-				if ( (linkableComponents.position<(unsigned int)lineRange.location && linkableComponents.position+linkableComponents.text.length>(u_int16_t)(lineRange.location)) || (linkableComponents.position>=(unsigned int)lineRange.location && linkableComponents.position<(unsigned int)(lineRange.location+lineRange.length)))
+				if ( (linkableComponents.position<(NSInteger)lineRange.location && linkableComponents.position+linkableComponents.text.length>(u_int16_t)(lineRange.location)) || (linkableComponents.position>=(NSInteger)lineRange.location && linkableComponents.position<(NSInteger)(lineRange.location+lineRange.length)))
 				{
 					CGFloat secondaryOffset;
 					CGFloat primaryOffset = CTLineGetOffsetForStringIndex(CFArrayGetValueAtIndex(frameLines,i), linkableComponents.position, &secondaryOffset);
@@ -509,9 +510,9 @@
 	CGFloat minLineHeight = 0;
 	CGFloat paragraphSpacing = 0.0;
 	CGFloat paragraphSpacingBefore = 0.0;
-	NSUInteger textAlignment = _textAlignment;
-	NSUInteger lineBreakMode = _lineBreakMode;
-	NSUInteger lineSpacing = (NSUInteger)_lineSpacing;
+	NSInteger textAlignment = _textAlignment;
+	NSInteger lineBreakMode = _lineBreakMode;
+	NSInteger lineSpacing = (NSInteger)_lineSpacing;
 
     textAlignment = kCTCenterTextAlignment;
 	
