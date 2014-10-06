@@ -60,16 +60,16 @@ typedef enum
 @end
 
 @interface RTLabelComponent : NSObject
-@property (nonatomic, assign) int componentIndex;
+@property (nonatomic, assign) NSUInteger componentIndex;
 @property (nonatomic, copy) NSString *text;
 @property (nonatomic, copy) NSString *tagLabel;
 @property (nonatomic) NSMutableDictionary *attributes;
-@property (nonatomic, assign) int position;
+@property (nonatomic, assign) NSUInteger position;
 
 - (id)initWithString:(NSString*)aText tag:(NSString*)aTagLabel attributes:(NSMutableDictionary*)theAttributes;
 + (id)componentWithString:(NSString*)aText tag:(NSString*)aTagLabel attributes:(NSMutableDictionary*)theAttributes;
-- (id)initWithTag:(NSString*)aTagLabel position:(int)_position attributes:(NSMutableDictionary*)_attributes;
-+ (id)componentWithTag:(NSString*)aTagLabel position:(int)aPosition attributes:(NSMutableDictionary*)theAttributes;
+- (id)initWithTag:(NSString*)aTagLabel position:(NSUInteger)_position attributes:(NSMutableDictionary*)_attributes;
++ (id)componentWithTag:(NSString*)aTagLabel position:(NSUInteger)aPosition attributes:(NSMutableDictionary*)theAttributes;
 
 @end
 
@@ -92,7 +92,7 @@ typedef enum
 @property (nonatomic, assign) CGSize optimumSize;
 @property (nonatomic, assign) RTTextLineBreakMode lineBreakMode;
 @property (nonatomic, assign) CGFloat lineSpacing;
-@property (nonatomic, assign) int currentSelectedButtonComponentIndex;
+@property (nonatomic, assign) NSUInteger currentSelectedButtonComponentIndex;
 @property (nonatomic, assign) CFRange visibleRange;
 @property (nonatomic, assign) BOOL highlighted;
 
