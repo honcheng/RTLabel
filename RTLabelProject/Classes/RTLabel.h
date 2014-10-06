@@ -60,7 +60,7 @@ typedef enum
 @end
 
 @interface RTLabelComponent : NSObject
-@property (nonatomic, assign) NSUInteger componentIndex;
+@property (nonatomic, assign) NSInteger componentIndex;
 @property (nonatomic, copy) NSString *text;
 @property (nonatomic, copy) NSString *tagLabel;
 @property (nonatomic) NSMutableDictionary *attributes;
@@ -68,8 +68,8 @@ typedef enum
 
 - (id)initWithString:(NSString*)aText tag:(NSString*)aTagLabel attributes:(NSMutableDictionary*)theAttributes;
 + (id)componentWithString:(NSString*)aText tag:(NSString*)aTagLabel attributes:(NSMutableDictionary*)theAttributes;
-- (id)initWithTag:(NSString*)aTagLabel position:(NSUInteger)_position attributes:(NSMutableDictionary*)_attributes;
-+ (id)componentWithTag:(NSString*)aTagLabel position:(NSUInteger)aPosition attributes:(NSMutableDictionary*)theAttributes;
+- (id)initWithTag:(NSString*)aTagLabel position:(NSInteger)_position attributes:(NSMutableDictionary*)_attributes;
++ (id)componentWithTag:(NSString*)aTagLabel position:(NSInteger)aPosition attributes:(NSMutableDictionary*)theAttributes;
 
 @end
 
