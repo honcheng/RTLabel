@@ -176,6 +176,12 @@
 	[self setNeedsDisplay];
 }
 
+- (CGRect) boundingRectForAnchorWithIdentifier:(NSString *)identifier
+{
+	NSValue *value = [_anchorsBoundingRects objectForKey:identifier];
+	return value? value.CGRectValue : CGRectZero;
+}
+
 - (void)drawRect:(CGRect)rect 
 {
 	[self render];
@@ -280,6 +286,12 @@
 			value = [value stringByReplacingOccurrencesOfString:@"'" withString:@""];
 			[component.attributes setObject:value forKey:@"href"];
 			
+			value = [component.attributes objectForKey:@"id"];
+			if (value) {
+				value = [value stringByReplacingOccurrencesOfString:@"'" withString:@""];
+				[component.attributes setObject:value forKey:@"id"];
+			}
+			
 			[links addObject:component];
 		}
 		else if ([component.tagLabel caseInsensitiveCompare:@"u"] == NSOrderedSame || [component.tagLabel caseInsensitiveCompare:@"uu"] == NSOrderedSame)
@@ -335,7 +347,8 @@
 	if (self.currentSelectedButtonComponentIndex==-1)
 	{
 		// only check for linkable items the first time, not when it's being redrawn on button pressed
-		
+		_anchorsBoundingRects = @{}.mutableCopy;
+
 		for (RTLabelComponent *linkableComponents in links)
 		{
 			float height = 0.0;
@@ -360,8 +373,12 @@
 					
 					CGFloat button_width = primaryOffset2 - primaryOffset;
 					
-					RTLabelButton *button = [[RTLabelButton alloc] initWithFrame:CGRectMake(primaryOffset+origin.x, height, button_width, ascent+descent)];
+					CGRect buttonFrame = CGRectMake(primaryOffset+origin.x, height, button_width, ascent+descent);
+					RTLabelButton *button = [[RTLabelButton alloc] initWithFrame:buttonFrame];
 					
+					if ([linkableComponents.attributes objectForKey:@"id"])
+						_anchorsBoundingRects[[linkableComponents.attributes objectForKey:@"id"]] = [NSValue valueWithCGRect:buttonFrame];
+
 					[button setBackgroundColor:[UIColor colorWithWhite:0 alpha:0]];
 					[button setComponentIndex:linkableComponents.componentIndex];
 					
