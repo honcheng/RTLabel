@@ -91,6 +91,14 @@
 		NSMutableDictionary *row20 = [NSMutableDictionary dictionary];
 		[row20 setObject:@"<p indent=20>Indented bla bla <bi>bla bla bla bla</bi> bla bla bla bla bla bla bla</p>" forKey:@"text"];
 		[self.dataArray addObject:row20];
+
+        NSMutableDictionary *row9 = [NSMutableDictionary dictionary];
+        [row9 setObject:@"Superscript<sup>sup</sup> and subscript<sub>sub</sub>" forKey:@"text"];
+        [self.dataArray addObject:row9];
+
+        NSMutableDictionary *row10 = [NSMutableDictionary dictionary];
+        row10[@"text"] = @"<ol><li>one</li><li>two<ul><li>one</li><li>two</li></ul></li></ol>";
+        [self.dataArray insertObject:row10 atIndex:0];
     }
     return self;
 }

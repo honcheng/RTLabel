@@ -127,6 +127,61 @@
 
 @implementation RTLabel
 
+
+static NSString *LettersForIndex(NSInteger index) {
+    NSString *result = @"";
+    index--;
+    do {
+        if(result.length)
+            index--;
+        int rest = index % ('Z' - 'A' + 1);
+        index /= 'Z' - 'A' + 1;
+        result = [[NSString stringWithFormat:@"%c", rest + 'A'] stringByAppendingString:result];
+    } while (index > 0);
+    return result;
+}
+
+static NSString *RomanForIndex(int index) {
+    static NSString *huns[] = {@"", @"C", @"CC", @"CCC", @"CD", @"D", @"DC", @"DCC", @"DCCC", @"CM"};
+    static NSString *tens[] = {@"", @"X", @"XX", @"XXX", @"XL", @"L", @"LX", @"LXX", @"LXXX", @"XC"};
+    static NSString *ones[] = {@"", @"I", @"II", @"III", @"IV", @"V", @"VI", @"VII", @"VIII", @"IX"};
+
+    NSMutableString *result = [NSMutableString new];
+    while (index >= 1000) {
+        [result appendString:@"M"];
+        index -= 1000;
+    }
+
+    [result appendString:huns[index / 100]];
+    index %= 100;
+    [result appendString:tens[index / 10]];
+    index %= 10;
+    [result appendString:ones[index]];
+    return result;
+}
+
+static NSString *ListPointString(NSString *type, NSInteger index) {
+    NSString *point = @"";
+    if([type isEqualToString:@"1"])
+        point = [NSString stringWithFormat:@"%d. ", index];
+    else if([type isEqualToString:@"A"])
+        point = [LettersForIndex(index) stringByAppendingString:@". "];
+    else if([type isEqualToString:@"a"])
+        point = [[LettersForIndex(index) lowercaseString] stringByAppendingString:@". "];
+    else if([type isEqualToString:@"I"])
+        point = [NSString stringWithFormat:@"%@. ", RomanForIndex(index)];
+    else if([type isEqualToString:@"i"])
+        point =  [NSString stringWithFormat:@"%@. ", [RomanForIndex(index) lowercaseString]];
+    else if([type isEqualToString:@"circle"])
+        point = @"\u25CB ";
+    else if([type isEqualToString:@"disc"])
+        point = @"\u25CF ";
+    else if([type isEqualToString:@"square"])
+        point = @"\u25A0 ";
+
+    return point;
+}
+
 - (id)initWithFrame:(CGRect)_frame
 {
     self = [super initWithFrame:_frame];
@@ -275,11 +330,7 @@
 					[self applySingleUnderlineText:attrString atPosition:component.position withLength:[component.text length]];
 				}
 			}
-			
-			NSString *value = [component.attributes objectForKey:@"href"];
-			value = [value stringByReplacingOccurrencesOfString:@"'" withString:@""];
-			[component.attributes setObject:value forKey:@"href"];
-			
+
 			[links addObject:component];
 		}
 		else if ([component.tagLabel caseInsensitiveCompare:@"u"] == NSOrderedSame || [component.tagLabel caseInsensitiveCompare:@"uu"] == NSOrderedSame)
@@ -312,6 +363,18 @@
 		{
 			[self applyCenterStyleToText:attrString attributes:component.attributes atPosition:component.position withLength:[component.text length]];
 		}
+        else if ([component.tagLabel caseInsensitiveCompare:@"sup"] == NSOrderedSame)
+        {
+            [self applySuperscriptStyle:1 toText:attrString atPosition:component.position withLength:[component.text length]];
+        }
+        else if ([component.tagLabel caseInsensitiveCompare:@"sub"] == NSOrderedSame)
+        {
+            [self applySuperscriptStyle:-1 toText:attrString atPosition:component.position withLength:[component.text length]];
+        }
+        else if ([component.tagLabel caseInsensitiveCompare:@"li"] == NSOrderedSame)
+        {
+            [self applyLiAttributes:component.attributes toText:attrString atPosition:component.position withLength:component.text.length];
+        }
 	}
     
     // Create the framesetter with the attributed string.
@@ -567,7 +630,6 @@
 	for (NSString *key in attributes)
 	{
 		NSString *value = [attributes objectForKey:key];
-		value = [value stringByReplacingOccurrencesOfString:@"'" withString:@""];
 		
 		if ([key caseInsensitiveCompare:@"color"] == NSOrderedSame)
 		{
@@ -610,13 +672,11 @@
 	if ([attributes objectForKey:@"face"] && [attributes objectForKey:@"size"])
 	{
 		NSString *fontName = [attributes objectForKey:@"face"];
-		fontName = [fontName stringByReplacingOccurrencesOfString:@"'" withString:@""];
 		font = [UIFont fontWithName:fontName size:[[attributes objectForKey:@"size"] intValue]];
 	}
 	else if ([attributes objectForKey:@"face"] && ![attributes objectForKey:@"size"])
 	{
 		NSString *fontName = [attributes objectForKey:@"face"];
-		fontName = [fontName stringByReplacingOccurrencesOfString:@"'" withString:@""];
 		font = [UIFont fontWithName:fontName size:self.font.pointSize];
 	}
 	else if (![attributes objectForKey:@"face"] && [attributes objectForKey:@"size"])
@@ -642,6 +702,29 @@
     }
     CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTFontAttributeName, boldFontRef);
     CFRelease(boldFontRef);
+}
+
+- (void)applyLiAttributes:(NSDictionary*)attributes toText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
+{
+	CFMutableDictionaryRef styleDict = ( CFDictionaryCreateMutable( (0), 0, (0), (0) ) );
+	CGFloat fistLineIndent = 15.0f * [attributes[@"indent"] intValue];
+    CGFloat headIndent = 15.0f + fistLineIndent;
+
+	CTParagraphStyleSetting theSettings[] =
+	{
+
+		{ kCTParagraphStyleSpecifierFirstLineHeadIndent, sizeof(CGFloat), &fistLineIndent },
+		{ kCTParagraphStyleSpecifierHeadIndent, sizeof(CGFloat), &headIndent },
+        { kCTParagraphStyleSpecifierMinimumLineSpacing, sizeof(CGFloat), &_lineSpacing }, // leading
+		{ kCTParagraphStyleSpecifierMaximumLineSpacing, sizeof(CGFloat), &_lineSpacing }, // leading
+	};
+
+	CTParagraphStyleRef theParagraphRef = CTParagraphStyleCreate(theSettings, sizeof(theSettings) / sizeof(CTParagraphStyleSetting));
+	CFDictionaryAddValue( styleDict, kCTParagraphStyleAttributeName, theParagraphRef );
+
+	CFAttributedStringSetAttributes( text, CFRangeMake(position, length), styleDict, 0 );
+	CFRelease(theParagraphRef);
+    CFRelease(styleDict);
 }
 
 - (void)applyBoldItalicStyleToText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
@@ -688,8 +771,6 @@
 
 - (void)applyUnderlineColor:(NSString*)value toText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
 {
-	
-	value = [value stringByReplacingOccurrencesOfString:@"'" withString:@""];
 	if ([value rangeOfString:@"#"].location==0) {
         CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB();
 		value = [value stringByReplacingOccurrencesOfString:@"#" withString:@"0x"];
@@ -712,6 +793,33 @@
 		}				
 	}
 	
+}
+
+
+- (void)applySuperscriptStyle:(int)value toText:(CFMutableAttributedStringRef)text atPosition:(int)position withLength:(int)length
+{
+    // Get current font
+    CFTypeRef actualFontRef = CFAttributedStringGetAttribute(text, position, kCTFontAttributeName, NULL);
+    if(!actualFontRef)
+        actualFontRef = (__bridge CTFontRef)[UIFont systemFontOfSize:[UIFont systemFontSize]];
+
+    // Make font smaller
+    CFNumberRef sizeRef = CTFontCopyAttribute(actualFontRef, kCTFontSizeAttribute);
+    float size = 0;
+    CFNumberGetValue(sizeRef, kCFNumberFloat32Type, &size);
+    CTFontRef customFont = CTFontCreateCopyWithAttributes(actualFontRef, size * 0.7f, 0, 0);
+    CFRelease(sizeRef);
+    CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTFontAttributeName, customFont);
+
+    // Move base line
+    CFMutableDictionaryRef styleDict = CFDictionaryCreateMutable( 0, 0, NULL, &kCFTypeDictionaryValueCallBacks);
+	CFDictionaryAddValue(styleDict, kCTBaselineReferenceFont, customFont);
+    CFDictionaryAddValue(styleDict, kCTBaselineClassIdeographicLow, (__bridge CFNumberRef)@(value * size/3.5));
+    CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTBaselineClassAttributeName, kCTBaselineClassIdeographicLow);
+    CFAttributedStringSetAttribute(text, CFRangeMake(position, length), kCTBaselineReferenceInfoAttributeName, styleDict);
+
+    CFRelease(customFont);
+    CFRelease(styleDict);
 }
 
 #pragma mark -
@@ -765,14 +873,14 @@
 
 - (void)setHighlightedText:(NSString *)text
 {
-	_highlightedText = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
+    _highlightedText = text;
 	RTLabelExtractedComponent *component = [RTLabel extractTextStyleFromText:_highlightedText paragraphReplacement:self.paragraphReplacement];
     [self setHighlightedTextComponents:component.textComponents];
 }
 
 - (void)setText:(NSString *)text
 {
-	_text = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
+    _text = text;
 	RTLabelExtractedComponent *component = [RTLabel extractTextStyleFromText:_text paragraphReplacement:self.paragraphReplacement];
     [self setTextComponents:component.textComponents];
     [self setPlainText:component.plainText];
@@ -781,7 +889,7 @@
 
 - (void)setText:(NSString *)text extractedTextComponent:(RTLabelExtractedComponent*)extractedComponent
 {
-	_text = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
+    _text = text;
     [self setTextComponents:extractedComponent.textComponents];
     [self setPlainText:extractedComponent.plainText];
 	[self setNeedsDisplay];
@@ -789,7 +897,7 @@
 
 - (void)setHighlightedText:(NSString *)text extractedTextComponent:(RTLabelExtractedComponent*)extractedComponent
 {
-    _highlightedText = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
+    _highlightedText = text;
     [self setHighlightedTextComponents:extractedComponent.textComponents];
 }
 
@@ -859,60 +967,74 @@
 
 + (RTLabelExtractedComponent*)extractTextStyleFromText:(NSString*)data paragraphReplacement:(NSString*)paragraphReplacement
 {
-	NSScanner *scanner = nil; 
-	NSString *text = nil;
-	NSString *tag = nil;
-	
 	NSMutableArray *components = [NSMutableArray array];
-	
-	int last_position = 0;
-	scanner = [NSScanner scannerWithString:data];
+    NSMutableString *plainText = [NSMutableString new];
+    int listIndent = 0;
+    int listPointCounter[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+    NSString *listPointType[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+    BOOL listPoint = NO;
+
+    NSRegularExpression *white_trimmer = [[NSRegularExpression alloc] initWithPattern:@"\\s+" options:NSRegularExpressionCaseInsensitive error:nil];
+    NSScanner *scanner = [NSScanner scannerWithString:data];
+    scanner.charactersToBeSkipped = nil;
+
 	while (![scanner isAtEnd])
     {
-		[scanner scanUpToString:@"<" intoString:NULL];
-		[scanner scanUpToString:@">" intoString:&text];
-		
-		NSString *delimiter = [NSString stringWithFormat:@"%@>", text];
-		int position = [data rangeOfString:delimiter].location;
-		if (position!=NSNotFound)
+        // Scan plain text
+        NSString *text = nil;
+		[scanner scanUpToString:@"<" intoString:&text];
+
+        if(text) {
+            // Replace html entities
+            text = [text stringByReplacingOccurrencesOfString:@"&lt;" withString:@"<"];
+            text = [text stringByReplacingOccurrencesOfString:@"&gt;" withString:@">"];
+            text = [text stringByReplacingOccurrencesOfString:@"&amp;" withString:@"&"];
+            text = [text stringByReplacingOccurrencesOfString:@"&apos;" withString:@"'"];
+            text = [text stringByReplacingOccurrencesOfString:@"&quot;" withString:@"\""];
+            text = [white_trimmer stringByReplacingMatchesInString:text options:0 range:NSMakeRange(0, text.length) withTemplate:@" "];
+
+            if(listPoint && listIndent) {
+                listPoint = NO;
+
+                NSString *point = ListPointString(listPointType[listIndent], listPointCounter[listIndent]);
+                text = [NSString stringWithFormat:@"%@%@", point, text];
+            }
+
+            [plainText appendString:text];
+        }
+
+        // Scan html tag
+        [scanner scanUpToString:@">" intoString:&text];
+        [scanner scanString:@">" intoString:nil];   // Skip closing '>'
+        NSString *tag = [text stringByAppendingString:@">"];
+
+		if ([tag rangeOfString:@"</"].location==0)
 		{
-			if ([delimiter rangeOfString:@"<p"].location==0)
-			{
-				data = [data stringByReplacingOccurrencesOfString:delimiter withString:paragraphReplacement options:NSCaseInsensitiveSearch range:NSMakeRange(last_position, position+delimiter.length-last_position)];
-			}
-			else
-			{
-				data = [data stringByReplacingOccurrencesOfString:delimiter withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(last_position, position+delimiter.length-last_position)];
-			}
-			
-			data = [data stringByReplacingOccurrencesOfString:@"&lt;" withString:@"<"];
-			data = [data stringByReplacingOccurrencesOfString:@"&gt;" withString:@">"];
-		}
-		
-		if ([text rangeOfString:@"</"].location==0)
-		{
-			// end of tag
-			tag = [text substringFromIndex:2];
-			if (position!=NSNotFound)
-			{
-				for (int i=[components count]-1; i>=0; i--)
-				{
-					RTLabelComponent *component = [components objectAtIndex:i];
-					if (component.text==nil && [component.tagLabel isEqualToString:tag])
-					{
-						NSString *text2 = [data substringWithRange:NSMakeRange(component.position, position-component.position)];
-						component.text = text2;
-						break;
-					}
+			// End of tag
+            NSString *tag_name = [tag substringWithRange:NSMakeRange(2, tag.length - 3)];
+
+            for (int i=[components count]-1; i>=0; i--)
+            {
+                RTLabelComponent *component = [components objectAtIndex:i];
+                if (component.text==nil && [component.tagLabel isEqualToString:tag_name])
+                {
+                    NSString *text2 = [plainText substringWithRange:NSMakeRange(component.position, plainText.length - component.position)];
+                    component.text = text2;
+                    break;
 				}
 			}
+
+            if ([tag_name caseInsensitiveCompare:@"ul"] == NSOrderedSame || [tag_name caseInsensitiveCompare:@"ol"] == NSOrderedSame) {
+                listPointCounter[listIndent] = 0;
+                listIndent--;
+            }
 		}
-		else
+		else if([tag rangeOfString:@"<"].location == 0)
 		{
-			// start of tag
-			NSArray *textComponents = [[text substringFromIndex:1] componentsSeparatedByString:@" "];
-			tag = [textComponents objectAtIndex:0];
-			//NSLog(@"start of tag: %@", tag);
+			// Start of tag
+			NSArray *textComponents = [[tag substringWithRange:NSMakeRange(1, tag.length - 2)] componentsSeparatedByString:@" "];
+			NSString *tag_name = [textComponents objectAtIndex:0];
+
 			NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
 			for (NSUInteger i=1; i<[textComponents count]; i++)
 			{
@@ -925,6 +1047,8 @@
 						NSString *value = [[pair subarrayWithRange:NSMakeRange(1, [pair count] - 1)] componentsJoinedByString:@"="];
 						value = [value stringByReplacingOccurrencesOfString:@"\"" withString:@"" options:NSLiteralSearch range:NSMakeRange(0, 1)];
 						value = [value stringByReplacingOccurrencesOfString:@"\"" withString:@"" options:NSLiteralSearch range:NSMakeRange([value length]-1, 1)];
+                        value = [value stringByReplacingOccurrencesOfString:@"'" withString:@"" options:NSLiteralSearch range:NSMakeRange(0, 1)];
+						value = [value stringByReplacingOccurrencesOfString:@"'" withString:@"" options:NSLiteralSearch range:NSMakeRange([value length]-1, 1)];
 						
 						[attributes setObject:value forKey:key];
 					} else if ([pair count]==1) {
@@ -932,14 +1056,37 @@
 					}
 				}
 			}
-			RTLabelComponent *component = [RTLabelComponent componentWithString:nil tag:tag attributes:attributes];
-			component.position = position;
+
+            if ([tag_name caseInsensitiveCompare:@"p"] == NSOrderedSame)
+                [plainText appendString:paragraphReplacement];
+            else if ([tag_name caseInsensitiveCompare:@"ul"] == NSOrderedSame || [tag_name caseInsensitiveCompare:@"ol"] == NSOrderedSame) {
+                // Start of html list
+                listIndent++;
+                listPointType[listIndent] = [tag_name caseInsensitiveCompare:@"ol"] == NSOrderedSame ? @"1" : @"circle";    // Default types
+                if(attributes[@"type"])
+                    listPointType[listIndent] = attributes[@"type"];
+            }
+            else if([tag_name caseInsensitiveCompare:@"li"] == NSOrderedSame) {
+                // New list point
+                attributes[@"indent"] = @(listIndent);
+                listPoint = YES;
+                listPointCounter[listIndent]++;
+
+                if(plainText.length && [tag_name caseInsensitiveCompare:@"li"] == NSOrderedSame)
+                    [plainText appendString:@"\n"];
+            }
+            else if ([tag_name caseInsensitiveCompare:@"br"] == NSOrderedSame) {
+                [plainText appendString:@"\n"];
+                continue;
+            }
+
+			RTLabelComponent *component = [RTLabelComponent componentWithString:nil tag:tag_name attributes:attributes];
+			component.position = plainText.length;
 			[components addObject:component];
 		}
-		last_position = position;
 	}
 	
-    return [RTLabelExtractedComponent rtLabelExtractComponentsWithTextComponent:components plainText:data];
+    return [RTLabelExtractedComponent rtLabelExtractComponentsWithTextComponent:components plainText:plainText];
 }
 
 
@@ -949,7 +1096,7 @@
 	NSScanner *scanner = nil;
 	NSString *text = nil;
 	NSString *tag = nil;
-	
+
 	NSMutableArray *components = [NSMutableArray array];
 	
 	//set up the scanner
@@ -1067,7 +1214,7 @@
 
 - (void)setText:(NSString *)text extractedTextStyle:(NSDictionary*)extractTextStyle
 {
-	_text = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
+    _text = text;
     [self setTextComponents:[extractTextStyle objectForKey:@"textComponents"]];
     [self setPlainText:[extractTextStyle objectForKey:@"plainText"]];
 	[self setNeedsDisplay];
