@@ -974,8 +974,7 @@ static NSString *ListPointString(NSString *type, NSInteger index) {
     NSString *listPointType[8] = {0, 0, 0, 0, 0, 0, 0, 0};
     BOOL listPoint = NO;
 
-    NSRegularExpression *regex = [[NSRegularExpression alloc] initWithPattern:@">\\s*<" options:NSRegularExpressionCaseInsensitive error:nil];
-    data = [regex stringByReplacingMatchesInString:data options:0 range:NSMakeRange(0, data.length) withTemplate:@"><"];
+    NSRegularExpression *white_trimmer = [[NSRegularExpression alloc] initWithPattern:@"\\s+" options:NSRegularExpressionCaseInsensitive error:nil];
     NSScanner *scanner = [NSScanner scannerWithString:data];
     scanner.charactersToBeSkipped = nil;
 
@@ -992,6 +991,7 @@ static NSString *ListPointString(NSString *type, NSInteger index) {
             text = [text stringByReplacingOccurrencesOfString:@"&amp;" withString:@"&"];
             text = [text stringByReplacingOccurrencesOfString:@"&apos;" withString:@"'"];
             text = [text stringByReplacingOccurrencesOfString:@"&quot;" withString:@"\""];
+            text = [white_trimmer stringByReplacingMatchesInString:text options:0 range:NSMakeRange(0, text.length) withTemplate:@" "];
 
             if(listPoint && listIndent) {
                 listPoint = NO;
