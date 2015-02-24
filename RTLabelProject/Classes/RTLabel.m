@@ -873,14 +873,14 @@ static NSString *ListPointString(NSString *type, NSInteger index) {
 
 - (void)setHighlightedText:(NSString *)text
 {
-	_highlightedText = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
+    _highlightedText = text;
 	RTLabelExtractedComponent *component = [RTLabel extractTextStyleFromText:_highlightedText paragraphReplacement:self.paragraphReplacement];
     [self setHighlightedTextComponents:component.textComponents];
 }
 
 - (void)setText:(NSString *)text
 {
-	_text = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
+    _text = text;
 	RTLabelExtractedComponent *component = [RTLabel extractTextStyleFromText:_text paragraphReplacement:self.paragraphReplacement];
     [self setTextComponents:component.textComponents];
     [self setPlainText:component.plainText];
@@ -889,7 +889,7 @@ static NSString *ListPointString(NSString *type, NSInteger index) {
 
 - (void)setText:(NSString *)text extractedTextComponent:(RTLabelExtractedComponent*)extractedComponent
 {
-	_text = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
+    _text = text;
     [self setTextComponents:extractedComponent.textComponents];
     [self setPlainText:extractedComponent.plainText];
 	[self setNeedsDisplay];
@@ -897,7 +897,7 @@ static NSString *ListPointString(NSString *type, NSInteger index) {
 
 - (void)setHighlightedText:(NSString *)text extractedTextComponent:(RTLabelExtractedComponent*)extractedComponent
 {
-    _highlightedText = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
+    _highlightedText = text;
     [self setHighlightedTextComponents:extractedComponent.textComponents];
 }
 
@@ -1075,7 +1075,10 @@ static NSString *ListPointString(NSString *type, NSInteger index) {
                 if(plainText.length && [tag_name caseInsensitiveCompare:@"li"] == NSOrderedSame)
                     [plainText appendString:@"\n"];
             }
-
+            else if ([tag_name caseInsensitiveCompare:@"br"] == NSOrderedSame) {
+                [plainText appendString:@"\n"];
+                continue;
+            }
 
 			RTLabelComponent *component = [RTLabelComponent componentWithString:nil tag:tag_name attributes:attributes];
 			component.position = plainText.length;
@@ -1211,7 +1214,7 @@ static NSString *ListPointString(NSString *type, NSInteger index) {
 
 - (void)setText:(NSString *)text extractedTextStyle:(NSDictionary*)extractTextStyle
 {
-	_text = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
+    _text = text;
     [self setTextComponents:[extractTextStyle objectForKey:@"textComponents"]];
     [self setPlainText:[extractTextStyle objectForKey:@"plainText"]];
 	[self setNeedsDisplay];
