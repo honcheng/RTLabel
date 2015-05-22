@@ -773,6 +773,8 @@
 - (void)setText:(NSString *)text
 {
 	_text = [text stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
+    _text = [_text stringByReplacingOccurrencesOfString:@"&nbsp;" withString:@" "];
+    _text = [_text stringByReplacingOccurrencesOfString:@"</p>" withString:@"</p>\n"];
 	RTLabelExtractedComponent *component = [RTLabel extractTextStyleFromText:_text paragraphReplacement:self.paragraphReplacement];
     [self setTextComponents:component.textComponents];
     [self setPlainText:component.plainText];
