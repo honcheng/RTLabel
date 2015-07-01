@@ -365,7 +365,8 @@
 					[button setBackgroundColor:[UIColor colorWithWhite:0 alpha:0]];
 					[button setComponentIndex:linkableComponents.componentIndex];
 					
-					[button setUrl:[NSURL URLWithString:[linkableComponents.attributes objectForKey:@"href"]]];
+                    NSURL *url = [NSURL URLWithString:[[linkableComponents.attributes objectForKey:@"href"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+					[button setUrl:url];
 					[button addTarget:self action:@selector(onButtonTouchDown:) forControlEvents:UIControlEventTouchDown];
 					[button addTarget:self action:@selector(onButtonTouchUpOutside:) forControlEvents:UIControlEventTouchUpOutside];
 					[button addTarget:self action:@selector(onButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
