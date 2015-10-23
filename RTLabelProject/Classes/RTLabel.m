@@ -161,7 +161,10 @@
 	_currentSelectedButtonComponentIndex = -1;
 	_paragraphReplacement = @"\n";
 	
+	
+	#if TARGET_OS_IOS
 	[self setMultipleTouchEnabled:YES];
+#endif
 }
 
 - (void)setTextAlignment:(RTTextAlignment)textAlignment
