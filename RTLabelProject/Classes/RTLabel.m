@@ -425,19 +425,19 @@
 		{
 			if ([value caseInsensitiveCompare:@"left"] == NSOrderedSame)
 			{
-				textAlignment = kCTLeftTextAlignment;
+				textAlignment = kCTTextAlignmentLeft;
 			}
 			else if ([value caseInsensitiveCompare:@"right"] == NSOrderedSame)
 			{
-				textAlignment = kCTRightTextAlignment;
+				textAlignment = kCTTextAlignmentRight;
 			}
 			else if ([value caseInsensitiveCompare:@"justify"] == NSOrderedSame)
 			{
-				textAlignment = kCTJustifiedTextAlignment;
+				textAlignment = kCTTextAlignmentJustified;
 			}
 			else if ([value caseInsensitiveCompare:@"center"] == NSOrderedSame)
 			{
-				textAlignment = kCTCenterTextAlignment;
+				textAlignment = kCTTextAlignmentCenter;
 			}
 		}
 		else if ([key caseInsensitiveCompare:@"indent"] == NSOrderedSame)
@@ -518,7 +518,7 @@
 	NSInteger lineBreakMode = _lineBreakMode;
 	NSInteger lineSpacing = (NSInteger)_lineSpacing;
 
-    textAlignment = kCTCenterTextAlignment;
+    textAlignment = kCTTextAlignmentCenter;
 	
 	CTParagraphStyleSetting theSettings[] =
 	{
