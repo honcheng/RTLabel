@@ -5,6 +5,14 @@ Rich text formatting based on HTML-like markups for iOS.
 
 <img src="https://github.com/honcheng/RTLabel/raw/master/screenshot.png"/>
 
+<!-- MacBuildServer Install Button -->
+<div class="macbuildserver-block">
+    <a class="macbuildserver-button" href="http://macbuildserver.com/project/github/build/?xcode_project=RTLabelProject%2FRTLabelProject.xcodeproj&amp;target=RTLabelProject&amp;repo_url=https%3A%2F%2Fgithub.com%2Fhoncheng%2FRTLabel&amp;build_conf=Release" target="_blank"><img src="http://com.macbuildserver.github.s3-website-us-east-1.amazonaws.com/button_up.png"/></a><br/><sup><a href="http://macbuildserver.com/github/opensource/" target="_blank">by MacBuildServer</a></sup>
+</div>
+<!-- MacBuildServer Install Button -->
+
+
+
 RTLabel works like UILabel, but supports html-like markups for rich text display. 
 It is based on Core Text, so it supports some of the stuff that Core Text supports
 
