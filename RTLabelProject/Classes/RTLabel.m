@@ -334,7 +334,9 @@
 	
 	CFRange range;
 	CGSize constraint = CGSizeMake(self.frame.size.width, CGFLOAT_MAX);
-	self.optimumSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, [self.plainText length]), nil, constraint, &range);
+	//self.optimumSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, [self.plainText length]), nil, constraint, &range);
+    CGSize optimumSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, [self.plainText length]), nil, constraint, &range);
+    self.optimumSize = CGSizeMake(ceilf(optimumSize.width), ceilf(optimumSize.height));
 	
 	
 	if (self.currentSelectedButtonComponentIndex==-1)
