@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>68987889-3702-4203-AE36-0E6FDF45FDE5</string>
+	<key>IDESourceControlProjectName</key>
+	<string>RTLabelProject</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>F1F3DEE1-0165-4AE2-9FBC-0C57006DCF73</key>
+		<string>ssh://github.com/devinross/RTLabel.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>RTLabelProject/RTLabelProject.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>F1F3DEE1-0165-4AE2-9FBC-0C57006DCF73</key>
+		<string>../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>ssh://github.com/devinross/RTLabel.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>F1F3DEE1-0165-4AE2-9FBC-0C57006DCF73</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>F1F3DEE1-0165-4AE2-9FBC-0C57006DCF73</string>
+			<key>IDESourceControlWCCName</key>
+			<string>RTLabel</string>
+		</dict>
+	</array>
+</dict>
+</plist>
