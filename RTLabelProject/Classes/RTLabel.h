@@ -95,12 +95,16 @@ typedef enum
 @property (nonatomic, assign) NSInteger currentSelectedButtonComponentIndex;
 @property (nonatomic, assign) CFRange visibleRange;
 @property (nonatomic, assign) BOOL highlighted;
+@property (nonatomic, readonly) NSMutableDictionary *anchorsBoundingRects;
 
 // set text
 - (void)setText:(NSString*)text;
 + (RTLabelExtractedComponent*)extractTextStyleFromText:(NSString*)data paragraphReplacement:(NSString*)paragraphReplacement;
 // get the visible text
 - (NSString*)visibleText;
+
+// get the bounding rect of the anchor referenced by its 'id' attribute (<a href='' id=''>...</a>), relatively to the view
+- (CGRect) boundingRectForAnchorWithIdentifier: (NSString *) identifier;
 
 // alternative
 // from susieyy http://github.com/susieyy
